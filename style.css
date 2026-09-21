@@ -1,0 +1,79 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f7fb;
+  color: #172033;
+}
+
+header {
+  background: #173b73;
+  color: white;
+  text-align: center;
+  padding: 30px 15px;
+}
+
+header h1 {
+  margin: 0 0 10px;
+  font-size: 30px;
+}
+
+header p {
+  margin: 0;
+  font-size: 16px;
+}
+
+main {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 12px;
+  border: 1px solid #ccd5e2;
+  border-radius: 12px;
+  font-size: 16px;
+  background: white;
+}
+
+.job {
+  background: white;
+  margin-bottom: 15px;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+
+.job h2 {
+  margin-top: 0;
+}
+
+.job p {
+  margin: 8px 0;
+}
+
+.job button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  background: #173b73;
+  color: white;
+  font-size: 16px;
+}
+
+.job button:active {
+  transform: scale(0.98);
+}
+
+#jobs {
+  margin-top: 20px;
+}
