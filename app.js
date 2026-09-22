@@ -1,112 +1,76 @@
 const jobs = [
   {
-    id: 1,
     title: "Agent de sécurité",
-    city: "Bruxelles",
     country: "Belgique",
-    type: "Temps plein",
-    company: "Entreprise de sécurité",
-    salary: "Selon expérience",
-    description: "Poste d'agent de sécurité en Belgique.",
-    requirements: [
-      "Sérieux et ponctuel",
-      "Bonne présentation",
-      "Expérience dans la sécurité"
-    ]
+    city: "Bruxelles",
+    type: "Sécurité"
   },
   {
-    id: 2,
-    title: "Réceptionniste hôtel",
+    title: "Serveur / Serveuse",
+    country: "Belgique",
+    city: "Bruxelles",
+    type: "Hôtellerie"
+  },
+  {
+    title: "Réceptionniste",
+    country: "Belgique",
     city: "Liège",
-    country: "Belgique",
-    type: "Temps plein",
-    company: "Hôtel",
-    salary: "Selon expérience",
-    description: "Accueil des clients et gestion de la réception.",
-    requirements: [
-      "Bonne communication",
-      "Français",
-      "Expérience en réception ou hôtellerie"
-    ]
+    type: "Hôtellerie"
   },
   {
-    id: 3,
-    title: "Serveur",
-    city: "Bruxelles",
-    country: "Belgique",
-    type: "Temps plein",
-    company: "Restaurant",
-    salary: "Selon expérience",
-    description: "Service des clients dans un restaurant.",
-    requirements: [
-      "Sérieux",
-      "Ponctualité",
-      "Expérience en restauration"
-    ]
+    title: "Employé de restauration",
+    country: "France",
+    city: "Paris",
+    type: "Restauration"
   }
 ];
 
-const app = document.getElementById("jobs");
+function displayJobs(list = jobs) {
+  const container = document.getElementById("jobs");
 
-function showJobs(list) {
-  app.innerHTML = "";
+  if (!container) return;
+
+  container.innerHTML = "";
 
   list.forEach(job => {
     const card = document.createElement("div");
+
     card.className = "job-card";
 
     card.innerHTML = `
-      <h2>${job.title}</h2>
+      <h3>${job.title}</h3>
       <p>📍 ${job.city}, ${job.country}</p>
       <p>💼 ${job.type}</p>
-      <p>🏢 ${job.company}</p>
-
-      <button onclick="showDetails(${job.id})">
-        Voir l'offre
+      <button onclick="applyJob('${job.title}')">
+        Postuler
       </button>
     `;
 
-    app.appendChild(card);
+    container.appendChild(card);
   });
 }
 
-function showDetails(id) {
-  const job = jobs.find(j => j.id === id);
+function searchJobs() {
+  const input = document.getElementById("search");
 
-  app.innerHTML = `
-    <div class="job-details">
-      <button onclick="showJobs(jobs)">← Retour</button>
+  if (!input) return;
 
-      <h1>${job.title}</h1>
+  const text = input.value.toLowerCase();
 
-      <p>📍 <strong>Lieu :</strong> ${job.city}, ${job.country}</p>
-      <p>💼 <strong>Contrat :</strong> ${job.type}</p>
-      <p>🏢 <strong>Entreprise :</strong> ${job.company}</p>
-      <p>💰 <strong>Salaire :</strong> ${job.salary}</p>
-
-      <h3>Description</h3>
-      <p>${job.description}</p>
-
-      <h3>Exigences</h3>
-      <ul>
-        ${job.requirements.map(r => `<li>${r}</li>`).join("")}
-      </ul>
-
-      <button onclick="applyJob(${job.id})">
-        📩 Postuler directement
-      </button>
-    </div>
-  `;
-}
-
-function applyJob(id) {
-  const job = jobs.find(j => j.id === id);
-
-  alert(
-    "Candidature pour : " +
-    job.title +
-    "\\n\\nLa page de candidature sera ajoutée à l'étape suivante."
+  const results = jobs.filter(job =>
+    job.title.toLowerCase().includes(text) ||
+    job.country.toLowerCase().includes(text) ||
+    job.city.toLowerCase().includes(text) ||
+    job.type.toLowerCase().includes(text)
   );
+
+  displayJobs(results);
 }
 
-showJobs(jobs);
+function applyJob(title) {
+  alert("Vous avez choisi : " + title);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  displayJobs();
+});
