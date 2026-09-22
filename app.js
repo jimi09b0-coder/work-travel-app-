@@ -81,7 +81,57 @@ function showJob(id) {
 }
 
 function applyJob(title) {
-  alert("Candidature pour : " + title);
+  document.getElementById("jobs").innerHTML = `
+    <div class="job-card">
+      <h2>📩 Candidature</h2>
+
+      <p><strong>Poste :</strong> ${title}</p>
+
+      <input
+        type="text"
+        id="name"
+        placeholder="Votre nom complet"
+      >
+
+      <input
+        type="email"
+        id="email"
+        placeholder="Votre adresse e-mail"
+      >
+
+      <input
+        type="tel"
+        id="phone"
+        placeholder="Votre numéro de téléphone"
+      >
+
+      <textarea
+        id="message"
+        placeholder="Message au recruteur"
+      ></textarea>
+
+      <button onclick="sendApplication()">
+        Envoyer ma candidature
+      </button>
+
+      <button onclick="displayJobs()" class="back-button">
+        ← Retour
+      </button>
+    </div>
+  `;
+}
+
+function sendApplication() {
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const phone = document.getElementById("phone").value;
+
+  if (!name || !email || !phone) {
+    alert("Veuillez remplir tous les champs.");
+    return;
+  }
+
+  alert("Votre candidature est prête à être envoyée. Merci !");
 }
 
 function searchJobs() {
