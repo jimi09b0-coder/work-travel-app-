@@ -11,26 +11,27 @@
 
   <header>
     <h1>🌍 Work Travel</h1>
-    <p>Trouvez votre prochain emploi en Europe</p>
+    <p>Travail et voyage en Europe</p>
   </header>
 
   <main>
 
-    <input
-      type="text"
-      id="search"
-      placeholder="🔎 Rechercher un emploi..."
-    >
+    <section class="search-box">
+      <h2>🔎 Rechercher un emploi</h2>
 
-    <select id="country">
-      <option value="">🌍 Toutes les destinations</option>
-      <option value="Belgique">🇧🇪 Belgique</option>
-      <option value="France">🇫🇷 France</option>
-      <option value="Italie">🇮🇹 Italie</option>
-      <option value="Espagne">🇪🇸 Espagne</option>
-    </select>
+      <input
+        type="text"
+        id="search"
+        placeholder="Métier, pays ou ville..."
+        oninput="searchJobs()"
+      >
+    </section>
 
-    <section id="jobs"></section>
+    <section>
+      <h2>💼 Offres d'emploi</h2>
+
+      <div id="jobs"></div>
+    </section>
 
   </main>
 
