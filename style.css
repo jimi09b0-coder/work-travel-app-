@@ -17,3 +17,28 @@
 .job-card h3 {
   margin-top: 15px;
 }
+.job-card input,
+.job-card textarea {
+  width: 100%;
+  padding: 13px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+}
+
+.job-card textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.job-card input:focus,
+.job-card textarea:focus {
+  outline: none;
+  border-color: #0b5ed7;
+}
+
+.job-card button {
+  margin-top: 15px;
+}
