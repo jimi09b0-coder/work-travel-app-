@@ -1,61 +1,94 @@
 const jobs = [
   {
+    id: 1,
     title: "Agent de sécurité",
     country: "Belgique",
     city: "Bruxelles",
-    type: "Sécurité"
+    type: "Sécurité",
+    description: "Poste d'agent de sécurité en Belgique.",
+    requirements: "Sérieux, ponctuel et expérience en sécurité."
   },
   {
-    title: "Serveur / Serveuse",
+    id: 2,
+    title: "Serveur",
     country: "Belgique",
     city: "Bruxelles",
-    type: "Hôtellerie"
+    type: "Hôtellerie",
+    description: "Poste de serveur dans un établissement hôtelier.",
+    requirements: "Expérience en restauration et bon contact avec les clients."
   },
   {
+    id: 3,
     title: "Réceptionniste",
     country: "Belgique",
     city: "Liège",
-    type: "Hôtellerie"
-  },
-  {
-    title: "Employé de restauration",
-    country: "France",
-    city: "Paris",
-    type: "Restauration"
+    type: "Hôtellerie",
+    description: "Accueil des clients et gestion de la réception.",
+    requirements: "Français et expérience en réception."
   }
 ];
 
 function displayJobs(list = jobs) {
   const container = document.getElementById("jobs");
-
   if (!container) return;
 
   container.innerHTML = "";
 
   list.forEach(job => {
-    const card = document.createElement("div");
+    container.innerHTML += `
+      <div class="job-card">
+        <h3>${job.title}</h3>
+        <p>📍 ${job.city}, ${job.country}</p>
+        <p>💼 ${job.type}</p>
 
-    card.className = "job-card";
-
-    card.innerHTML = `
-      <h3>${job.title}</h3>
-      <p>📍 ${job.city}, ${job.country}</p>
-      <p>💼 ${job.type}</p>
-      <button onclick="applyJob('${job.title}')">
-        Postuler
-      </button>
+        <button onclick="showJob(${job.id})">
+          Voir les détails
+        </button>
+      </div>
     `;
-
-    container.appendChild(card);
   });
 }
 
+function showJob(id) {
+  const job = jobs.find(j => j.id === id);
+
+  if (!job) return;
+
+  document.getElementById("jobs").innerHTML = `
+    <div class="job-card">
+      <h2>${job.title}</h2>
+
+      <p>📍 ${job.city}, ${job.country}</p>
+      <p>💼 ${job.type}</p>
+
+      <hr>
+
+      <h3>Description</h3>
+      <p>${job.description}</p>
+
+      <h3>Conditions</h3>
+      <p>${job.requirements}</p>
+
+      <button onclick="applyJob('${job.title}')">
+        📩 Postuler directement
+      </button>
+
+      <button onclick="displayJobs()" class="back-button">
+        ← Retour aux offres
+      </button>
+    </div>
+  `;
+}
+
+function applyJob(title) {
+  alert("Candidature pour : " + title);
+}
+
 function searchJobs() {
-  const input = document.getElementById("search");
-
-  if (!input) return;
-
-  const text = input.value.toLowerCase();
+  const text = document
+    .getElementById("search")
+    .value
+    .toLowerCase();
 
   const results = jobs.filter(job =>
     job.title.toLowerCase().includes(text) ||
@@ -65,10 +98,6 @@ function searchJobs() {
   );
 
   displayJobs(results);
-}
-
-function applyJob(title) {
-  alert("Vous avez choisi : " + title);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
