@@ -4,29 +4,35 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Work Travel</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <h1>🌍 Work Travel</h1>
+  <header>
+    <h1>🌍 Work Travel</h1>
+    <p>Trouvez votre prochain emploi en Europe</p>
+  </header>
 
-  <p>Trouvez votre prochain emploi en Europe</p>
+  <main>
 
-  <input
-    type="text"
-    id="search"
-    placeholder="🔎 Rechercher un emploi..."
-  >
+    <input
+      type="text"
+      id="search"
+      placeholder="🔎 Rechercher un emploi..."
+    >
 
-  <select id="country">
-    <option value="">🌍 Toutes les destinations</option>
-    <option value="Belgique">🇧🇪 Belgique</option>
-    <option value="France">🇫🇷 France</option>
-    <option value="Italie">🇮🇹 Italie</option>
-    <option value="Espagne">🇪🇸 Espagne</option>
-  </select>
+    <select id="country">
+      <option value="">🌍 Toutes les destinations</option>
+      <option value="Belgique">🇧🇪 Belgique</option>
+      <option value="France">🇫🇷 France</option>
+      <option value="Italie">🇮🇹 Italie</option>
+      <option value="Espagne">🇪🇸 Espagne</option>
+    </select>
 
-  <div id="jobs"></div>
+    <section id="jobs"></section>
+
+  </main>
 
   <script src="app.js"></script>
 
