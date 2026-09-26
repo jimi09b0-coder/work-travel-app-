@@ -283,6 +283,49 @@ async function login(e) {
   await renderDashboard();
 }
 
+function getProfileCompletion(profile, fallbackName="") {
+  const fields = [
+    fallbackName || profile?.full_name,
+    profile?.phone,
+    profile?.headline,
+    profile?.bio,
+    profile?.skills?.length,
+    profile?.languages?.length,
+    profile?.experience,
+    profile?.education,
+    profile?.cv_path
+  ];
+  return Math.round(fields.filter(Boolean).length / fields.length * 100);
+}
+
+function csvValues(value) {
+  return value.split(",").map(x => x.trim()).filter(Boolean).slice(0, 12);
+}
+
+async function saveCandidateProfile(e) {
+  e.preventDefault();
+  const user = await currentUser();
+  if (!user) return renderAuth("login");
+  const payload = {
+    full_name: $("profileName").value.trim(),
+    phone: $("profilePhone").value.trim(),
+    headline: $("profileHeadline").value.trim(),
+    bio: $("profileBio").value.trim(),
+    skills: csvValues($("profileSkills").value),
+    languages: csvValues($("profileLanguages").value),
+    experience: $("profileExperience").value.trim(),
+    education: $("profileEducation").value.trim(),
+    updated_at: new Date().toISOString()
+  };
+  if (!payload.full_name) return alert("Veuillez saisir votre nom.");
+  const { error } = await supabase.from("profiles").update(payload).eq("id", user.id);
+  if (error) return alert("Impossible d’enregistrer le profil : " + error.message);
+  const { error: authError } = await supabase.auth.updateUser({data:{full_name:payload.full_name}});
+  if (authError) return alert("Profil enregistré, mais le compte n'a pas pu être synchronisé : " + authError.message);
+  showNotification("Profil professionnel enregistré.", "success");
+  await renderDashboard();
+}
+
 async function updateProfileName(e) {
   e.preventDefault();
   const user = await currentUser();
@@ -300,7 +343,7 @@ async function renderDashboard() {
   const user = await currentUser();
   if (!user) return renderAuth("login");
   const [{data:profile}, {data:apps, error}] = await Promise.all([
-    supabase.from("profiles").select("full_name,cv_path").eq("id",user.id).maybeSingle(),
+    supabase.from("profiles").select("full_name,phone,headline,bio,skills,languages,experience,education,cv_path").eq("id",user.id).maybeSingle(),
     supabase.from("applications").select("id,job_id,created_at,status,jobs(title,city,country)").eq("user_id",user.id).order("created_at",{ascending:false})
   ]);
   if (error) return alert("Erreur lors du chargement du compte : " + error.message);
@@ -310,7 +353,7 @@ async function renderDashboard() {
   const accepted = apps?.filter(a => a.status === "Acceptée").length || 0;
   const refused = apps?.filter(a => a.status === "Refusée").length || 0;
   const favoriteCount = getFavorites().length;
-  const profileCompletion = Math.round(((name !== "Candidat" ? 50 : 0) + (profile?.cv_path ? 50 : 0)));
+  const profileCompletion = getProfileCompletion(profile, name !== "Candidat" ? name : "");
   const latestApps = (apps || []).slice(0, 5);
   $("account").innerHTML = `
     <div class="account-card dashboard">
@@ -327,10 +370,25 @@ async function renderDashboard() {
         <button class="stat-card"><span>🟢</span><strong>${accepted}</strong><small>Acceptées</small></button>
         <button class="stat-card"><span>⭐</span><strong>${favoriteCount}</strong><small>Favoris</small></button>
       </div>
+      <section class="candidate-profile-editor">
+        <div class="panel-heading"><div><span class="eyebrow">PROFIL PROFESSIONNEL</span><h3>👤 Mon profil</h3><p class="small-note">Complétez votre profil pour mieux présenter votre candidature.</p></div><span class="completion-mini">${profileCompletion}%</span></div>
+        <form class="candidate-profile-form" onsubmit="saveCandidateProfile(event)">
+          <div class="profile-form-grid">
+            <label>📛 Nom complet<input id="profileName" type="text" value="${esc(name)}" maxlength="80" required></label>
+            <label>📱 Téléphone<input id="profilePhone" type="tel" maxlength="30" value="${esc(profile?.phone || "")}" placeholder="+213 ..."></label>
+            <label>🎯 Titre professionnel<input id="profileHeadline" type="text" maxlength="120" value="${esc(profile?.headline || "")}" placeholder="Ex. Agent de sécurité"></label>
+            <label>🧰 Compétences<input id="profileSkills" type="text" value="${esc((profile?.skills || []).join(", "))}" placeholder="Sécurité, accueil, informatique"></label>
+            <label>🌐 Langues<input id="profileLanguages" type="text" value="${esc((profile?.languages || []).join(", "))}" placeholder="Français, arabe, anglais"></label>
+            <label>💼 Expérience<textarea id="profileExperience" rows="4" maxlength="1500" placeholder="Décrivez vos expériences professionnelles...">${esc(profile?.experience || "")}</textarea></label>
+            <label>🎓 Formation<textarea id="profileEducation" rows="4" maxlength="1500" placeholder="Diplômes, formations, certifications...">${esc(profile?.education || "")}</textarea></label>
+          </div>
+          <label>📝 Présentation<textarea id="profileBio" rows="5" maxlength="2000" placeholder="Présentez votre profil en quelques lignes...">${esc(profile?.bio || "")}</textarea></label>
+          <button type="submit">💾 Enregistrer mon profil</button>
+        </form>
+      </section>
       <div class="dashboard-grid">
-        <section class="dashboard-panel"><div class="panel-heading"><div><span class="eyebrow">PROFIL</span><h3>👤 Mes informations</h3></div><span class="completion-mini">${profileCompletion}%</span></div>
-          <form class="name-form" onsubmit="updateProfileName(event)"><input id="profileName" type="text" value="${esc(name)}" maxlength="80" required><button type="submit">💾 Enregistrer</button></form>
-          <div class="cv-box"><div><strong>📄 Mon CV</strong><p id="cvStatus" class="small-note">${profile?.cv_path ? `CV enregistré. <button type="button" class="cv-link" onclick="openCV()">Ouvrir</button> <button type="button" class="cv-delete" onclick="deleteCV()">Supprimer</button>` : "Ajoutez votre CV pour compléter votre profil."}</p></div><input type="file" id="cvFile" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"></div>
+        <section class="dashboard-panel"><div class="panel-heading"><div><span class="eyebrow">DOCUMENTS</span><h3>📄 Mon CV</h3></div></div>
+          <div class="cv-box"><div><strong>CV professionnel</strong><p id="cvStatus" class="small-note">${profile?.cv_path ? `CV enregistré. <button type="button" class="cv-link" onclick="openCV()">Ouvrir</button> <button type="button" class="cv-delete" onclick="deleteCV()">Supprimer</button>` : "Ajoutez votre CV pour compléter votre profil."}</p></div><input type="file" id="cvFile" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"></div>
         </section>
         <section class="dashboard-panel"><div class="panel-heading"><div><span class="eyebrow">ACTIVITÉ</span><h3>📈 Résumé</h3></div></div>
           <div class="activity-list"><div><span>🟡</span><strong>${pending}</strong><p>candidature(s) en cours</p></div><div><span>🟢</span><strong>${accepted}</strong><p>candidature(s) acceptée(s)</p></div><div><span>🔴</span><strong>${refused}</strong><p>candidature(s) refusée(s)</p></div></div>
@@ -469,7 +527,7 @@ async function loadJobs() {
   renderSearchHistory();
 }
 
-window.showJob=showJob; window.savePreferences=savePreferences; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName;
+window.showJob=showJob; window.savePreferences=savePreferences; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile;
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
