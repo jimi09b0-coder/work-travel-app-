@@ -121,7 +121,7 @@ async function renderDashboard() {
   const name = profile?.full_name || user.user_metadata?.full_name || "Candidat";
   $("account").innerHTML = `
     <div class="account-card">
-      <div class="account-top"><div><span class="eyebrow">MON COMPTE</span><h2>👋 Bonjour ${esc(name)}</h2><p>${esc(user.email)}</p></div><button class="back-button" onclick="logout()">Se déconnecter</button></div>
+      <div class="account-top"><div class="account-identity"><span class="eyebrow">MON COMPTE</span><h2>👋 Bonjour ${esc(name)}</h2><p class="account-email">✉️ ${esc(user.email)}</p></div><div class="account-actions"><button class="refresh-button" onclick="renderDashboard()">↻ Actualiser</button><button class="back-button" onclick="logout()">Se déconnecter</button></div></div>
       <div class="profile-grid">
         <div><h3>📄 Mon CV</h3><input type="file" id="cvFile" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><p id="cvStatus" class="small-note">${profile?.cv_path ? `CV enregistré dans votre espace. <button type="button" class="cv-link" onclick="openCV()">📄 Ouvrir mon CV</button> <button type="button" class="cv-delete" onclick="deleteCV()">🗑️ Supprimer</button>` : "Aucun CV enregistré."}</p></div>
         <div><h3>📊 Mes candidatures</h3><strong class="big-number">${apps?.length || 0}</strong><p class="small-note">candidature(s) enregistrée(s)</p></div>
