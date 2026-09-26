@@ -400,7 +400,11 @@ async function saveCompanyProfile(e){
 }
   const list = apps || [];
   const jobList = ownedJobs || [];
-  const counts = jobList.reduce((acc,j) => { acc[j.id] = list.filter(a => a.jobs?.id === j.id).length; return acc; }, {});
+  const jobStats = jobList.reduce((acc,j) => {
+    const items = list.filter(a => a.jobs?.id === j.id);
+    acc[j.id] = { total: items.length, pending: items.filter(a => (a.status || "En cours") === "En cours").length, accepted: items.filter(a => a.status === "Acceptée").length, refused: items.filter(a => a.status === "Refusée").length };
+    return acc;
+  }, {});
 
   const cards = list.map(a => {
     const current = a.status || "En cours";
@@ -428,14 +432,19 @@ async function saveCompanyProfile(e){
     </article>`;
   }).join("");
 
-  const jobCards = jobList.map(j => `<article class="employer-job-card">
-    <div><h3>${esc(j.title)}</h3><p>📍 ${esc(j.city)}, ${esc(j.country)} · 💼 ${esc(j.type)} · 🕐 ${esc(j.contract)}</p></div>
-    <span class="employer-job-count">${counts[j.id] || 0} candidature(s)</span>
-    <div class="employer-job-actions">
-      <button type="button" onclick="editEmployerJob(${j.id})">✏️ Modifier</button>
-      <button type="button" class="danger-button" onclick="deleteEmployerJob(${j.id})">🗑️ Supprimer</button>
-    </div>
-  </article>`).join("");
+  const jobCards = jobList.map(j => {
+    const s = jobStats[j.id] || {total:0,pending:0,accepted:0,refused:0};
+    return `<article class="employer-job-card" data-job-card-id="${j.id}">
+      <div><h3>${esc(j.title)}</h3><p>📍 ${esc(j.city)}, ${esc(j.country)} · 💼 ${esc(j.type)} · 🕐 ${esc(j.contract)}</p></div>
+      <div class="employer-job-count">${s.total} candidature(s)</div>
+      <div class="employer-job-status-summary"><span>🟡 ${s.pending}</span><span>🟢 ${s.accepted}</span><span>🔴 ${s.refused}</span></div>
+      <div class="employer-job-actions">
+        <button type="button" onclick="focusEmployerApplications(${j.id})">📩 Voir les candidatures</button>
+        <button type="button" onclick="editEmployerJob(${j.id})">✏️ Modifier</button>
+        <button type="button" class="danger-button" onclick="deleteEmployerJob(${j.id})">🗑️ Supprimer</button>
+      </div>
+    </article>`;
+  }).join("");
 
   $("account").innerHTML = `
     <div class="account-card dashboard employer-dashboard">
@@ -501,6 +510,13 @@ async function saveCompanyProfile(e){
         <div id="employerApplicationResults">${cards || '<p class="small-note">Aucune candidature reçue sur vos offres.</p>'}</div>
       </section>
     </div>`;
+}
+
+function focusEmployerApplications(jobId){
+  const select = $("employerApplicationJob");
+  if (select) { select.value = String(jobId); filterEmployerApplications(); }
+  const section = $("employerApplicationResults");
+  if (section) section.scrollIntoView({behavior:"smooth", block:"start"});
 }
 
 function filterEmployerApplications() {
