@@ -510,6 +510,7 @@ async function saveCompanyProfile(e){
             <option value="newest">Plus récentes</option><option value="oldest">Plus anciennes</option><option value="name">Nom du candidat</option>
           </select>
         </div>
+        <p id="employerApplicationResultCount" class="filter-result-count">${list.length} candidature(s) affichée(s)</p>
         <div id="employerApplicationResults">${cards || '<p class="small-note">Aucune candidature reçue sur vos offres.</p>'}<p id="employerApplicationEmpty" class="filter-empty-state" hidden>Aucun résultat ne correspond aux filtres sélectionnés.</p></div>
       </section>
     </div>`;
@@ -550,6 +551,8 @@ function filterEmployerApplications() {
   });
   const empty = $("employerApplicationEmpty");
   if (empty) empty.hidden = visible !== 0;
+  const counter = $("employerApplicationResultCount");
+  if (counter) counter.textContent = `${visible} candidature(s) affichée(s) sur ${cards.length}`;
 }
 
 async function saveEmployerJob(e) {
