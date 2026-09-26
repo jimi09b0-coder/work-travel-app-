@@ -192,7 +192,8 @@ async async function showJob(id) {
 async function showCompanyProfile(userId) {
   const {data:company,error}=await supabase.rpc("get_company_public_profile",{company_user_id:userId}).maybeSingle();
   if(error||!company?.company_name) return;
-  const companyJobs=jobs.filter(j=>j.employer_id===userId);
+  const {data:companyJobs,error:jobsError}=await supabase.from("jobs").select("*,profiles!jobs_employer_id_fkey(company_name,company_logo_url,company_city,company_country)").eq("employer_id",userId).order("created_at",{ascending:false});
+  if(jobsError) return alert("Impossible de charger les offres de cette entreprise : "+jobsError.message);
   $("jobs").innerHTML=`
     <article class="company-page">
       <div class="company-page-head">
