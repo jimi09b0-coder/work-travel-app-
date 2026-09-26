@@ -180,14 +180,38 @@ async function renderDashboard() {
   ]);
   if (error) return alert("Erreur lors du chargement du compte : " + error.message);
   const name = profile?.full_name || user.user_metadata?.full_name || "Candidat";
+  const totalApps = apps?.length || 0;
+  const pending = apps?.filter(a => (a.status || "En cours") === "En cours").length || 0;
+  const accepted = apps?.filter(a => a.status === "Acceptée").length || 0;
+  const refused = apps?.filter(a => a.status === "Refusée").length || 0;
+  const favoriteCount = getFavorites().length;
+  const profileCompletion = Math.round(((name !== "Candidat" ? 50 : 0) + (profile?.cv_path ? 50 : 0)));
+  const latestApps = (apps || []).slice(0, 5);
   $("account").innerHTML = `
-    <div class="account-card">
-      <div class="account-top"><div class="account-identity"><span class="eyebrow">MON COMPTE</span><h2>👋 Bonjour ${esc(name)}</h2><form class="name-form" onsubmit="updateProfileName(event)"><input id="profileName" type="text" value="${esc(name)}" maxlength="80" required><button type="submit">💾 Enregistrer</button></form><p class="account-email">✉️ ${esc(user.email)}</p></div><div class="account-actions"><button class="refresh-button" onclick="renderDashboard()">↻ Actualiser</button><button class="back-button" onclick="logout()">Se déconnecter</button></div></div>
-      <div class="profile-grid">
-        <div><h3>📄 Mon CV</h3><input type="file" id="cvFile" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><p id="cvStatus" class="small-note">${profile?.cv_path ? `CV enregistré dans votre espace. <button type="button" class="cv-link" onclick="openCV()">📄 Ouvrir mon CV</button> <button type="button" class="cv-delete" onclick="deleteCV()">🗑️ Supprimer</button>` : "Aucun CV enregistré."}</p></div>
-        <div><h3>📊 Mes candidatures</h3><strong class="big-number">${apps?.length || 0}</strong><p class="small-note">candidature(s) enregistrée(s)</p><div class="application-stats"><span>🟡 ${apps?.filter(a => (a.status || "En cours") === "En cours").length || 0} En cours</span><span>🟢 ${apps?.filter(a => a.status === "Acceptée").length || 0} Acceptée(s)</span><span>🔴 ${apps?.filter(a => a.status === "Refusée").length || 0} Refusée(s)</span></div></div>
+    <div class="account-card dashboard">
+      <div class="dashboard-header">
+        <div class="account-identity"><span class="eyebrow">TABLEAU DE BORD</span><h2>👋 Bonjour ${esc(name)}</h2><p class="account-email">✉️ ${esc(user.email)}</p></div>
+        <div class="account-actions"><button class="refresh-button" onclick="renderDashboard()">↻ Actualiser</button><button class="back-button" onclick="logout()">Se déconnecter</button></div>
       </div>
-      <div class="applications-list"><h3>Historique</h3>${apps?.length ? apps.map(a => `<div class="application-row"><strong>${esc(a.jobs?.title)}</strong><span>📍 ${esc(a.jobs?.city)}, ${esc(a.jobs?.country)}</span><small>${new Date(a.created_at).toLocaleDateString("fr-FR")} · <span class="status-badge status-${(a.status || "En cours").toLowerCase().replace(/\s+/g,"-") }">${esc(a.status || "En cours")}</span></small></div>`).join("") : '<p class="small-note">Aucune candidature pour le moment.</p>'}</div>
+      <div class="dashboard-welcome"><div><strong>Votre espace candidat</strong><p>Suivez vos candidatures, préparez votre départ et gardez votre profil prêt pour les prochaines opportunités.</p></div><div class="completion"><div><span>Profil complété</span><strong>${profileCompletion}%</strong></div><div class="progress-track"><span style="width:${profileCompletion}%"></span></div><small>${profileCompletion === 100 ? "Profil prêt pour postuler." : "Ajoutez votre nom et votre CV pour compléter votre profil."}</small></div></div>
+      <div class="dashboard-stats">
+        <button class="stat-card" onclick="document.getElementById('offres').scrollIntoView({behavior:'smooth'})"><span>📩</span><strong>${totalApps}</strong><small>Candidatures</small></button>
+        <button class="stat-card" onclick="document.getElementById('offres').scrollIntoView({behavior:'smooth'})"><span>🟡</span><strong>${pending}</strong><small>En cours</small></button>
+        <button class="stat-card"><span>🟢</span><strong>${accepted}</strong><small>Acceptées</small></button>
+        <button class="stat-card"><span>⭐</span><strong>${favoriteCount}</strong><small>Favoris</small></button>
+      </div>
+      <div class="dashboard-grid">
+        <section class="dashboard-panel"><div class="panel-heading"><div><span class="eyebrow">PROFIL</span><h3>👤 Mes informations</h3></div><span class="completion-mini">${profileCompletion}%</span></div>
+          <form class="name-form" onsubmit="updateProfileName(event)"><input id="profileName" type="text" value="${esc(name)}" maxlength="80" required><button type="submit">💾 Enregistrer</button></form>
+          <div class="cv-box"><div><strong>📄 Mon CV</strong><p id="cvStatus" class="small-note">${profile?.cv_path ? `CV enregistré. <button type="button" class="cv-link" onclick="openCV()">Ouvrir</button> <button type="button" class="cv-delete" onclick="deleteCV()">Supprimer</button>` : "Ajoutez votre CV pour compléter votre profil."}</p></div><input type="file" id="cvFile" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"></div>
+        </section>
+        <section class="dashboard-panel"><div class="panel-heading"><div><span class="eyebrow">ACTIVITÉ</span><h3>📈 Résumé</h3></div></div>
+          <div class="activity-list"><div><span>🟡</span><strong>${pending}</strong><p>candidature(s) en cours</p></div><div><span>🟢</span><strong>${accepted}</strong><p>candidature(s) acceptée(s)</p></div><div><span>🔴</span><strong>${refused}</strong><p>candidature(s) refusée(s)</p></div></div>
+        </section>
+      </div>
+      <div class="applications-list dashboard-history"><div class="panel-heading"><div><span class="eyebrow">SUIVI</span><h3>📋 Mes dernières candidatures</h3></div><span class="small-note">${totalApps} au total</span></div>
+        ${latestApps.length ? latestApps.map(a => `<div class="application-row"><strong>${esc(a.jobs?.title || "Offre")}</strong><span>📍 ${esc(a.jobs?.city || "")}, ${esc(a.jobs?.country || "")}</span><small>${new Date(a.created_at).toLocaleDateString("fr-FR")} · <span class="status-badge status-${(a.status || "En cours").toLowerCase().replace(/\s+/g,"-") }">${esc(a.status || "En cours")}</span></small></div>`).join("") : '<p class="small-note">Aucune candidature pour le moment. Découvrez les offres disponibles.</p>'}
+      </div>
     </div>`;
   $("cvFile").addEventListener("change", saveCV);
 }
