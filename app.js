@@ -26,6 +26,16 @@ function isFavorite(id) {
   return getFavorites().includes(Number(id));
 }
 
+function clearFavorites() {
+  const count = getFavorites().length;
+  if (!count) return;
+  if (!confirm("Supprimer toutes les offres favorites ?")) return;
+  localStorage.removeItem("workTravelFavorites");
+  favoritesOnly = false;
+  if ($("favoritesFilter")) $("favoritesFilter").classList.remove("active");
+  displayJobs(jobs);
+}
+
 function toggleFavoritesOnly() {
   favoritesOnly = !favoritesOnly;
   $("favoritesFilter").classList.toggle("active", favoritesOnly);
@@ -234,7 +244,7 @@ async function loadJobs() {
   displayJobs();
 }
 
-window.showJob=showJob; window.applyJob=applyJob; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly;
+window.showJob=showJob; window.applyJob=applyJob; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites;
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
