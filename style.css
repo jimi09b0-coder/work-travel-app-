@@ -74,3 +74,10 @@
 .employer-details summary{cursor:pointer;font-weight:700}
 .employer-details p{color:var(--muted);white-space:pre-line}
 @media(max-width:760px){.employer-application-head{flex-direction:column}.employer-application-grid{grid-template-columns:1fr}}
+
+.employer-job-manager{margin-top:18px;padding:18px;border:1px solid var(--border);border-radius:14px;background:#fff}
+.employer-job-form label{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:.88rem;color:var(--text);margin-bottom:14px}
+.employer-job-form input,.employer-job-form textarea{width:100%;box-sizing:border-box;padding:10px 11px;border:1px solid var(--border);border-radius:9px;background:#fff;font:inherit;color:var(--text)}
+.employer-job-form textarea{resize:vertical}.employer-job-form-actions{display:flex;gap:10px;flex-wrap:wrap}
+.employer-job-list{display:grid;gap:10px}.employer-job-card{display:grid;grid-template-columns:1fr auto;gap:8px 14px;padding:14px;border:1px solid var(--border);border-radius:10px;background:#f8fbff}.employer-job-card h3{margin:0}.employer-job-card p{margin:4px 0 0;color:var(--muted);font-size:.85rem}.employer-job-count{align-self:start;padding:6px 9px;border-radius:999px;background:#eef5ff;color:var(--primary-dark);font-size:.78rem;font-weight:800}.employer-job-actions{grid-column:1/-1;display:flex;gap:8px}.employer-job-actions button{padding:7px 10px}.danger-button{background:#fde8e8;color:#b42318}.danger-button:hover{background:#fbd5d5}
+@media(max-width:760px){.employer-job-card{grid-template-columns:1fr}.employer-job-actions{grid-column:auto}.employer-job-count{justify-self:start}}
