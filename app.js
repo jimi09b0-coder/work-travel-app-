@@ -45,9 +45,19 @@ function showJob(id) {
   $("offres").scrollIntoView({behavior:"smooth"});
 }
 
+async function hasApplied(jobId, userId) {
+  const { data, error } = await supabase.from("applications").select("id").eq("user_id", userId).eq("job_id", jobId).maybeSingle();
+  if (error) return false;
+  return !!data;
+}
+
 async function applyJob(id) {
   const user = await currentUser();
   if (!user) { openAccount("login"); return; }
+  if (await hasApplied(id, user.id)) {
+    alert("Vous avez déjà postulé à cette offre.");
+    return;
+  }
   const { error } = await supabase.from("applications").insert({user_id:user.id, job_id:id});
   if (error) {
     if (error.code === "23505") alert("Vous avez déjà postulé à cette offre.");
