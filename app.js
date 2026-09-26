@@ -17,6 +17,47 @@ async function populateFilters() {
   $("typeFilter").innerHTML = '<option value="">Tous les secteurs</option>' + types.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join("");
 }
 
+function getSearchHistory() {
+  try { return JSON.parse(localStorage.getItem("workTravelSearchHistory") || "[]"); }
+  catch { return []; }
+}
+
+function saveSearchHistory(term) {
+  const value = term.trim();
+  if (!value) return;
+  const next = [value, ...getSearchHistory().filter(x => x.toLowerCase() !== value.toLowerCase())].slice(0,5);
+  localStorage.setItem("workTravelSearchHistory", JSON.stringify(next));
+  renderSearchHistory();
+}
+
+function renderSearchHistory() {
+  const box = $("searchHistory");
+  if (!box) return;
+  const history = getSearchHistory();
+  box.innerHTML = history.length ? `<span>🕘 Recherches récentes</span>${history.map(x => `<button type="button" onclick="useSearchHistory(${JSON.stringify(x).replace(/"/g,"&quot;")})">${esc(x)}</button>`).join("")}` : "";
+}
+
+function useSearchHistory(value) {
+  if (!$("search")) return;
+  $("search").value = value;
+  searchJobs();
+}
+
+function clearSearchHistory() {
+  localStorage.removeItem("workTravelSearchHistory");
+  renderSearchHistory();
+}
+
+function showNotification(message, type="info") {
+  const old = document.querySelector(".app-notification");
+  if (old) old.remove();
+  const el = document.createElement("div");
+  el.className = "app-notification notification-" + type;
+  el.innerHTML = `<span>${type === "success" ? "✓" : "🔔"}</span><p>${esc(message)}</p><button aria-label="Fermer" onclick="this.parentElement.remove()">×</button>`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 4500);
+}
+
 function getFavorites() {
   try { return JSON.parse(localStorage.getItem("workTravelFavorites") || "[]").map(Number); }
   catch { return []; }
@@ -284,9 +325,17 @@ async function logout() {
   renderAuth("login", "Vous êtes déconnecté.");
 }
 
-async function searchJobs() {
-  const t = $("search").value.trim().toLowerCase(), c = $("countryFilter").value, ty = $("typeFilter").value;
-  displayJobs(jobs.filter(j => (!t || [j.title,j.country,j.city,j.type,j.description].some(v => v.toLowerCase().includes(t))) && (!c || j.country === c) && (!ty || j.type === ty) && (!favoritesOnly || isFavorite(j.id))));
+async function searchJobs(saveHistory = false) {
+  const raw = $("search").value.trim();
+  const t = raw.toLowerCase(), c = $("countryFilter").value, ty = $("typeFilter").value;
+  const words = t.split(/\\s+/).filter(Boolean);
+  const list = jobs.filter(j => {
+    const haystack = [j.title,j.country,j.city,j.type,j.contract,j.description,j.requirements].join(" ").toLowerCase();
+    const matchesText = !words.length || words.every(word => haystack.includes(word));
+    return matchesText && (!c || j.country === c) && (!ty || j.type === ty) && (!favoritesOnly || isFavorite(j.id));
+  });
+  displayJobs(list);
+  if (saveHistory && raw) saveSearchHistory(raw);
 }
 
 const travelItems = ["Passeport / pièce d'identité","Contrat ou promesse d'embauche","Justificatifs de logement","Assurance voyage / santé","Moyens de paiement","Adresse et trajet vers le logement","Copies numériques des documents","Numéros d'urgence et contacts utiles"];
@@ -354,9 +403,10 @@ async function loadJobs() {
   jobs = data || [];
   await populateFilters();
   displayJobs();
+  renderSearchHistory();
 }
 
-window.showJob=showJob; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName;
+window.showJob=showJob; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName;
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
