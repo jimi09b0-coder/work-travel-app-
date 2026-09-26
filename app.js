@@ -507,7 +507,7 @@ async function saveCompanyProfile(e){
             ${jobList.map(j=>`<option value="${j.id}">${esc(j.title)}</option>`).join("")}
           </select>
         </div>
-        <div id="employerApplicationResults">${cards || '<p class="small-note">Aucune candidature reçue sur vos offres.</p>'}</div>
+        <div id="employerApplicationResults">${cards || '<p class="small-note">Aucune candidature reçue sur vos offres.</p>'}<p id="employerApplicationEmpty" class="filter-empty-state" hidden>Aucun résultat ne correspond aux filtres sélectionnés.</p></div>
       </section>
     </div>`;
 }
