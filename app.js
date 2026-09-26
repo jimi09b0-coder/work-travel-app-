@@ -448,6 +448,7 @@ async function saveCompanyProfile(e){
         <div class="stat-card"><span>📩</span><strong>${list.length}</strong><small>Candidatures</small></div>
         <div class="stat-card"><span>🟡</span><strong>${list.filter(a=>(a.status||"En cours")==="En cours").length}</strong><small>En cours</small></div>
         <div class="stat-card"><span>🟢</span><strong>${list.filter(a=>a.status==="Acceptée").length}</strong><small>Acceptées</small></div>
+        <div class="stat-card"><span>🔴</span><strong>${list.filter(a=>a.status==="Refusée").length}</strong><small>Refusées</small></div>
       </div>
       <section class="company-profile-manager">
         <div class="panel-heading"><div><span class="eyebrow">IDENTITÉ ENTREPRISE</span><h3>🏢 Profil de votre entreprise</h3><p class="small-note">Ces informations peuvent être affichées avec vos offres.</p></div></div>
