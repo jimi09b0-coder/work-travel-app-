@@ -506,10 +506,28 @@ async function saveCompanyProfile(e){
             <option value="">Toutes les offres</option>
             ${jobList.map(j=>`<option value="${j.id}">${esc(j.title)}</option>`).join("")}
           </select>
+          <select id="employerApplicationSort" onchange="sortEmployerApplications()">
+            <option value="newest">Plus récentes</option><option value="oldest">Plus anciennes</option><option value="name">Nom du candidat</option>
+          </select>
         </div>
         <div id="employerApplicationResults">${cards || '<p class="small-note">Aucune candidature reçue sur vos offres.</p>'}<p id="employerApplicationEmpty" class="filter-empty-state" hidden>Aucun résultat ne correspond aux filtres sélectionnés.</p></div>
       </section>
     </div>`;
+}
+
+function sortEmployerApplications() {
+  const container = $("employerApplicationResults");
+  if (!container) return;
+  const cards = [...container.querySelectorAll(".employer-application-card")];
+  const mode = $("employerApplicationSort")?.value || "newest";
+  cards.sort((a,b) => {
+    if (mode === "name") return (a.dataset.candidateName || "").localeCompare(b.dataset.candidateName || "", "fr");
+    const da = new Date(a.dataset.createdAt || 0).getTime();
+    const db = new Date(b.dataset.createdAt || 0).getTime();
+    return mode === "oldest" ? da - db : db - da;
+  });
+  cards.forEach(card => container.appendChild(card));
+  filterEmployerApplications();
 }
 
 function focusEmployerApplications(jobId){
