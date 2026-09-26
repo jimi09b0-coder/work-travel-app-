@@ -1,47 +1,26 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Work Travel - Trouvez un emploi et préparez votre voyage en Europe.">
-  <title>Work Travel | Emploi & Voyage en Europe</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Work Travel - Emploi et voyage en Europe.">
+<title>Work Travel | Emploi & Voyage</title><link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="hero">
-    <nav class="navbar">
-      <a class="logo" href="#" onclick="resetView(); return false;">🌍 Work Travel</a>
-      <div class="nav-links"><a href="#offres">Offres</a><a href="#voyage">Voyage</a><a href="#a-propos">À propos</a></div>
-    </nav>
-    <div class="hero-content">
-      <span class="badge">🇪🇺 Europe • Emploi • Voyage</span>
-      <h1>Travaillez en Europe,<br><span>vivez votre aventure.</span></h1>
-      <p>Trouvez des opportunités d'emploi et les informations essentielles pour préparer votre départ.</p>
-      <a class="hero-button" href="#offres">🔎 Voir les offres</a>
-    </div>
-  </header>
-  <main>
-    <section class="search-section" id="offres">
-      <div class="section-heading"><span class="eyebrow">OPPORTUNITÉS</span><h2>🔎 Rechercher un emploi</h2><p>Filtrez les offres par métier, pays, ville ou secteur.</p></div>
-      <div class="filters">
-        <label class="search-input"><span>🔍</span><input type="search" id="search" placeholder="Métier, pays ou ville..." oninput="searchJobs()"></label>
-        <select id="countryFilter" onchange="searchJobs()" aria-label="Filtrer par pays"><option value="">Tous les pays</option></select>
-        <select id="typeFilter" onchange="searchJobs()" aria-label="Filtrer par secteur"><option value="">Tous les secteurs</option></select>
-      </div>
-      <div class="results-bar"><h2>💼 Offres d'emploi</h2><span id="resultsCount"></span></div>
-      <div id="jobs" class="jobs-grid"></div>
-    </section>
-    <section class="travel-section" id="voyage">
-      <div><span class="eyebrow">PRÉPARER SON DÉPART</span><h2>🧳 Travail + Voyage</h2><p>Retrouvez progressivement les informations utiles pour votre installation : logement, transport, documents et coût de la vie.</p></div>
-      <div class="travel-cards">
-        <article><span>🏠</span><h3>Logement</h3><p>Conseils pour trouver un logement à votre arrivée.</p></article>
-        <article><span>🚌</span><h3>Transport</h3><p>Préparez vos déplacements dans votre nouvelle ville.</p></article>
-        <article><span>📄</span><h3>Documents</h3><p>Organisez vos documents avant le départ.</p></article>
-      </div>
-    </section>
-    <section class="about-section" id="a-propos"><span class="eyebrow">WORK TRAVEL</span><h2>Un point de départ pour votre projet européen</h2><p>Work Travel rassemble des offres d'emploi et des informations pratiques pour faciliter votre projet de travail et de voyage en Europe.</p></section>
-  </main>
-  <footer><strong>🌍 Work Travel</strong><span>Travail et voyage en Europe</span></footer>
-  <script src="app.js"></script>
-</body>
-</html>
+<header class="hero">
+<nav class="navbar"><a class="logo" href="#" onclick="resetView();return false;">🌍 Work Travel</a>
+<div class="nav-links"><a href="#offres">Offres</a><a href="#voyage">Voyage</a><a href="#compte" onclick="openAccount();return false;">Mon compte</a></div></nav>
+<div class="hero-content"><span class="badge">🇪🇺 Europe • Emploi • Voyage</span><h1>Travaillez en Europe,<br><span>vivez votre aventure.</span></h1><p>Trouvez un emploi, préparez votre départ et gérez vos candidatures au même endroit.</p><a class="hero-button" href="#offres">🔎 Voir les offres</a></div>
+</header>
+<main>
+<section class="search-section" id="offres">
+<div class="section-heading"><span class="eyebrow">OPPORTUNITÉS</span><h2>🔎 Rechercher un emploi</h2><p>Filtrez les offres par métier, pays, ville ou secteur.</p></div>
+<div class="filters"><label class="search-input"><span>🔍</span><input type="search" id="search" placeholder="Métier, pays ou ville..." oninput="searchJobs()"></label>
+<select id="countryFilter" onchange="searchJobs()"><option value="">Tous les pays</option></select><select id="typeFilter" onchange="searchJobs()"><option value="">Tous les secteurs</option></select></div>
+<div class="results-bar"><h2>💼 Offres d'emploi</h2><span id="resultsCount"></span></div><div id="jobs" class="jobs-grid"></div>
+</section>
+<section class="account-section" id="compte"><div id="account"></div></section>
+<section class="travel-section" id="voyage"><div><span class="eyebrow">PRÉPARER SON DÉPART</span><h2>🧳 Travail + Voyage</h2><p>Retrouvez les informations utiles pour votre installation : logement, transport et documents.</p></div>
+<div class="travel-cards"><article><span>🏠</span><h3>Logement</h3><p>Conseils pour trouver un logement à votre arrivée.</p></article><article><span>🚌</span><h3>Transport</h3><p>Préparez vos déplacements dans votre nouvelle ville.</p></article><article><span>📄</span><h3>Documents</h3><p>Organisez vos documents avant le départ.</p></article></div></section>
+<section class="about-section"><span class="eyebrow">WORK TRAVEL</span><h2>Votre projet européen, au même endroit</h2><p>Créez votre profil, ajoutez votre CV et gardez une trace de vos candidatures.</p></section>
+</main><footer><strong>🌍 Work Travel</strong><span>Travail et voyage en Europe</span></footer>
+<script src="app.js"></script></body></html>
