@@ -158,6 +158,19 @@ async function login(e) {
   await renderDashboard();
 }
 
+async function updateProfileName(e) {
+  e.preventDefault();
+  const user = await currentUser();
+  if (!user) return renderAuth("login");
+  const name = $("profileName").value.trim();
+  if (!name) return alert("Veuillez saisir votre nom.");
+  const { error: profileError } = await supabase.from("profiles").update({full_name:name,updated_at:new Date().toISOString()}).eq("id",user.id);
+  if (profileError) return alert("Impossible de mettre à jour le profil : " + profileError.message);
+  const { error: authError } = await supabase.auth.updateUser({data:{full_name:name}});
+  if (authError) return alert("Profil enregistré, mais les données du compte n'ont pas pu être synchronisées : " + authError.message);
+  await renderDashboard();
+}
+
 async function renderDashboard() {
   const user = await currentUser();
   if (!user) return renderAuth("login");
@@ -169,7 +182,7 @@ async function renderDashboard() {
   const name = profile?.full_name || user.user_metadata?.full_name || "Candidat";
   $("account").innerHTML = `
     <div class="account-card">
-      <div class="account-top"><div class="account-identity"><span class="eyebrow">MON COMPTE</span><h2>👋 Bonjour ${esc(name)}</h2><p class="account-email">✉️ ${esc(user.email)}</p></div><div class="account-actions"><button class="refresh-button" onclick="renderDashboard()">↻ Actualiser</button><button class="back-button" onclick="logout()">Se déconnecter</button></div></div>
+      <div class="account-top"><div class="account-identity"><span class="eyebrow">MON COMPTE</span><h2>👋 Bonjour ${esc(name)}</h2><form class="name-form" onsubmit="updateProfileName(event)"><input id="profileName" type="text" value="${esc(name)}" maxlength="80" required><button type="submit">💾 Enregistrer</button></form><p class="account-email">✉️ ${esc(user.email)}</p></div><div class="account-actions"><button class="refresh-button" onclick="renderDashboard()">↻ Actualiser</button><button class="back-button" onclick="logout()">Se déconnecter</button></div></div>
       <div class="profile-grid">
         <div><h3>📄 Mon CV</h3><input type="file" id="cvFile" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><p id="cvStatus" class="small-note">${profile?.cv_path ? `CV enregistré dans votre espace. <button type="button" class="cv-link" onclick="openCV()">📄 Ouvrir mon CV</button> <button type="button" class="cv-delete" onclick="deleteCV()">🗑️ Supprimer</button>` : "Aucun CV enregistré."}</p></div>
         <div><h3>📊 Mes candidatures</h3><strong class="big-number">${apps?.length || 0}</strong><p class="small-note">candidature(s) enregistrée(s)</p><div class="application-stats"><span>🟡 ${apps?.filter(a => (a.status || "En cours") === "En cours").length || 0} En cours</span><span>🟢 ${apps?.filter(a => a.status === "Acceptée").length || 0} Acceptée(s)</span><span>🔴 ${apps?.filter(a => a.status === "Refusée").length || 0} Refusée(s)</span></div></div>
@@ -244,7 +257,7 @@ async function loadJobs() {
   displayJobs();
 }
 
-window.showJob=showJob; window.applyJob=applyJob; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites;
+window.showJob=showJob; window.applyJob=applyJob; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName;
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
