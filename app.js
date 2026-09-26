@@ -403,7 +403,7 @@ async function saveCompanyProfile(e){
 
   const cards = list.map(a => {
     const current = a.status || "En cours";
-    return `<article class="employer-application-card">
+    return `<article class="employer-application-card" data-search="${esc([a.profile_snapshot?.full_name,a.profile_snapshot?.headline,a.jobs?.title,a.jobs?.city,a.jobs?.country].filter(Boolean).join(" "))}" data-status="${esc(current)}" data-job-id="${esc(a.jobs?.id || "")}">
       <div class="employer-application-head"><div>
         <h3>${esc(a.profile_snapshot?.full_name || "Candidat")}</h3>
         <p>${esc(a.profile_snapshot?.headline || "Profil candidat")} · ${esc(a.jobs?.title || "Offre")}</p>
@@ -486,9 +486,29 @@ async function saveCompanyProfile(e){
       </section>
       <section class="employer-applications">
         <div class="panel-heading"><div><span class="eyebrow">CANDIDATURES</span><h3>📩 Candidatures reçues</h3></div><span class="small-note">${list.length} au total</span></div>
-        ${cards || '<p class="small-note">Aucune candidature reçue sur vos offres.</p>'}
+        <div class="employer-filters">
+          <input id="employerApplicationSearch" type="search" placeholder="🔎 Rechercher un candidat ou une offre..." oninput="filterEmployerApplications()">
+          <select id="employerApplicationStatus" onchange="filterEmployerApplications()">
+            <option value="">Tous les statuts</option><option>En cours</option><option>Acceptée</option><option>Refusée</option>
+          </select>
+          <select id="employerApplicationJob" onchange="filterEmployerApplications()">
+            <option value="">Toutes les offres</option>
+            ${jobList.map(j=>`<option value="${j.id}">${esc(j.title)}</option>`).join("")}
+          </select>
+        </div>
+        <div id="employerApplicationResults">${cards || '<p class="small-note">Aucune candidature reçue sur vos offres.</p>'}</div>
       </section>
     </div>`;
+}
+
+function filterEmployerApplications() {
+  const q = ($("employerApplicationSearch")?.value || "").trim().toLowerCase();
+  const status = $("employerApplicationStatus")?.value || "";
+  const jobId = $("employerApplicationJob")?.value || "";
+  document.querySelectorAll("#employerApplicationResults .employer-application-card").forEach(card => {
+    const hay = (card.dataset.search || "").toLowerCase();
+    card.hidden = Boolean((q && !hay.includes(q)) || (status && card.dataset.status !== status) || (jobId && card.dataset.jobId !== jobId));
+  });
 }
 
 async function saveEmployerJob(e) {
