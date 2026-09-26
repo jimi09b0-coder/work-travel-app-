@@ -169,7 +169,7 @@ function displayJobs(list = jobs) {
     </article>`).join("");
 }
 
-async function showJob(id) {
+async async function showJob(id) {
   const j = jobs.find(x => x.id === id);
   if (!j) return;
   const user = await currentUser();
@@ -179,7 +179,7 @@ async function showJob(id) {
     <article class="job-detail-card">
       <div class="job-detail-top"><div><span class="eyebrow">OFFRE D'EMPLOI</span><h2>${esc(j.title)}</h2><div class="job-meta"><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><span>💼 ${esc(j.type)}</span><span>🕐 ${esc(j.contract)}</span></div></div><button class="favorite-button ${isFavorite(j.id) ? "is-favorite" : ""}" onclick="toggleFavorite(${j.id})">${isFavorite(j.id) ? "★" : "☆"}</button></div>
       <div class="job-detail-grid"><div>
-        \${j.profiles?.company_name ? \`<section class="job-company-profile"><div class="company-profile-head">\${j.profiles.company_logo_url ? \`<img src="\${esc(j.profiles.company_logo_url)}" alt="">\` : \`<div class="company-logo-placeholder">🏢</div>\`}<div><span class="eyebrow">ENTREPRISE</span><h3>\${esc(j.profiles.company_name)}</h3><p>📍 \${esc(j.profiles.company_city || "")}\${j.profiles.company_city && j.profiles.company_country ? ", " : ""}\${esc(j.profiles.company_country || "")}</p></div></div>\${j.profiles.company_description ? \`<p>\${esc(j.profiles.company_description)}</p>\` : ""}<div class="company-links">\${j.profiles.company_website ? \`<a href="\${esc(j.profiles.company_website)}" target="_blank" rel="noopener noreferrer">🌐 Site web</a>\` : ""}\${j.profiles.company_phone ? \`<span>📞 \${esc(j.profiles.company_phone)}</span>\` : ""}\${j.profiles.company_email ? \`<span>✉️ \${esc(j.profiles.company_email)}</span>\` : ""}</div></section>\` : ""}
+        \${j.profiles?.company_name ? \`<section class="job-company-profile"><div class="company-profile-head">\${j.profiles.company_logo_url ? \`<img src="\${esc(j.profiles.company_logo_url)}" alt="">\` : \`<div class="company-logo-placeholder">🏢</div>\`}<div><span class="eyebrow">ENTREPRISE</span><h3>\${esc(j.profiles.company_name)}</h3><p>📍 \${esc(j.profiles.company_city || "")}\${j.profiles.company_city && j.profiles.company_country ? ", " : ""}\${esc(j.profiles.company_country || "")}</p></div></div>\${j.profiles.company_description ? \`<p>\${esc(j.profiles.company_description)}</p>\` : ""}<button type="button" class="company-profile-link" onclick="showCompanyProfile('${j.employer_id}')">Voir le profil de l’entreprise →</button><div class="company-links">\${j.profiles.company_website ? \`<a href="\${esc(j.profiles.company_website)}" target="_blank" rel="noopener noreferrer">🌐 Site web</a>\` : ""}\${j.profiles.company_phone ? \`<span>📞 \${esc(j.profiles.company_phone)}</span>\` : ""}\${j.profiles.company_email ? \`<span>✉️ \${esc(j.profiles.company_email)}</span>\` : ""}</div></section>\` : ""}
         <section class="detail-section"><h3>📝 Description</h3><p>${esc(j.description)}</p></section>
         <section class="detail-section"><h3>✅ Conditions & exigences</h3><p>${esc(j.requirements)}</p></section>
         <section class="detail-section"><h3>🧳 Préparer votre départ</h3><div class="travel-mini"><span>📄 Documents</span><span>🏠 Logement</span><span>🚌 Transport</span><span>🛡️ Assurance</span></div></section>
@@ -189,6 +189,25 @@ async function showJob(id) {
   $("offres").scrollIntoView({behavior:"smooth"});
 }
 
+async function showCompanyProfile(userId) {
+  const {data:company,error}=await supabase.from("profiles").select("id,company_name,company_logo_url,company_description,company_website,company_phone,company_email,company_city,company_country").eq("id",userId).maybeSingle();
+  if(error||!company?.company_name) return;
+  const companyJobs=jobs.filter(j=>j.employer_id===userId);
+  $("jobs").innerHTML=`
+    <article class="company-page">
+      <div class="company-page-head">
+        ${company.company_logo_url ? `<img src="${esc(company.company_logo_url)}" alt="">` : '<div class="company-logo-large">🏢</div>'}
+        <div><span class="eyebrow">ENTREPRISE</span><h2>${esc(company.company_name)}</h2><p>📍 ${esc(company.company_city||"")}${company.company_city&&company.company_country?", ":""}${esc(company.company_country||"")}</p></div>
+      </div>
+      ${company.company_description ? `<section class="company-page-section"><h3>À propos</h3><p>${esc(company.company_description)}</p></section>` : ""}
+      <div class="company-links">${company.company_website ? `<a href="${esc(company.company_website)}" target="_blank" rel="noopener noreferrer">🌐 Site web</a>` : ""}${company.company_phone ? `<span>📞 ${esc(company.company_phone)}</span>` : ""}${company.company_email ? `<span>✉️ ${esc(company.company_email)}</span>` : ""}</div>
+      <section class="company-page-section"><div class="panel-heading"><div><span class="eyebrow">OPPORTUNITÉS</span><h3>💼 Offres de cette entreprise</h3></div><span>${companyJobs.length} offre(s)</span></div>
+        <div class="similar-jobs">${companyJobs.map(j=>`<button class="similar-job" onclick="showJob(${j.id})"><strong>${esc(j.title)}</strong><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><small>${esc(j.type)} · ${esc(j.contract)}</small></button>`).join("") || '<p class="small-note">Aucune offre publiée actuellement.</p>'}</div>
+      </section>
+      <button onclick="resetView()" class="back-button">← Retour aux offres</button>
+    </article>`;
+  $("offres").scrollIntoView({behavior:"smooth"});
+}
 async function hasApplied(jobId, userId) {
   const { data, error } = await supabase.from("applications").select("id").eq("user_id", userId).eq("job_id", jobId).maybeSingle();
   if (error) return false;
@@ -799,7 +818,7 @@ async function loadJobs() {
   renderSearchHistory();
 }
 
-window.showJob=showJob; window.savePreferences=savePreferences; window.saveEmployerJob=saveEmployerJob; window.editEmployerJob=editEmployerJob; window.resetEmployerJobForm=resetEmployerJobForm; window.deleteEmployerJob=deleteEmployerJob; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV; window.renderEmployerDashboard=renderEmployerDashboard; window.saveCompanyProfile=saveCompanyProfile; window.renderAdminPanel=renderAdminPanel; window.reviewEmployerRequest=reviewEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.submitEmployerRequest=submitEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.submitEmployerRequest=submitEmployerRequest; window.updateApplicationStatus=updateApplicationStatus;
+window.showJob=showJob; window.savePreferences=savePreferences; window.saveEmployerJob=saveEmployerJob; window.editEmployerJob=editEmployerJob; window.resetEmployerJobForm=resetEmployerJobForm; window.deleteEmployerJob=deleteEmployerJob; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV; window.renderEmployerDashboard=renderEmployerDashboard; window.saveCompanyProfile=saveCompanyProfile; window.renderAdminPanel=renderAdminPanel; window.reviewEmployerRequest=reviewEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.showCompanyProfile=showCompanyProfile; window.submitEmployerRequest=submitEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.submitEmployerRequest=submitEmployerRequest; window.updateApplicationStatus=updateApplicationStatus;
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
