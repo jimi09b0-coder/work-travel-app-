@@ -34,3 +34,14 @@
 .candidate-profile-form>button{padding:10px 14px}
 .completion-mini{min-width:52px;padding:5px 9px;border-radius:999px;background:#eef5ff;color:var(--primary-dark);font-size:.78rem;font-weight:800;text-align:center}
 @media(max-width:760px){.profile-form-grid{grid-template-columns:1fr}}
+
+.candidate-profile-preview{margin:18px 0;padding:18px;border:1px solid var(--border);border-radius:14px;background:#fff}
+.profile-preview-card{padding:18px;border:1px solid var(--border);border-radius:12px;background:#f8fbff}
+.profile-preview-head{display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.profile-avatar{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#eef5ff;color:var(--primary-dark);font-size:1.3rem;font-weight:900}
+.profile-preview-head h3{margin:0}.profile-preview-head p{margin:3px 0;color:var(--muted)}
+.preview-section{padding:13px 0;border-bottom:1px solid var(--border)}
+.preview-section p{margin:6px 0 0;color:var(--muted);white-space:pre-line}
+.preview-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.preview-tags span{padding:6px 9px;border-radius:999px;background:#eef5ff;color:var(--primary-dark);font-size:.8rem;font-weight:700}
+.preview-contact{padding-top:13px;color:var(--muted);font-size:.88rem}
