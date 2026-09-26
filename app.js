@@ -16,6 +16,22 @@ async function populateFilters() {
   $("typeFilter").innerHTML = '<option value="">Tous les secteurs</option>' + types.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join("");
 }
 
+function getFavorites() {
+  try { return JSON.parse(localStorage.getItem("workTravelFavorites") || "[]").map(Number); }
+  catch { return []; }
+}
+
+function isFavorite(id) {
+  return getFavorites().includes(Number(id));
+}
+
+function toggleFavorite(id) {
+  const favorites = getFavorites();
+  const next = favorites.includes(Number(id)) ? favorites.filter(x => x !== Number(id)) : [...favorites, Number(id)];
+  localStorage.setItem("workTravelFavorites", JSON.stringify(next));
+  searchJobs();
+}
+
 function displayJobs(list = jobs) {
   $("resultsCount").textContent = `${list.length} offre${list.length > 1 ? "s" : ""}`;
   if (!list.length) {
@@ -208,7 +224,7 @@ async function loadJobs() {
   displayJobs();
 }
 
-window.showJob=showJob; window.applyJob=applyJob; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV;
+window.showJob=showJob; window.applyJob=applyJob; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite;
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
