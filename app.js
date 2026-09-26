@@ -77,7 +77,7 @@ async function showJob(id) {
       <span class="eyebrow">OFFRE D'EMPLOI</span><h2>${esc(j.title)}</h2>
       <div class="job-meta"><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><span>💼 ${esc(j.type)}</span><span>🕐 ${esc(j.contract)}</span></div>
       <div class="job-description"><h3>Description</h3><p>${esc(j.description)}</p><h3>Conditions</h3><p>${esc(j.requirements)}</p></div>
-      ${alreadyApplied ? '<span class="applied-badge">✓ Déjà postulé</span>' : `<button onclick="applyJob(${j.id})">📩 Postuler</button>`}
+      ${alreadyApplied ? '<span class="applied-badge">✓ Déjà postulé</span>' : `<button onclick="openApplicationForm(${j.id})">📩 Postuler</button>`}
       <button onclick="resetView()" class="back-button">← Retour</button>
     </article>`;
   $("offres").scrollIntoView({behavior:"smooth"});
@@ -89,20 +89,41 @@ async function hasApplied(jobId, userId) {
   return !!data;
 }
 
-async function applyJob(id) {
+function openApplicationForm(id) {
+  const j = jobs.find(x => x.id === id);
+  if (!j) return;
+  $("jobs").innerHTML = `
+    <article class="job-card application-card">
+      <span class="eyebrow">CANDIDATURE</span><h2>📩 Postuler à « ${esc(j.title)} »</h2>
+      <p>Présentez votre profil en quelques lignes. Votre CV enregistré sera associé automatiquement à la candidature.</p>
+      <form class="application-form" id="jobApplicationForm">
+        <label>📱 Téléphone<input id="applicationPhone" type="tel" maxlength="30" placeholder="+213 ..."></label>
+        <label>🕐 Disponibilité<select id="applicationAvailability" required><option value="">Choisir</option><option>Immédiate</option><option>Dans 2 semaines</option><option>Dans 1 mois</option><option>À définir</option></select></label>
+        <label>✍️ Lettre de motivation<textarea id="coverLetter" rows="7" maxlength="2000" required placeholder="Expliquez brièvement votre motivation, votre expérience et pourquoi ce poste vous intéresse..."></textarea></label>
+        <div class="application-actions"><button type="submit">🚀 Envoyer ma candidature</button><button type="button" class="back-button" onclick="showJob(${id})">← Retour à l’offre</button></div>
+      </form>
+    </article>`;
+  $("jobApplicationForm").addEventListener("submit", e => applyJob(e,id));
+  $("offres").scrollIntoView({behavior:"smooth"});
+}
+
+async function applyJob(e, id) {
+  e.preventDefault();
   const user = await currentUser();
   if (!user) { openAccount("login"); return; }
-  if (await hasApplied(id, user.id)) {
-    alert("Vous avez déjà postulé à cette offre.");
-    return;
-  }
-  const { error } = await supabase.from("applications").insert({user_id:user.id, job_id:id});
+  if (await hasApplied(id, user.id)) { alert("Vous avez déjà postulé à cette offre."); return; }
+  const cover_letter = $("coverLetter").value.trim();
+  const availability = $("applicationAvailability").value;
+  const phone = $("applicationPhone").value.trim();
+  if (!cover_letter || !availability) return alert("Veuillez compléter la lettre de motivation et votre disponibilité.");
+  if (cover_letter.length < 30) return alert("Votre lettre de motivation doit contenir au moins 30 caractères.");
+  const { error } = await supabase.from("applications").insert({user_id:user.id, job_id:id, cover_letter, availability, phone});
   if (error) {
     if (error.code === "23505") alert("Vous avez déjà postulé à cette offre.");
-    else alert("Impossible d'enregistrer la candidature : " + error.message);
+    else alert("Impossible d’enregistrer la candidature : " + error.message);
     return;
   }
-  alert("Candidature enregistrée dans votre espace.");
+  alert("🎉 Candidature envoyée avec succès.");
   await renderDashboard();
   $("compte").scrollIntoView({behavior:"smooth"});
 }
@@ -281,7 +302,7 @@ async function loadJobs() {
   displayJobs();
 }
 
-window.showJob=showJob; window.applyJob=applyJob; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName;
+window.showJob=showJob; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName;
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
