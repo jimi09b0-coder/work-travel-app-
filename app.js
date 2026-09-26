@@ -289,6 +289,57 @@ async function searchJobs() {
   displayJobs(jobs.filter(j => (!t || [j.title,j.country,j.city,j.type,j.description].some(v => v.toLowerCase().includes(t))) && (!c || j.country === c) && (!ty || j.type === ty) && (!favoritesOnly || isFavorite(j.id))));
 }
 
+const travelItems = ["Passeport / pièce d'identité","Contrat ou promesse d'embauche","Justificatifs de logement","Assurance voyage / santé","Moyens de paiement","Adresse et trajet vers le logement","Copies numériques des documents","Numéros d'urgence et contacts utiles"];
+
+function updateTravelGuide() {
+  const country = $("travelCountry")?.value;
+  const box = $("travelGuide");
+  if (!box) return;
+  if (!country) {
+    box.innerHTML = '<div class="travel-empty"><span>🗺️</span><h3>Choisissez votre destination</h3><p>Vous obtiendrez une checklist adaptée à votre départ.</p></div>';
+    updateTravelProgress();
+    return;
+  }
+  const key = "workTravelChecklist_" + country;
+  let checked = [];
+  try { checked = JSON.parse(localStorage.getItem(key) || "[]"); } catch {}
+  box.innerHTML = `
+    <div class="travel-guide-head"><div><span class="eyebrow">GUIDE ${esc(country).toUpperCase()}</span><h3>📋 Checklist avant le départ</h3></div><button class="clear-checklist" onclick="clearTravelChecklist()">Réinitialiser</button></div>
+    <div class="travel-checklist">${travelItems.map((item,i) => `<label class="check-item"><input type="checkbox" ${checked.includes(i) ? "checked" : ""} onchange="toggleTravelItem(${i})"><span>${esc(item)}</span></label>`).join("")}</div>
+    <div class="travel-tips"><strong>💡 Conseil</strong><p>Conservez une copie numérique de vos documents importants dans un espace sécurisé avant votre départ.</p></div>`;
+  updateTravelProgress();
+}
+
+function toggleTravelItem(index) {
+  const country = $("travelCountry")?.value;
+  if (!country) return;
+  const key = "workTravelChecklist_" + country;
+  let checked = [];
+  try { checked = JSON.parse(localStorage.getItem(key) || "[]"); } catch {}
+  checked = checked.includes(index) ? checked.filter(x => x !== index) : [...checked, index];
+  localStorage.setItem(key, JSON.stringify(checked));
+  updateTravelProgress();
+}
+
+function clearTravelChecklist() {
+  const country = $("travelCountry")?.value;
+  if (!country || !confirm("Réinitialiser votre checklist ?")) return;
+  localStorage.removeItem("workTravelChecklist_" + country);
+  updateTravelGuide();
+}
+
+function updateTravelProgress() {
+  const country = $("travelCountry")?.value;
+  const total = travelItems.length;
+  let count = 0;
+  if (country) {
+    try { count = JSON.parse(localStorage.getItem("workTravelChecklist_" + country) || "[]").length; } catch {}
+  }
+  const percent = Math.round((count / total) * 100);
+  if ($("travelProgress")) $("travelProgress").textContent = percent + "%";
+  if ($("travelProgressBar")) $("travelProgressBar").style.width = percent + "%";
+}
+
 function resetView() {
   $("search").value = ""; $("countryFilter").value = ""; $("typeFilter").value = ""; favoritesOnly = false; if ($("favoritesFilter")) $("favoritesFilter").classList.remove("active"); displayJobs(jobs);
   $("offres").scrollIntoView({behavior:"smooth"});
@@ -305,7 +356,7 @@ async function loadJobs() {
   displayJobs();
 }
 
-window.showJob=showJob; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName;
+window.showJob=showJob; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName;
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
