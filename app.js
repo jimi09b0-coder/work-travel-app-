@@ -353,11 +353,162 @@ async function updateProfileName(e) {
   await renderDashboard();
 }
 
-async function renderEmployerDashboard() {\n  const user = await currentUser();\n  if (!user) return renderAuth('login');\n  const {data:apps,error}=await supabase.from('applications').select('id,created_at,status,cover_letter,availability,phone,profile_snapshot,cv_path,cv_name,jobs(id,title,city,country)').order('created_at',{ascending:false});\n  if(error) return alert('Erreur : '+error.message);\n  const list=apps||[];\n  const card=list.map(a=>'<article class="employer-application-card"><div class="employer-application-head"><div><h3>'+esc(a.profile_snapshot?.full_name||'Candidat')+'</h3><p>'+esc(a.profile_snapshot?.headline||'Profil candidat')+' · '+esc(a.jobs?.title||'Offre')+'</p><small>📍 '+esc(a.jobs?.city||'')+', '+esc(a.jobs?.country||'')+'</small></div><select onchange="updateApplicationStatus('+a.id+',this.value)"><option>En cours</option><option>Acceptée</option><option>Refusée</option></select></div><div class="employer-application-grid"><div><small>🕐 Disponibilité</small><strong>'+esc(a.availability||'Non précisée')+'</strong></div><div><small>📱 Téléphone</small><strong>'+esc(a.phone||'Non précisé')+'</strong></div><div><small>📄 CV</small>'+(a.cv_path?'<button type="button" class="cv-link" onclick="openApplicationCV(\\''+esc(a.cv_path)+'\\')">Ouvrir</button>':'<strong>Non joint</strong>')+'</div></div><details class="employer-details"><summary>Voir le profil et la lettre</summary><p>'+esc(a.profile_snapshot?.bio||'')+'</p><p><strong>✍️ Lettre</strong><br>'+esc(a.cover_letter||'')+'</p></details></article>').join('');\n  $('account').innerHTML='<div class="account-card dashboard employer-dashboard"><div class="dashboard-header"><div class="account-identity"><span class="eyebrow">ESPACE ENTREPRISE</span><h2>🏢 Candidatures reçues</h2><p class="account-email">✉️ '+esc(user.email)+'</p></div><button class="refresh-button" onclick="renderEmployerDashboard()">↻ Actualiser</button></div><div class="dashboard-stats"><div class="stat-card"><span>📩</span><strong>'+list.length+'</strong><small>Total</small></div></div>'+card+'</div>';\n}\n\nasync function updateApplicationStatus(id,status){\n  if(!['En cours','Acceptée','Refusée'].includes(status)) return;\n  const {error}=await supabase.from('applications').update({status}).eq('id',id);\n  if(error) return alert('Impossible de mettre à jour : '+error.message);\n  await renderEmployerDashboard();\n}\n\nasync function renderDashboard() {
+async function renderEmployerDashboard() {
+  const user = await currentUser();
+  if (!user) return renderAuth("login");
+
+  const {data:profile, error:profileError} = await supabase.from("profiles").select("role,full_name").eq("id",user.id).maybeSingle();
+  if (profileError) return alert("Erreur lors du chargement du profil entreprise : " + profileError.message);
+  if (profile?.role !== "employer") return renderDashboard();
+
+  const [{data:ownedJobs,error:jobsError},{data:apps,error:appsError}] = await Promise.all([
+    supabase.from("jobs").select("id,title,country,city,type,contract,description,requirements,created_at,employer_id").eq("employer_id",user.id).order("created_at",{ascending:false}),
+    supabase.from("applications").select("id,created_at,status,cover_letter,availability,phone,profile_snapshot,cv_path,cv_name,jobs!inner(id,title,city,country,employer_id)").eq("jobs.employer_id",user.id).order("created_at",{ascending:false})
+  ]);
+  if (jobsError) return alert("Impossible de charger vos offres : " + jobsError.message);
+  if (appsError) return alert("Impossible de charger les candidatures : " + appsError.message);
+
+  const list = apps || [];
+  const jobList = ownedJobs || [];
+  const counts = jobList.reduce((acc,j) => { acc[j.id] = list.filter(a => a.jobs?.id === j.id).length; return acc; }, {});
+
+  const cards = list.map(a => {
+    const current = a.status || "En cours";
+    return `<article class="employer-application-card">
+      <div class="employer-application-head"><div>
+        <h3>${esc(a.profile_snapshot?.full_name || "Candidat")}</h3>
+        <p>${esc(a.profile_snapshot?.headline || "Profil candidat")} · ${esc(a.jobs?.title || "Offre")}</p>
+        <small>📍 ${esc(a.jobs?.city || "")}, ${esc(a.jobs?.country || "")}</small>
+      </div>
+      <select onchange="updateApplicationStatus(${a.id},this.value)">
+        <option ${current==="En cours"?"selected":""}>En cours</option>
+        <option ${current==="Acceptée"?"selected":""}>Acceptée</option>
+        <option ${current==="Refusée"?"selected":""}>Refusée</option>
+      </select></div>
+      <div class="employer-application-grid">
+        <div><small>🕐 Disponibilité</small><strong>${esc(a.availability || "Non précisée")}</strong></div>
+        <div><small>📱 Téléphone</small><strong>${esc(a.phone || "Non précisé")}</strong></div>
+        <div><small>📄 CV</small>${a.cv_path ? `<button type="button" class="cv-link" onclick="openApplicationCV('${esc(a.cv_path)}')">Ouvrir</button>` : "<strong>Non joint</strong>"}</div>
+      </div>
+      <details class="employer-details"><summary>Voir le profil et la lettre</summary>
+        <p>${esc(a.profile_snapshot?.bio || "")}</p>
+        <p><strong>✍️ Lettre</strong><br>${esc(a.cover_letter || "")}</p>
+        ${(a.profile_snapshot?.skills || []).length ? `<p><strong>🧰 Compétences</strong><br>${esc(a.profile_snapshot.skills.join(" · "))}</p>` : ""}
+      </details>
+    </article>`;
+  }).join("");
+
+  const jobCards = jobList.map(j => `<article class="employer-job-card">
+    <div><h3>${esc(j.title)}</h3><p>📍 ${esc(j.city)}, ${esc(j.country)} · 💼 ${esc(j.type)} · 🕐 ${esc(j.contract)}</p></div>
+    <span class="employer-job-count">${counts[j.id] || 0} candidature(s)</span>
+    <div class="employer-job-actions">
+      <button type="button" onclick="editEmployerJob(${j.id})">✏️ Modifier</button>
+      <button type="button" class="danger-button" onclick="deleteEmployerJob(${j.id})">🗑️ Supprimer</button>
+    </div>
+  </article>`).join("");
+
+  $("account").innerHTML = `
+    <div class="account-card dashboard employer-dashboard">
+      <div class="dashboard-header">
+        <div class="account-identity"><span class="eyebrow">ESPACE ENTREPRISE</span><h2>🏢 ${esc(profile?.full_name || "Entreprise")}</h2><p class="account-email">✉️ ${esc(user.email)}</p></div>
+        <div class="account-actions"><button class="refresh-button" onclick="renderEmployerDashboard()">↻ Actualiser</button><button class="back-button" onclick="logout()">Se déconnecter</button></div>
+      </div>
+      <div class="dashboard-stats">
+        <div class="stat-card"><span>💼</span><strong>${jobList.length}</strong><small>Mes offres</small></div>
+        <div class="stat-card"><span>📩</span><strong>${list.length}</strong><small>Candidatures</small></div>
+        <div class="stat-card"><span>🟡</span><strong>${list.filter(a=>(a.status||"En cours")==="En cours").length}</strong><small>En cours</small></div>
+        <div class="stat-card"><span>🟢</span><strong>${list.filter(a=>a.status==="Acceptée").length}</strong><small>Acceptées</small></div>
+      </div>
+      <section class="employer-job-manager">
+        <div class="panel-heading"><div><span class="eyebrow">RECRUTEMENT</span><h3>➕ Publier une offre</h3><p class="small-note">Chaque offre est automatiquement rattachée à votre compte entreprise.</p></div></div>
+        <form class="employer-job-form" onsubmit="saveEmployerJob(event)">
+          <div class="profile-form-grid">
+            <label>💼 Intitulé<input id="employerJobTitle" required maxlength="120"></label>
+            <label>🌍 Pays<input id="employerJobCountry" required maxlength="80"></label>
+            <label>📍 Ville<input id="employerJobCity" required maxlength="80"></label>
+            <label>🏷️ Secteur<input id="employerJobType" required maxlength="80" placeholder="Hôtellerie, Logistique..."></label>
+            <label>🕐 Contrat<input id="employerJobContract" required maxlength="80" value="Temps plein"></label>
+          </div>
+          <label>📝 Description<textarea id="employerJobDescription" rows="5" required maxlength="3000"></textarea></label>
+          <label>✅ Conditions & exigences<textarea id="employerJobRequirements" rows="4" required maxlength="2000"></textarea></label>
+          <input type="hidden" id="employerJobId">
+          <div class="employer-job-form-actions"><button type="submit">💾 Enregistrer l'offre</button><button type="button" class="back-button" onclick="resetEmployerJobForm()">Réinitialiser</button></div>
+        </form>
+      </section>
+      <section class="employer-job-manager">
+        <div class="panel-heading"><div><span class="eyebrow">MES OFFRES</span><h3>📋 Offres publiées</h3></div></div>
+        <div class="employer-job-list">${jobCards || '<p class="small-note">Aucune offre publiée pour le moment.</p>'}</div>
+      </section>
+      <section class="employer-applications">
+        <div class="panel-heading"><div><span class="eyebrow">CANDIDATURES</span><h3>📩 Candidatures reçues</h3></div><span class="small-note">${list.length} au total</span></div>
+        ${cards || '<p class="small-note">Aucune candidature reçue sur vos offres.</p>'}
+      </section>
+    </div>`;
+}
+
+async function saveEmployerJob(e) {
+  e.preventDefault();
+  const user = await currentUser();
+  if (!user) return renderAuth("login");
+  const id = $("employerJobId").value;
+  const payload = {
+    title: $("employerJobTitle").value.trim(),
+    country: $("employerJobCountry").value.trim(),
+    city: $("employerJobCity").value.trim(),
+    type: $("employerJobType").value.trim(),
+    contract: $("employerJobContract").value.trim(),
+    description: $("employerJobDescription").value.trim(),
+    requirements: $("employerJobRequirements").value.trim()
+  };
+  if (Object.values(payload).some(v => !v)) return alert("Veuillez compléter tous les champs.");
+  const query = id
+    ? supabase.from("jobs").update(payload).eq("id",id).eq("employer_id",user.id)
+    : supabase.from("jobs").insert({...payload,employer_id:user.id});
+  const {error} = await query;
+  if (error) return alert("Impossible d'enregistrer l'offre : " + error.message);
+  showNotification(id ? "Offre mise à jour." : "Offre publiée avec succès.", "success");
+  await loadJobs();
+  await renderEmployerDashboard();
+}
+
+function editEmployerJob(id) {
+  const job = jobs.find(j => Number(j.id) === Number(id));
+  if (!job) return;
+  $("employerJobId").value = job.id;
+  $("employerJobTitle").value = job.title || "";
+  $("employerJobCountry").value = job.country || "";
+  $("employerJobCity").value = job.city || "";
+  $("employerJobType").value = job.type || "";
+  $("employerJobContract").value = job.contract || "";
+  $("employerJobDescription").value = job.description || "";
+  $("employerJobRequirements").value = job.requirements || "";
+  $("employerJobTitle").focus();
+}
+
+function resetEmployerJobForm() {
+  const form = document.querySelector(".employer-job-form");
+  if (form) form.reset();
+  if ($("employerJobId")) $("employerJobId").value = "";
+  if ($("employerJobContract")) $("employerJobContract").value = "Temps plein";
+}
+
+async function deleteEmployerJob(id) {
+  const user = await currentUser();
+  if (!user) return renderAuth("login");
+  const {data:apps} = await supabase.from("applications").select("id").eq("job_id",id);
+  if ((apps || []).length) return alert("Cette offre possède des candidatures. Modifiez-la plutôt que de la supprimer.");
+  if (!confirm("Supprimer cette offre ?")) return;
+  const {error} = await supabase.from("jobs").delete().eq("id",id).eq("employer_id",user.id);
+  if (error) return alert("Impossible de supprimer l'offre : " + error.message);
+  await loadJobs();
+  await renderEmployerDashboard();
+}
+
+async function renderDashboard() {
   const user = await currentUser();
   if (!user) return renderAuth("login");
   const [{data:profile}, {data:apps, error}] = await Promise.all([
-    supabase.from("profiles").select("full_name,phone,headline,bio,skills,languages,experience,education,cv_path").eq("id",user.id).maybeSingle(),
+    supabase.from("profiles").select("full_name,phone,headline,bio,skills,languages,experience,education,cv_path,role").eq("id",user.id).maybeSingle(),
     supabase.from("applications").select("id,job_id,created_at,status,cover_letter,availability,phone,profile_snapshot,cv_path,cv_name,jobs(title,city,country)").eq("user_id",user.id).order("created_at",{ascending:false})
   ]);
   if (error) return alert("Erreur lors du chargement du compte : " + error.message);
@@ -436,7 +587,11 @@ async function renderEmployerDashboard() {\n  const user = await currentUser();\
 async function openApplicationCV(path) {
   const user = await currentUser();
   if (!user) return renderAuth("login");
-  if (!path || (!path.startsWith("applications/" + user.id + "/") && !path.startsWith(user.id + "/"))) return alert("Document non autorisé.");
+  const {data:profile} = await supabase.from("profiles").select("role").eq("id",user.id).maybeSingle();
+  const isEmployer = profile?.role === "employer";
+  if (!path) return alert("Document non autorisé.");
+  if (!isEmployer && !path.startsWith("applications/" + user.id + "/") && !path.startsWith(user.id + "/")) return alert("Document non autorisé.");
+  if (isEmployer && !path.startsWith("applications/")) return alert("Document non autorisé.");
   const { data, error } = await supabase.storage.from("cvs").createSignedUrl(path, 60);
   if (error) return alert("Impossible d’ouvrir le CV : " + error.message);
   window.open(data.signedUrl, "_blank", "noopener,noreferrer");
@@ -567,7 +722,7 @@ async function loadJobs() {
   renderSearchHistory();
 }
 
-window.showJob=showJob; window.savePreferences=savePreferences; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV; window.renderEmployerDashboard=renderEmployerDashboard; window.updateApplicationStatus=updateApplicationStatus;
+window.showJob=showJob; window.savePreferences=savePreferences; window.saveEmployerJob=saveEmployerJob; window.editEmployerJob=editEmployerJob; window.resetEmployerJobForm=resetEmployerJobForm; window.deleteEmployerJob=deleteEmployerJob; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV; window.renderEmployerDashboard=renderEmployerDashboard; window.updateApplicationStatus=updateApplicationStatus;
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
