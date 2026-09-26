@@ -48,6 +48,22 @@ function clearSearchHistory() {
   renderSearchHistory();
 }
 
+function getReadNotifications() {
+  try { return JSON.parse(localStorage.getItem("workTravelReadNotifications") || "[]"); } catch { return []; }
+}
+
+function notificationKey(app) { return String(app.id) + ':' + String(app.status || 'En cours'); }
+
+function markNotificationRead(key) {
+  const next = [...new Set([...getReadNotifications(), key])];
+  localStorage.setItem("workTravelReadNotifications", JSON.stringify(next));
+  renderDashboard();
+}
+
+function buildUserNotifications(apps) {
+  const read = getReadNotifications();
+  return (apps || []).filter(a => { const status = a.status || "En cours"; return status !== "En cours" && !read.includes(notificationKey(a)); }).slice(0, 5);
+}
 function showNotification(message, type="info") {
   const old = document.querySelector(".app-notification");
   if (old) old.remove();
@@ -259,6 +275,8 @@ async function renderDashboard() {
         <div class="account-actions"><button class="refresh-button" onclick="renderDashboard()">↻ Actualiser</button><button class="back-button" onclick="logout()">Se déconnecter</button></div>
       </div>
       <div class="dashboard-welcome"><div><strong>Votre espace candidat</strong><p>Suivez vos candidatures, préparez votre départ et gardez votre profil prêt pour les prochaines opportunités.</p></div><div class="completion"><div><span>Profil complété</span><strong>${profileCompletion}%</strong></div><div class="progress-track"><span style="width:${profileCompletion}%"></span></div><small>${profileCompletion === 100 ? "Profil prêt pour postuler." : "Ajoutez votre nom et votre CV pour compléter votre profil."}</small></div></div>
+      <div class="dashboard-notifications"><div class="panel-heading"><div><span class="eyebrow">NOTIFICATIONS</span><h3>🔔 Nouveautés</h3></div><span class="notification-count">${buildUserNotifications(apps).length}</span></div>
+        ${buildUserNotifications(apps).length ? buildUserNotifications(apps).map(a => `<div class="notification-row"><span>${a.status === "Acceptée" ? "🟢" : "🔴"}</span><div><strong>${esc(a.jobs?.title || "Votre candidature")}</strong><p>Votre candidature est maintenant <b>${esc(a.status || "En cours")}</b>.</p></div><button onclick="markNotificationRead('${notificationKey(a)}')">✓ Lu</button></div>`).join("") : '<p class="small-note">Aucune nouvelle notification.</p>'}</div>
       <div class="dashboard-stats">
         <button class="stat-card" onclick="document.getElementById('offres').scrollIntoView({behavior:'smooth'})"><span>📩</span><strong>${totalApps}</strong><small>Candidatures</small></button>
         <button class="stat-card" onclick="document.getElementById('offres').scrollIntoView({behavior:'smooth'})"><span>🟡</span><strong>${pending}</strong><small>En cours</small></button>
