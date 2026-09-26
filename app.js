@@ -154,7 +154,7 @@ async function saveCV(e) {
   if (uploadError) return alert("Échec du téléchargement : " + uploadError.message);
   const { error:profileError } = await supabase.from("profiles").update({cv_path:path,updated_at:new Date().toISOString()}).eq("id",user.id);
   if (profileError) return alert("CV envoyé mais profil non mis à jour : " + profileError.message);
-  $("cvStatus").textContent = "CV enregistré : " + file.name;
+  $("cvStatus").innerHTML = `CV enregistré : ${esc(file.name)} <button type="button" class="cv-link" onclick="openCV()">📄 Ouvrir mon CV</button>`;
 }
 
 async function logout() {
