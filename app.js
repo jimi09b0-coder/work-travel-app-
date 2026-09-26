@@ -164,6 +164,7 @@ function displayJobs(list = jobs) {
       <div class="job-card-title"><h3>${esc(j.title)}</h3><span class="match-score">${jobMatchScore(j)}% · ${matchLabel(jobMatchScore(j))}</span></div>
       <div class="job-meta"><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><span>💼 ${esc(j.type)}</span><span>🕐 ${esc(j.contract)}</span></div>
       <p>${esc(j.description)}</p>
+      \${j.profiles?.company_name ? \`<div class="job-company-mini">\${j.profiles.company_logo_url ? \`<img src="\${esc(j.profiles.company_logo_url)}" alt="">\` : "<span>🏢</span>"}<div><strong>\${esc(j.profiles.company_name)}</strong><small>\${esc(j.profiles.company_city || j.profiles.company_country || "Entreprise")}</small></div></div>\` : ""}
       <button onclick="showJob(${j.id})">Voir les détails →</button>
     </article>`).join("");
 }
@@ -178,6 +179,7 @@ async function showJob(id) {
     <article class="job-detail-card">
       <div class="job-detail-top"><div><span class="eyebrow">OFFRE D'EMPLOI</span><h2>${esc(j.title)}</h2><div class="job-meta"><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><span>💼 ${esc(j.type)}</span><span>🕐 ${esc(j.contract)}</span></div></div><button class="favorite-button ${isFavorite(j.id) ? "is-favorite" : ""}" onclick="toggleFavorite(${j.id})">${isFavorite(j.id) ? "★" : "☆"}</button></div>
       <div class="job-detail-grid"><div>
+        \${j.profiles?.company_name ? \`<section class="job-company-profile"><div class="company-profile-head">\${j.profiles.company_logo_url ? \`<img src="\${esc(j.profiles.company_logo_url)}" alt="">\` : \`<div class="company-logo-placeholder">🏢</div>\`}<div><span class="eyebrow">ENTREPRISE</span><h3>\${esc(j.profiles.company_name)}</h3><p>📍 \${esc(j.profiles.company_city || "")}\${j.profiles.company_city && j.profiles.company_country ? ", " : ""}\${esc(j.profiles.company_country || "")}</p></div></div>\${j.profiles.company_description ? \`<p>\${esc(j.profiles.company_description)}</p>\` : ""}<div class="company-links">\${j.profiles.company_website ? \`<a href="\${esc(j.profiles.company_website)}" target="_blank" rel="noopener noreferrer">🌐 Site web</a>\` : ""}\${j.profiles.company_phone ? \`<span>📞 \${esc(j.profiles.company_phone)}</span>\` : ""}\${j.profiles.company_email ? \`<span>✉️ \${esc(j.profiles.company_email)}</span>\` : ""}</div></section>\` : ""}
         <section class="detail-section"><h3>📝 Description</h3><p>${esc(j.description)}</p></section>
         <section class="detail-section"><h3>✅ Conditions & exigences</h3><p>${esc(j.requirements)}</p></section>
         <section class="detail-section"><h3>🧳 Préparer votre départ</h3><div class="travel-mini"><span>📄 Documents</span><span>🏠 Logement</span><span>🚌 Transport</span><span>🛡️ Assurance</span></div></section>
@@ -784,7 +786,7 @@ function resetView() {
 }
 
 async function loadJobs() {
-  const {data,error} = await supabase.from("jobs").select("*").order("id");
+  const {data,error} = await supabase.from("jobs").select("*,profiles!jobs_employer_id_fkey(company_name,company_logo_url,company_description,company_website,company_phone,company_email,company_city,company_country)").order("id");
   if (error) {
     $("jobs").innerHTML = '<div class="empty-state"><h3>Impossible de charger les offres</h3><p>Vérifiez la connexion à la base de données.</p></div>';
     return;
