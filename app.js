@@ -190,7 +190,7 @@ async async function showJob(id) {
 }
 
 async function showCompanyProfile(userId) {
-  const {data:company,error}=await supabase.from("profiles").select("id,company_name,company_logo_url,company_description,company_website,company_phone,company_email,company_city,company_country").eq("id",userId).maybeSingle();
+  const {data:company,error}=await supabase.rpc("get_company_public_profile",{company_user_id:userId}).maybeSingle();
   if(error||!company?.company_name) return;
   const companyJobs=jobs.filter(j=>j.employer_id===userId);
   $("jobs").innerHTML=`
