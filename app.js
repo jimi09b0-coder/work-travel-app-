@@ -504,6 +504,53 @@ async function deleteEmployerJob(id) {
   await renderEmployerDashboard();
 }
 
+async function submitEmployerRequest(e) {
+  e.preventDefault();
+  const user=await currentUser(); if(!user) return renderAuth("login");
+  const company_name=$("employerCompanyName").value.trim();
+  if(!company_name) return alert("Veuillez saisir le nom de votre entreprise.");
+  const {data:pending}=await supabase.from("employer_requests").select("id").eq("user_id",user.id).eq("status","pending").maybeSingle();
+  if(pending) return alert("Une demande est déjà en attente.");
+  const payload={user_id:user.id,company_name,contact_phone:$("employerContactPhone").value.trim(),website:$("employerWebsite").value.trim(),message:$("employerRequestMessage").value.trim()};
+  const {error}=await supabase.from("employer_requests").insert(payload);
+  if(error) return alert("Impossible d'envoyer la demande : "+error.message);
+  showNotification("Demande entreprise envoyée.","success"); await renderDashboard();
+}
+function showEmployerRequestForm(){
+  const box=document.getElementById("employerRequestBox"); if(!box)return;
+  box.innerHTML='<span class="eyebrow">DEMANDE ENTREPRISE</span><h3>🏢 Demander un accès recruteur</h3><form class="employer-request-form" onsubmit="submitEmployerRequest(event)"><label>Nom de l’entreprise<input id="employerCompanyName" required maxlength="160"></label><label>Téléphone professionnel<input id="employerContactPhone" maxlength="40"></label><label>Site web<input id="employerWebsite" type="url" maxlength="200"></label><label>Présentation<textarea id="employerRequestMessage" rows="4" maxlength="1500"></textarea></label><div class="employer-request-actions"><button type="submit">📨 Envoyer</button><button type="button" class="back-button" onclick="renderEmployerRequestPanel()">Annuler</button></div></form>';
+}
+async function renderEmployerRequestPanel(){
+  const user=await currentUser(),box=document.getElementById("employerRequestBox"); if(!user||!box)return;
+  const {data:rows}=await supabase.from("employer_requests").select("company_name,status,created_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(1);
+  const r=rows&&rows[0];
+  if(!r){box.innerHTML='<span class="eyebrow">RECRUTEMENT</span><h3>🏢 Vous recrutez ?</h3><p>Demandez un accès entreprise pour publier vos offres et gérer les candidatures.</p><button type="button" onclick="showEmployerRequestForm()">Demander un compte entreprise</button>';return;}
+  const labels={pending:"En attente",approved:"Approuvée",rejected:"Refusée"};
+  box.innerHTML='<span class="eyebrow">COMPTE ENTREPRISE</span><h3>🏢 Demande '+esc(labels[r.status]||r.status)+'</h3><p><strong>'+esc(r.company_name)+'</strong> · '+new Date(r.created_at).toLocaleDateString("fr-FR")+'</p><p class="small-note">'+(r.status==="pending"?"Votre demande est en cours de validation.":r.status==="approved"?"Votre accès entreprise est actif.":"La demande a été refusée.")+'</p>';
+}
+async function renderAdminPanel(){
+  const user=await currentUser(); if(!user)return renderAuth("login");
+  const {data:profile}=await supabase.from("profiles").select("is_admin").eq("id",user.id).maybeSingle();
+  if(!profile||!profile.is_admin)return renderDashboard();
+  const {data:rows,error}=await supabase.from("employer_requests").select("id,user_id,company_name,contact_phone,website,message,status,created_at").order("created_at",{ascending:false});
+  if(error)return alert("Impossible de charger les demandes : "+error.message);
+  const cards=(rows||[]).map(r=>'<article class="admin-request-card"><div class="admin-request-head"><div><span class="eyebrow">DEMANDE #'+r.id+'</span><h3>'+esc(r.company_name)+'</h3><p>'+esc(r.contact_phone||"Téléphone non renseigné")+' · '+esc(r.website||"Site non renseigné")+'</p><small>'+new Date(r.created_at).toLocaleDateString("fr-FR")+'</small></div><span class="status-badge">'+esc(r.status)+'</span></div><p class="admin-request-message">'+esc(r.message||"Aucun message.")+'</p><div class="admin-request-actions"><button type="button" onclick="reviewEmployerRequest('+r.id+',\\'approved\\')">✅ Approuver</button><button type="button" class="danger-button" onclick="reviewEmployerRequest('+r.id+',\\'rejected\\')">❌ Refuser</button></div></article>').join("");
+  $("account").innerHTML='<div class="account-card dashboard admin-dashboard"><div class="dashboard-header"><div class="account-identity"><span class="eyebrow">ADMINISTRATION</span><h2>🛡️ Gestion des entreprises</h2><p class="account-email">Validation des comptes recruteurs</p></div><div class="account-actions"><button onclick="renderAdminPanel()">↻ Actualiser</button><button class="back-button" onclick="logout()">Se déconnecter</button></div></div><div class="dashboard-stats"><div class="stat-card"><span>📋</span><strong>'+(rows||[]).length+'</strong><small>Total</small></div><div class="stat-card"><span>🟡</span><strong>'+(rows||[]).filter(x=>x.status==="pending").length+'</strong><small>En attente</small></div><div class="stat-card"><span>🟢</span><strong>'+(rows||[]).filter(x=>x.status==="approved").length+'</strong><small>Approuvées</small></div></div><section class="admin-requests"><div class="panel-heading"><div><span class="eyebrow">REVUE</span><h3>Demandes reçues</h3></div></div>'+(cards||'<p class="small-note">Aucune demande.</p>')+'</section></div>';
+}
+async function reviewEmployerRequest(id,status){
+  const user=await currentUser(); if(!user||!["approved","rejected"].includes(status))return;
+  if(!confirm(status==="approved"?"Approuver cette entreprise ?":"Refuser cette demande ?"))return;
+  const {data:req,error:readError}=await supabase.from("employer_requests").select("user_id").eq("id",id).maybeSingle();
+  if(readError||!req)return alert("Demande introuvable.");
+  const {error}=await supabase.from("employer_requests").update({status,reviewed_at:new Date().toISOString()}).eq("id",id);
+  if(error)return alert("Impossible de traiter la demande : "+error.message);
+  if(status==="approved"){
+    const {error:roleError}=await supabase.from("profiles").update({role:"employer"}).eq("id",req.user_id);
+    if(roleError)return alert("Demande approuvée, mais activation impossible : "+roleError.message);
+  }
+  await renderAdminPanel();
+}
+
 async function renderDashboard() {
   const user = await currentUser();
   if (!user) return renderAuth("login");
@@ -512,6 +559,7 @@ async function renderDashboard() {
     supabase.from("applications").select("id,job_id,created_at,status,cover_letter,availability,phone,profile_snapshot,cv_path,cv_name,jobs(title,city,country)").eq("user_id",user.id).order("created_at",{ascending:false})
   ]);
   if (error) return alert("Erreur lors du chargement du compte : " + error.message);
+  if (profile?.is_admin) return renderAdminPanel();
   if (profile?.role === 'employer') return renderEmployerDashboard();
   const name = profile?.full_name || user.user_metadata?.full_name || 'Candidat';
   const totalApps = apps?.length || 0;
@@ -564,6 +612,7 @@ async function renderDashboard() {
           ${profile?.phone ? `<div class="preview-contact">📱 ${esc(profile.phone)}</div>` : ""}
         </div>
       </section>
+      <section class="employer-request-panel" id="employerRequestBox"></section>
       <section class="employer-request-panel" id="employerRequestBox"></section>
       <div class="dashboard-grid">
         <section class="dashboard-panel"><div class="panel-heading"><div><span class="eyebrow">DOCUMENTS</span><h3>📄 Mon CV</h3></div></div>
@@ -724,7 +773,7 @@ async function loadJobs() {
   renderSearchHistory();
 }
 
-window.showJob=showJob; window.savePreferences=savePreferences; window.saveEmployerJob=saveEmployerJob; window.editEmployerJob=editEmployerJob; window.resetEmployerJobForm=resetEmployerJobForm; window.deleteEmployerJob=deleteEmployerJob; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV; window.renderEmployerDashboard=renderEmployerDashboard; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.submitEmployerRequest=submitEmployerRequest; window.updateApplicationStatus=updateApplicationStatus;
+window.showJob=showJob; window.savePreferences=savePreferences; window.saveEmployerJob=saveEmployerJob; window.editEmployerJob=editEmployerJob; window.resetEmployerJobForm=resetEmployerJobForm; window.deleteEmployerJob=deleteEmployerJob; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV; window.renderEmployerDashboard=renderEmployerDashboard; window.renderAdminPanel=renderAdminPanel; window.reviewEmployerRequest=reviewEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.submitEmployerRequest=submitEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.submitEmployerRequest=submitEmployerRequest; window.updateApplicationStatus=updateApplicationStatus;
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
