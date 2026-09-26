@@ -115,7 +115,7 @@ async function renderDashboard() {
   if (!user) return renderAuth("login");
   const [{data:profile}, {data:apps, error}] = await Promise.all([
     supabase.from("profiles").select("full_name,cv_path").eq("id",user.id).maybeSingle(),
-    supabase.from("applications").select("id,job_id,created_at,jobs(title,city,country)").eq("user_id",user.id).order("created_at",{ascending:false})
+    supabase.from("applications").select("id,job_id,created_at,status,jobs(title,city,country)").eq("user_id",user.id).order("created_at",{ascending:false})
   ]);
   if (error) return alert("Erreur lors du chargement du compte : " + error.message);
   const name = profile?.full_name || user.user_metadata?.full_name || "Candidat";
@@ -126,7 +126,7 @@ async function renderDashboard() {
         <div><h3>📄 Mon CV</h3><input type="file" id="cvFile" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><p id="cvStatus" class="small-note">${profile?.cv_path ? "CV enregistré dans votre espace." : "Aucun CV enregistré."}</p></div>
         <div><h3>📊 Mes candidatures</h3><strong class="big-number">${apps?.length || 0}</strong><p class="small-note">candidature(s) enregistrée(s)</p></div>
       </div>
-      <div class="applications-list"><h3>Historique</h3>${apps?.length ? apps.map(a => `<div class="application-row"><strong>${esc(a.jobs?.title)}</strong><span>📍 ${esc(a.jobs?.city)}, ${esc(a.jobs?.country)}</span><small>${new Date(a.created_at).toLocaleDateString("fr-FR")}</small></div>`).join("") : '<p class="small-note">Aucune candidature pour le moment.</p>'}</div>
+      <div class="applications-list"><h3>Historique</h3>${apps?.length ? apps.map(a => `<div class="application-row"><strong>${esc(a.jobs?.title)}</strong><span>📍 ${esc(a.jobs?.city)}, ${esc(a.jobs?.country)}</span><small>${new Date(a.created_at).toLocaleDateString("fr-FR")} · ${esc(a.status || "En cours")}</small></div>`).join("") : '<p class="small-note">Aucune candidature pour le moment.</p>'}</div>
     </div>`;
   $("cvFile").addEventListener("change", saveCV);
 }
