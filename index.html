@@ -16,7 +16,7 @@
 <div class="section-heading"><span class="eyebrow">OPPORTUNITÉS</span><h2>🔎 Rechercher un emploi</h2><p>Filtrez les offres par métier, pays, ville ou secteur.</p></div>
 <div class="filters"><label class="search-input"><span>🔍</span><input type="search" id="search" placeholder="Métier, pays ou ville..." oninput="searchJobs()"></label>
 <select id="countryFilter" onchange="searchJobs()"><option value="">Tous les pays</option></select><select id="typeFilter" onchange="searchJobs()"><option value="">Tous les secteurs</option></select></div>
-<div class="results-bar"><h2>💼 Offres d'emploi</h2><span id="resultsCount"></span></div><div id="jobs" class="jobs-grid"></div>
+<div class="results-bar"><h2>💼 Offres d'emploi</h2><div class="results-actions"><button id="favoritesFilter" class="favorites-filter" onclick="toggleFavoritesOnly()">☆ Favoris (<span id="favoritesCount">0</span>)</button><span id="resultsCount"></span></div></div><div id="jobs" class="jobs-grid"></div>
 </section>
 <section class="account-section" id="compte"><div id="account"></div></section>
 <section class="travel-section" id="voyage"><div><span class="eyebrow">PRÉPARER SON DÉPART</span><h2>🧳 Travail + Voyage</h2><p>Retrouvez les informations utiles pour votre installation : logement, transport et documents.</p></div>
