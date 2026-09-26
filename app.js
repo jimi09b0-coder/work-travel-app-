@@ -1,6 +1,7 @@
 import { supabase } from "./supabase-config.js";
 
 let jobs = [];
+let favoritesOnly = false;
 const $ = id => document.getElementById(id);
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 
@@ -23,6 +24,12 @@ function getFavorites() {
 
 function isFavorite(id) {
   return getFavorites().includes(Number(id));
+}
+
+function toggleFavoritesOnly() {
+  favoritesOnly = !favoritesOnly;
+  $("favoritesFilter").classList.toggle("active", favoritesOnly);
+  searchJobs();
 }
 
 function toggleFavorite(id) {
@@ -206,11 +213,11 @@ async function logout() {
 
 async function searchJobs() {
   const t = $("search").value.trim().toLowerCase(), c = $("countryFilter").value, ty = $("typeFilter").value;
-  displayJobs(jobs.filter(j => (!t || [j.title,j.country,j.city,j.type,j.description].some(v => v.toLowerCase().includes(t))) && (!c || j.country === c) && (!ty || j.type === ty)));
+  displayJobs(jobs.filter(j => (!t || [j.title,j.country,j.city,j.type,j.description].some(v => v.toLowerCase().includes(t))) && (!c || j.country === c) && (!ty || j.type === ty) && (!favoritesOnly || isFavorite(j.id))));
 }
 
 function resetView() {
-  $("search").value = ""; $("countryFilter").value = ""; $("typeFilter").value = ""; displayJobs(jobs);
+  $("search").value = ""; $("countryFilter").value = ""; $("typeFilter").value = ""; favoritesOnly = false; if ($("favoritesFilter")) $("favoritesFilter").classList.remove("active"); displayJobs(jobs);
   $("offres").scrollIntoView({behavior:"smooth"});
 }
 
@@ -225,7 +232,7 @@ async function loadJobs() {
   displayJobs();
 }
 
-window.showJob=showJob; window.applyJob=applyJob; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite;
+window.showJob=showJob; window.applyJob=applyJob; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly;
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
