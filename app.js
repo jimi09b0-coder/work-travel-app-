@@ -414,11 +414,11 @@ async function saveCompanyProfile(e){
         <p>${esc(a.profile_snapshot?.headline || "Profil candidat")} · ${esc(a.jobs?.title || "Offre")}</p>
         <small>📍 ${esc(a.jobs?.city || "")}, ${esc(a.jobs?.country || "")}</small>
       </div>
-      <select onchange="updateApplicationStatus(${a.id},this.value)">
-        <option ${current==="En cours"?"selected":""}>En cours</option>
-        <option ${current==="Acceptée"?"selected":""}>Acceptée</option>
-        <option ${current==="Refusée"?"selected":""}>Refusée</option>
-      </select></div>
+      <div class="application-status-actions">
+        <button type="button" class="${current==="En cours"?"active":""}" onclick="updateApplicationStatus(${a.id},'En cours')">🟡 En cours</button>
+        <button type="button" class="${current==="Acceptée"?"active":""}" onclick="updateApplicationStatus(${a.id},'Acceptée')">🟢 Acceptée</button>
+        <button type="button" class="${current==="Refusée"?"active":""}" onclick="updateApplicationStatus(${a.id},'Refusée')">🔴 Refusée</button>
+      </div></div>
       <div class="employer-application-grid">
         <div><small>🕐 Disponibilité</small><strong>${esc(a.availability || "Non précisée")}</strong></div>
         <div><small>📱 Téléphone</small><strong>${esc(a.phone || "Non précisé")}</strong></div>
