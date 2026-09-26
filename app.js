@@ -40,6 +40,8 @@ function toggleFavorite(id) {
 }
 
 function displayJobs(list = jobs) {
+  const favoritesCount = getFavorites().length;
+  if ($("favoritesCount")) $("favoritesCount").textContent = favoritesCount;
   $("resultsCount").textContent = `${list.length} offre${list.length > 1 ? "s" : ""}`;
   if (!list.length) {
     $("jobs").innerHTML = '<div class="empty-state"><h3>Aucune offre trouvée</h3><p>Essayez un autre filtre.</p></div>';
