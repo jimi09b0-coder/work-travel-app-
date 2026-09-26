@@ -31,15 +31,17 @@ function displayJobs(list = jobs) {
     </article>`).join("");
 }
 
-function showJob(id) {
+async function showJob(id) {
   const j = jobs.find(x => x.id === id);
   if (!j) return;
+  const user = await currentUser();
+  const alreadyApplied = user ? await hasApplied(id, user.id) : false;
   $("jobs").innerHTML = `
     <article class="job-card">
       <span class="eyebrow">OFFRE D'EMPLOI</span><h2>${esc(j.title)}</h2>
       <div class="job-meta"><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><span>💼 ${esc(j.type)}</span><span>🕐 ${esc(j.contract)}</span></div>
       <div class="job-description"><h3>Description</h3><p>${esc(j.description)}</p><h3>Conditions</h3><p>${esc(j.requirements)}</p></div>
-      <button onclick="applyJob(${j.id})">📩 Postuler</button>
+      ${alreadyApplied ? '<span class="applied-badge">✓ Déjà postulé</span>' : `<button onclick="applyJob(${j.id})">📩 Postuler</button>`}
       <button onclick="resetView()" class="back-button">← Retour</button>
     </article>`;
   $("offres").scrollIntoView({behavior:"smooth"});
