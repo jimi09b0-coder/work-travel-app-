@@ -106,6 +106,27 @@ function toggleFavorite(id) {
   searchJobs();
 }
 
+function jobMatchScore(job) {
+  const q = $("search")?.value.trim().toLowerCase() || "";
+  const country = $("countryFilter")?.value || "";
+  const type = $("typeFilter")?.value || "";
+  let score = 45;
+  if (country && job.country === country) score += 25;
+  if (type && job.type === type) score += 20;
+  if (q) {
+    const hay = [job.title,job.country,job.city,job.type,job.contract,job.description,job.requirements].join(' ').toLowerCase();
+    const words = q.split(/\s+/).filter(Boolean);
+    score += Math.min(10, words.filter(w => hay.includes(w)).length * 5);
+  }
+  return Math.min(100, score);
+}
+
+function matchLabel(score) {
+  if (score >= 85) return "Excellent";
+  if (score >= 70) return "Très bon";
+  if (score >= 55) return "Bon";
+  return "À découvrir";
+}
 function displayJobs(list = jobs) {
   const favoritesCount = getFavorites().length;
   if ($("favoritesCount")) $("favoritesCount").textContent = favoritesCount;
@@ -117,7 +138,7 @@ function displayJobs(list = jobs) {
   $("jobs").innerHTML = list.map(j => `
     <article class="job-card">
       <button class="favorite-button ${isFavorite(j.id) ? "is-favorite" : ""}" onclick="toggleFavorite(${j.id})" title="Ajouter aux favoris">${isFavorite(j.id) ? "★" : "☆"}</button>
-      <h3>${esc(j.title)}</h3>
+      <div class="job-card-title"><h3>${esc(j.title)}</h3><span class="match-score">${jobMatchScore(j)}% · ${matchLabel(jobMatchScore(j))}</span></div>
       <div class="job-meta"><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><span>💼 ${esc(j.type)}</span><span>🕐 ${esc(j.contract)}</span></div>
       <p>${esc(j.description)}</p>
       <button onclick="showJob(${j.id})">Voir les détails →</button>
@@ -424,7 +445,7 @@ async function loadJobs() {
   renderSearchHistory();
 }
 
-window.showJob=showJob; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName;
+window.showJob=showJob; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName;
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
