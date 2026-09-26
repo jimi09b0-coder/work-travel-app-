@@ -72,13 +72,16 @@ async function showJob(id) {
   if (!j) return;
   const user = await currentUser();
   const alreadyApplied = user ? await hasApplied(id, user.id) : false;
+  const similar = jobs.filter(x => x.id !== id && (x.country === j.country || x.type === j.type)).slice(0,3);
   $("jobs").innerHTML = `
-    <article class="job-card">
-      <span class="eyebrow">OFFRE D'EMPLOI</span><h2>${esc(j.title)}</h2>
-      <div class="job-meta"><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><span>💼 ${esc(j.type)}</span><span>🕐 ${esc(j.contract)}</span></div>
-      <div class="job-description"><h3>Description</h3><p>${esc(j.description)}</p><h3>Conditions</h3><p>${esc(j.requirements)}</p></div>
-      ${alreadyApplied ? '<span class="applied-badge">✓ Déjà postulé</span>' : `<button onclick="openApplicationForm(${j.id})">📩 Postuler</button>`}
-      <button onclick="resetView()" class="back-button">← Retour</button>
+    <article class="job-detail-card">
+      <div class="job-detail-top"><div><span class="eyebrow">OFFRE D'EMPLOI</span><h2>${esc(j.title)}</h2><div class="job-meta"><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><span>💼 ${esc(j.type)}</span><span>🕐 ${esc(j.contract)}</span></div></div><button class="favorite-button ${isFavorite(j.id) ? "is-favorite" : ""}" onclick="toggleFavorite(${j.id})">${isFavorite(j.id) ? "★" : "☆"}</button></div>
+      <div class="job-detail-grid"><div>
+        <section class="detail-section"><h3>📝 Description</h3><p>${esc(j.description)}</p></section>
+        <section class="detail-section"><h3>✅ Conditions & exigences</h3><p>${esc(j.requirements)}</p></section>
+        <section class="detail-section"><h3>🧳 Préparer votre départ</h3><div class="travel-mini"><span>📄 Documents</span><span>🏠 Logement</span><span>🚌 Transport</span><span>🛡️ Assurance</span></div></section>
+      </div><aside class="job-apply-box"><span class="eyebrow">VOTRE CANDIDATURE</span><h3>Prêt à postuler ?</h3><p>Préparez votre CV et votre lettre de motivation avant d’envoyer votre candidature.</p>${alreadyApplied ? '<div class="applied-badge">✓ Déjà postulé</div>' : `<button class="apply-main" onclick="openApplicationForm(${j.id})">🚀 Postuler maintenant</button>`}<button onclick="resetView()" class="back-button detail-back">← Retour aux offres</button></aside></div>
+      ${similar.length ? `<section class="similar-section"><div class="panel-heading"><div><span class="eyebrow">À DÉCOUVRIR</span><h3>💼 Offres similaires</h3></div></div><div class="similar-jobs">${similar.map(x => `<button class="similar-job" onclick="showJob(${x.id})"><strong>${esc(x.title)}</strong><span>📍 ${esc(x.city)}, ${esc(x.country)}</span><small>${esc(x.type)} · ${esc(x.contract)}</small></button>`).join("")}</div></section>` : ""}
     </article>`;
   $("offres").scrollIntoView({behavior:"smooth"});
 }
