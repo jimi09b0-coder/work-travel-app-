@@ -40,6 +40,7 @@ function displayJobs(list = jobs) {
   }
   $("jobs").innerHTML = list.map(j => `
     <article class="job-card">
+      <button class="favorite-button ${isFavorite(j.id) ? "is-favorite" : ""}" onclick="toggleFavorite(${j.id})" title="Ajouter aux favoris">${isFavorite(j.id) ? "★" : "☆"}</button>
       <h3>${esc(j.title)}</h3>
       <div class="job-meta"><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><span>💼 ${esc(j.type)}</span><span>🕐 ${esc(j.contract)}</span></div>
       <p>${esc(j.description)}</p>
