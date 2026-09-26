@@ -357,7 +357,7 @@ async function renderEmployerDashboard() {
   const user = await currentUser();
   if (!user) return renderAuth("login");
 
-  const {data:profile, error:profileError} = await supabase.from("profiles").select("role,full_name").eq("id",user.id).maybeSingle();
+  const {data:profile, error:profileError} = await supabase.from("profiles").select("role,full_name,company_name,company_logo_url,company_description,company_website,company_phone,company_email,company_city,company_country").eq("id",user.id).maybeSingle();
   if (profileError) return alert("Erreur lors du chargement du profil entreprise : " + profileError.message);
   if (profile?.role !== "employer") return renderDashboard();
 
@@ -368,6 +368,14 @@ async function renderEmployerDashboard() {
   if (jobsError) return alert("Impossible de charger vos offres : " + jobsError.message);
   if (appsError) return alert("Impossible de charger les candidatures : " + appsError.message);
 
+function safeHtml(v){return esc(v || "");}
+async function saveCompanyProfile(e){
+  e.preventDefault(); const user=await currentUser(); if(!user)return renderAuth("login");
+  const payload={company_name:$("companyName").value.trim(),company_logo_url:$("companyLogo").value.trim(),company_description:$("companyDescription").value.trim(),company_website:$("companyWebsite").value.trim(),company_phone:$("companyPhone").value.trim(),company_email:$("companyEmail").value.trim(),company_city:$("companyCity").value.trim(),company_country:$("companyCountry").value.trim()};
+  const {error}=await supabase.from("profiles").update(payload).eq("id",user.id);
+  if(error)return alert("Impossible d'enregistrer les informations : "+error.message);
+  showNotification("Profil entreprise enregistré.","success"); await renderEmployerDashboard();
+}
   const list = apps || [];
   const jobList = ownedJobs || [];
   const counts = jobList.reduce((acc,j) => { acc[j.id] = list.filter(a => a.jobs?.id === j.id).length; return acc; }, {});
@@ -419,6 +427,22 @@ async function renderEmployerDashboard() {
         <div class="stat-card"><span>🟡</span><strong>${list.filter(a=>(a.status||"En cours")==="En cours").length}</strong><small>En cours</small></div>
         <div class="stat-card"><span>🟢</span><strong>${list.filter(a=>a.status==="Acceptée").length}</strong><small>Acceptées</small></div>
       </div>
+      <section class="company-profile-manager">
+        <div class="panel-heading"><div><span class="eyebrow">IDENTITÉ ENTREPRISE</span><h3>🏢 Profil de votre entreprise</h3><p class="small-note">Ces informations peuvent être affichées avec vos offres.</p></div></div>
+        <form class="company-profile-form" onsubmit="saveCompanyProfile(event)">
+          <div class="profile-form-grid">
+            <label>Nom de l'entreprise<input id="companyName" value="${safeHtml(profile?.company_name)}" required maxlength="160"></label>
+            <label>Logo (URL)<input id="companyLogo" value="${safeHtml(profile?.company_logo_url)}" type="url" maxlength="500"></label>
+            <label>Site web<input id="companyWebsite" value="${safeHtml(profile?.company_website)}" type="url" maxlength="200"></label>
+            <label>Téléphone<input id="companyPhone" value="${safeHtml(profile?.company_phone)}" maxlength="40"></label>
+            <label>Email professionnel<input id="companyEmail" value="${safeHtml(profile?.company_email)}" type="email" maxlength="160"></label>
+            <label>Ville<input id="companyCity" value="${safeHtml(profile?.company_city)}" maxlength="80"></label>
+            <label>Pays<input id="companyCountry" value="${safeHtml(profile?.company_country)}" maxlength="80"></label>
+          </div>
+          <label>Présentation<textarea id="companyDescription" rows="4" maxlength="2000">${safeHtml(profile?.company_description)}</textarea></label>
+          <button type="submit">💾 Enregistrer le profil entreprise</button>
+        </form>
+      </section>
       <section class="employer-job-manager">
         <div class="panel-heading"><div><span class="eyebrow">RECRUTEMENT</span><h3>➕ Publier une offre</h3><p class="small-note">Chaque offre est automatiquement rattachée à votre compte entreprise.</p></div></div>
         <form class="employer-job-form" onsubmit="saveEmployerJob(event)">
@@ -773,7 +797,7 @@ async function loadJobs() {
   renderSearchHistory();
 }
 
-window.showJob=showJob; window.savePreferences=savePreferences; window.saveEmployerJob=saveEmployerJob; window.editEmployerJob=editEmployerJob; window.resetEmployerJobForm=resetEmployerJobForm; window.deleteEmployerJob=deleteEmployerJob; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV; window.renderEmployerDashboard=renderEmployerDashboard; window.renderAdminPanel=renderAdminPanel; window.reviewEmployerRequest=reviewEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.submitEmployerRequest=submitEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.submitEmployerRequest=submitEmployerRequest; window.updateApplicationStatus=updateApplicationStatus;
+window.showJob=showJob; window.savePreferences=savePreferences; window.saveEmployerJob=saveEmployerJob; window.editEmployerJob=editEmployerJob; window.resetEmployerJobForm=resetEmployerJobForm; window.deleteEmployerJob=deleteEmployerJob; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV; window.renderEmployerDashboard=renderEmployerDashboard; window.saveCompanyProfile=saveCompanyProfile; window.renderAdminPanel=renderAdminPanel; window.reviewEmployerRequest=reviewEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.submitEmployerRequest=submitEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.submitEmployerRequest=submitEmployerRequest; window.updateApplicationStatus=updateApplicationStatus;
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
