@@ -523,10 +523,15 @@ function filterEmployerApplications() {
   const q = ($("employerApplicationSearch")?.value || "").trim().toLowerCase();
   const status = $("employerApplicationStatus")?.value || "";
   const jobId = $("employerApplicationJob")?.value || "";
-  document.querySelectorAll("#employerApplicationResults .employer-application-card").forEach(card => {
+  const cards = [...document.querySelectorAll("#employerApplicationResults .employer-application-card")];
+  let visible = 0;
+  cards.forEach(card => {
     const hay = (card.dataset.search || "").toLowerCase();
     card.hidden = Boolean((q && !hay.includes(q)) || (status && card.dataset.status !== status) || (jobId && card.dataset.jobId !== jobId));
+    if (!card.hidden) visible++;
   });
+  const empty = $("employerApplicationEmpty");
+  if (empty) empty.hidden = visible !== 0;
 }
 
 async function saveEmployerJob(e) {
