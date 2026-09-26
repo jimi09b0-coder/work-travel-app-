@@ -126,7 +126,7 @@ async function renderDashboard() {
         <div><h3>📄 Mon CV</h3><input type="file" id="cvFile" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><p id="cvStatus" class="small-note">${profile?.cv_path ? "CV enregistré dans votre espace." : "Aucun CV enregistré."}</p></div>
         <div><h3>📊 Mes candidatures</h3><strong class="big-number">${apps?.length || 0}</strong><p class="small-note">candidature(s) enregistrée(s)</p></div>
       </div>
-      <div class="applications-list"><h3>Historique</h3>${apps?.length ? apps.map(a => `<div class="application-row"><strong>${esc(a.jobs?.title)}</strong><span>📍 ${esc(a.jobs?.city)}, ${esc(a.jobs?.country)}</span><small>${new Date(a.created_at).toLocaleDateString("fr-FR")} · ${esc(a.status || "En cours")}</small></div>`).join("") : '<p class="small-note">Aucune candidature pour le moment.</p>'}</div>
+      <div class="applications-list"><h3>Historique</h3>${apps?.length ? apps.map(a => `<div class="application-row"><strong>${esc(a.jobs?.title)}</strong><span>📍 ${esc(a.jobs?.city)}, ${esc(a.jobs?.country)}</span><small>${new Date(a.created_at).toLocaleDateString("fr-FR")} · <span class="status-badge status-${(a.status || "En cours").toLowerCase().replace(/\s+/g,"-") }">${esc(a.status || "En cours")}</span></small></div>`).join("") : '<p class="small-note">Aucune candidature pour le moment.</p>'}</div>
     </div>`;
   $("cvFile").addEventListener("change", saveCV);
 }
