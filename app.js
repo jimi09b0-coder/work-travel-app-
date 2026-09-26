@@ -199,8 +199,9 @@ function openApplicationForm(id) {
   $("jobs").innerHTML = `
     <article class="job-card application-card">
       <span class="eyebrow">CANDIDATURE</span><h2>📩 Postuler à « ${esc(j.title)} »</h2>
-      <p>Présentez votre profil en quelques lignes. Votre CV enregistré sera associé automatiquement à la candidature.</p>
+      <p>Votre profil professionnel, votre CV, votre lettre de motivation et votre disponibilité seront enregistrés avec cette candidature.</p>
       <form class="application-form" id="jobApplicationForm">
+        <div class="application-profile-status">👤 Profil professionnel · 📄 CV enregistré requis</div>
         <label>📱 Téléphone<input id="applicationPhone" type="tel" maxlength="30" placeholder="+213 ..."></label>
         <label>🕐 Disponibilité<select id="applicationAvailability" required><option value="">Choisir</option><option>Immédiate</option><option>Dans 2 semaines</option><option>Dans 1 mois</option><option>À définir</option></select></label>
         <label>✍️ Lettre de motivation<textarea id="coverLetter" rows="7" maxlength="2000" required placeholder="Expliquez brièvement votre motivation, votre expérience et pourquoi ce poste vous intéresse..."></textarea></label>
@@ -221,17 +222,30 @@ async function applyJob(e, id) {
   const phone = $("applicationPhone").value.trim();
   if (!cover_letter || !availability) return alert("Veuillez compléter la lettre de motivation et votre disponibilité.");
   if (cover_letter.length < 30) return alert("Votre lettre de motivation doit contenir au moins 30 caractères.");
-  const { error } = await supabase.from("applications").insert({user_id:user.id, job_id:id, cover_letter, availability, phone});
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("full_name,phone,headline,bio,skills,languages,experience,education,cv_path").eq("id", user.id).maybeSingle();
+  if (profileError) return alert("Impossible de charger votre profil : " + profileError.message);
+  if (!profile?.cv_path) return alert("Ajoutez votre CV dans votre espace candidat avant d'envoyer une candidature.");
+  const cvName = profile.cv_path.split("/").pop().replace(/^[0-9a-f-]+-/i, "") || "CV";
+  const applicationToken = crypto.randomUUID();
+  const applicationCvPath = "applications/" + user.id + "/" + applicationToken + "-" + cvName;
+  const { error: copyError } = await supabase.storage.from("cvs").copy(profile.cv_path, applicationCvPath);
+  if (copyError) return alert("Impossible de préparer la copie du CV pour cette candidature : " + copyError.message);
+  const profile_snapshot = {
+    full_name: profile.full_name || user.user_metadata?.full_name || "",
+    phone: phone || profile.phone || "", headline: profile.headline || "", bio: profile.bio || "",
+    skills: profile.skills || [], languages: profile.languages || [], experience: profile.experience || "",
+    education: profile.education || "", cv_name: cvName
+  };
+  const { error } = await supabase.from("applications").insert({user_id:user.id,job_id:id,cover_letter,availability,phone:phone || profile.phone || "",profile_snapshot,cv_path:applicationCvPath,cv_name:cvName});
   if (error) {
-    if (error.code === "23505") alert("Vous avez déjà postulé à cette offre.");
-    else alert("Impossible d’enregistrer la candidature : " + error.message);
+    await supabase.storage.from("cvs").remove([applicationCvPath]);
+    if (error.code === "23505") alert("Vous avez déjà postulé à cette offre."); else alert("Impossible d’enregistrer la candidature : " + error.message);
     return;
   }
-  alert("🎉 Candidature envoyée avec succès.");
+  showNotification("Candidature complète envoyée avec succès.", "success");
   await renderDashboard();
   $("compte").scrollIntoView({behavior:"smooth"});
 }
-
 function openAccount(mode="register") {
   currentUser().then(user => {
     if (user) renderDashboard();
@@ -344,7 +358,7 @@ async function renderDashboard() {
   if (!user) return renderAuth("login");
   const [{data:profile}, {data:apps, error}] = await Promise.all([
     supabase.from("profiles").select("full_name,phone,headline,bio,skills,languages,experience,education,cv_path").eq("id",user.id).maybeSingle(),
-    supabase.from("applications").select("id,job_id,created_at,status,jobs(title,city,country)").eq("user_id",user.id).order("created_at",{ascending:false})
+    supabase.from("applications").select("id,job_id,created_at,status,cover_letter,availability,phone,profile_snapshot,cv_path,cv_name,jobs(title,city,country)").eq("user_id",user.id).order("created_at",{ascending:false})
   ]);
   if (error) return alert("Erreur lors du chargement du compte : " + error.message);
   const name = profile?.full_name || user.user_metadata?.full_name || "Candidat";
@@ -407,12 +421,25 @@ async function renderDashboard() {
         </section>
       </div>
       <div class="applications-list dashboard-history"><div class="panel-heading"><div><span class="eyebrow">SUIVI</span><h3>📋 Mes dernières candidatures</h3></div><span class="small-note">${totalApps} au total</span></div>
-        ${latestApps.length ? latestApps.map(a => `<div class="application-row"><strong>${esc(a.jobs?.title || "Offre")}</strong><span>📍 ${esc(a.jobs?.city || "")}, ${esc(a.jobs?.country || "")}</span><small>${new Date(a.created_at).toLocaleDateString("fr-FR")} · <span class="status-badge status-${(a.status || "En cours").toLowerCase().replace(/\s+/g,"-") }">${esc(a.status || "En cours")}</span></small></div>`).join("") : '<p class="small-note">Aucune candidature pour le moment. Découvrez les offres disponibles.</p>'}
-      </div>
+        ${latestApps.length ? latestApps.map(a => `
+          <article class="application-history-card">
+            <div class="application-history-head"><div><strong>${esc(a.jobs?.title || "Offre")}</strong><span>📍 ${esc(a.jobs?.city || "")}, ${esc(a.jobs?.country || "")}</span></div><span class="status-badge status-${(a.status || "En cours").toLowerCase().replace(/\s+/g,"-")}">${esc(a.status || "En cours")}</span></div>
+            <div class="application-history-grid"><div><small>📅 Envoyée le</small><strong>${new Date(a.created_at).toLocaleDateString("fr-FR")}</strong></div><div><small>🕐 Disponibilité</small><strong>${esc(a.availability || "Non précisée")}</strong></div><div><small>📱 Téléphone</small><strong>${esc(a.phone || a.profile_snapshot?.phone || "Non précisé")}</strong></div><div><small>📄 CV</small>${a.cv_path ? `<button type="button" class="cv-link" onclick="openApplicationCV('${esc(a.cv_path)}')">Ouvrir ${esc(a.cv_name || "le CV")}</button>` : "<strong>Non joint</strong>"}</div></div>
+            <div class="application-history-section"><small>👤 Profil envoyé</small><div class="profile-snapshot-line"><strong>${esc(a.profile_snapshot?.full_name || "Candidat")}</strong>${a.profile_snapshot?.headline ? `<span>${esc(a.profile_snapshot.headline)}</span>` : ""}</div>${(a.profile_snapshot?.skills || []).length ? `<div class="preview-tags">${a.profile_snapshot.skills.map(x => `<span>${esc(x)}</span>`).join("")}</div>` : ""}</div>
+            <div class="application-history-section"><small>✍️ Lettre de motivation</small><p class="application-cover-letter">${esc(a.cover_letter || "Aucune lettre enregistrée.")}</p></div>
+          </article>`).join("") : '<p class="small-note">Aucune candidature pour le moment. Découvrez les offres disponibles.</p>'}      </div>
     </div>`;
   $("cvFile").addEventListener("change", saveCV);
 }
 
+async function openApplicationCV(path) {
+  const user = await currentUser();
+  if (!user) return renderAuth("login");
+  if (!path || (!path.startsWith("applications/" + user.id + "/") && !path.startsWith(user.id + "/"))) return alert("Document non autorisé.");
+  const { data, error } = await supabase.storage.from("cvs").createSignedUrl(path, 60);
+  if (error) return alert("Impossible d’ouvrir le CV : " + error.message);
+  window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+}
 async function deleteCV() {
   const user = await currentUser();
   if (!user) return renderAuth("login");
@@ -539,7 +566,7 @@ async function loadJobs() {
   renderSearchHistory();
 }
 
-window.showJob=showJob; window.savePreferences=savePreferences; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile;
+window.showJob=showJob; window.savePreferences=savePreferences; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV;
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
