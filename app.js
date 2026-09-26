@@ -386,6 +386,18 @@ async function renderDashboard() {
           <button type="submit">💾 Enregistrer mon profil</button>
         </form>
       </section>
+      <section class="candidate-profile-preview">
+        <div class="panel-heading"><div><span class="eyebrow">APERÇU</span><h3>👁️ Profil professionnel</h3><p class="small-note">Voici comment votre profil peut être présenté à un recruteur.</p></div></div>
+        <div class="profile-preview-card">
+          <div class="profile-preview-head"><div class="profile-avatar">${esc((name || "C").charAt(0).toUpperCase())}</div><div><h3>${esc(profile?.headline || name)}</h3><p>${esc(profile?.headline ? name : "Candidat Work Travel")}</p></div></div>
+          ${profile?.bio ? `<div class="preview-section"><strong>📝 Présentation</strong><p>${esc(profile.bio)}</p></div>` : ""}
+          ${(profile?.skills || []).length ? `<div class="preview-section"><strong>🧰 Compétences</strong><div class="preview-tags">${profile.skills.map(x => `<span>${esc(x)}</span>`).join("")}</div></div>` : ""}
+          ${(profile?.languages || []).length ? `<div class="preview-section"><strong>🌐 Langues</strong><p>${esc(profile.languages.join(" · "))}</p></div>` : ""}
+          ${profile?.experience ? `<div class="preview-section"><strong>💼 Expérience</strong><p>${esc(profile.experience)}</p></div>` : ""}
+          ${profile?.education ? `<div class="preview-section"><strong>🎓 Formation</strong><p>${esc(profile.education)}</p></div>` : ""}
+          ${profile?.phone ? `<div class="preview-contact">📱 ${esc(profile.phone)}</div>` : ""}
+        </div>
+      </section>
       <div class="dashboard-grid">
         <section class="dashboard-panel"><div class="panel-heading"><div><span class="eyebrow">DOCUMENTS</span><h3>📄 Mon CV</h3></div></div>
           <div class="cv-box"><div><strong>CV professionnel</strong><p id="cvStatus" class="small-note">${profile?.cv_path ? `CV enregistré. <button type="button" class="cv-link" onclick="openCV()">Ouvrir</button> <button type="button" class="cv-delete" onclick="deleteCV()">Supprimer</button>` : "Ajoutez votre CV pour compléter votre profil."}</p></div><input type="file" id="cvFile" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"></div>
