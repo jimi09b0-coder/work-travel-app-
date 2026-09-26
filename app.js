@@ -222,7 +222,7 @@ async function applyJob(e, id) {
   const phone = $("applicationPhone").value.trim();
   if (!cover_letter || !availability) return alert("Veuillez compléter la lettre de motivation et votre disponibilité.");
   if (cover_letter.length < 30) return alert("Votre lettre de motivation doit contenir au moins 30 caractères.");
-  const { data: profile, error: profileError } = await supabase.from("profiles").select("full_name,phone,headline,bio,skills,languages,experience,education,cv_path").eq("id", user.id).maybeSingle();
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("full_name,phone,headline,bio,skills,languages,experience,education,cv_path,role").eq("id", user.id).maybeSingle();
   if (profileError) return alert("Impossible de charger votre profil : " + profileError.message);
   if (!profile?.cv_path) return alert("Ajoutez votre CV dans votre espace candidat avant d'envoyer une candidature.");
   const cvName = profile.cv_path.split("/").pop().replace(/^[0-9a-f-]+-/i, "") || "CV";
@@ -353,7 +353,7 @@ async function updateProfileName(e) {
   await renderDashboard();
 }
 
-async function renderDashboard() {
+async function renderEmployerDashboard() {\n  const user = await currentUser();\n  if (!user) return renderAuth('login');\n  const {data:apps,error}=await supabase.from('applications').select('id,created_at,status,cover_letter,availability,phone,profile_snapshot,cv_path,cv_name,jobs(id,title,city,country)').order('created_at',{ascending:false});\n  if(error) return alert('Erreur : '+error.message);\n  const list=apps||[];\n  const card=list.map(a=>'<article class="employer-application-card"><div class="employer-application-head"><div><h3>'+esc(a.profile_snapshot?.full_name||'Candidat')+'</h3><p>'+esc(a.profile_snapshot?.headline||'Profil candidat')+' · '+esc(a.jobs?.title||'Offre')+'</p><small>📍 '+esc(a.jobs?.city||'')+', '+esc(a.jobs?.country||'')+'</small></div><select onchange="updateApplicationStatus('+a.id+',this.value)"><option>En cours</option><option>Acceptée</option><option>Refusée</option></select></div><div class="employer-application-grid"><div><small>🕐 Disponibilité</small><strong>'+esc(a.availability||'Non précisée')+'</strong></div><div><small>📱 Téléphone</small><strong>'+esc(a.phone||'Non précisé')+'</strong></div><div><small>📄 CV</small>'+(a.cv_path?'<button type="button" class="cv-link" onclick="openApplicationCV(\\''+esc(a.cv_path)+'\\')">Ouvrir</button>':'<strong>Non joint</strong>')+'</div></div><details class="employer-details"><summary>Voir le profil et la lettre</summary><p>'+esc(a.profile_snapshot?.bio||'')+'</p><p><strong>✍️ Lettre</strong><br>'+esc(a.cover_letter||'')+'</p></details></article>').join('');\n  $('account').innerHTML='<div class="account-card dashboard employer-dashboard"><div class="dashboard-header"><div class="account-identity"><span class="eyebrow">ESPACE ENTREPRISE</span><h2>🏢 Candidatures reçues</h2><p class="account-email">✉️ '+esc(user.email)+'</p></div><button class="refresh-button" onclick="renderEmployerDashboard()">↻ Actualiser</button></div><div class="dashboard-stats"><div class="stat-card"><span>📩</span><strong>'+list.length+'</strong><small>Total</small></div></div>'+card+'</div>';\n}\n\nasync function updateApplicationStatus(id,status){\n  if(!['En cours','Acceptée','Refusée'].includes(status)) return;\n  const {error}=await supabase.from('applications').update({status}).eq('id',id);\n  if(error) return alert('Impossible de mettre à jour : '+error.message);\n  await renderEmployerDashboard();\n}\n\nasync function renderDashboard() {
   const user = await currentUser();
   if (!user) return renderAuth("login");
   const [{data:profile}, {data:apps, error}] = await Promise.all([
@@ -361,7 +361,8 @@ async function renderDashboard() {
     supabase.from("applications").select("id,job_id,created_at,status,cover_letter,availability,phone,profile_snapshot,cv_path,cv_name,jobs(title,city,country)").eq("user_id",user.id).order("created_at",{ascending:false})
   ]);
   if (error) return alert("Erreur lors du chargement du compte : " + error.message);
-  const name = profile?.full_name || user.user_metadata?.full_name || "Candidat";
+  if (profile?.role === 'employer') return renderEmployerDashboard();
+  const name = profile?.full_name || user.user_metadata?.full_name || 'Candidat';
   const totalApps = apps?.length || 0;
   const pending = apps?.filter(a => (a.status || "En cours") === "En cours").length || 0;
   const accepted = apps?.filter(a => a.status === "Acceptée").length || 0;
@@ -566,7 +567,7 @@ async function loadJobs() {
   renderSearchHistory();
 }
 
-window.showJob=showJob; window.savePreferences=savePreferences; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV;
+window.showJob=showJob; window.savePreferences=savePreferences; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV; window.renderEmployerDashboard=renderEmployerDashboard; window.updateApplicationStatus=updateApplicationStatus;
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
