@@ -106,13 +106,36 @@ function toggleFavorite(id) {
   searchJobs();
 }
 
+function getPreferences() {
+  try { return JSON.parse(localStorage.getItem('workTravelPreferences') || '{}'); } catch { return {}; }
+}
+
+function savePreferences() {
+  const countries = [...document.querySelectorAll('.pref-country:checked')].map(x => x.value);
+  const types = [...document.querySelectorAll('.pref-type:checked')].map(x => x.value);
+  localStorage.setItem('workTravelPreferences', JSON.stringify({countries, types}));
+  showNotification('Préférences enregistrées.', 'success');
+  displayJobs(jobs);
+}
+
+function renderPreferences() {
+  const box = $('preferencesBox');
+  if (!box) return;
+  const prefs = getPreferences();
+  const countries = [...new Set(jobs.map(j => j.country))].sort();
+  const types = [...new Set(jobs.map(j => j.type))].sort();
+  box.innerHTML = `<div class="preferences-head"><div><span class="eyebrow">PERSONNALISATION</span><h3>🎯 Mes préférences</h3><p>Choisissez les destinations et secteurs qui vous intéressent.</p></div></div><div class="preference-groups"><div><strong>🌍 Pays</strong><div class="preference-options">${countries.map(x => `<label><input class="pref-country" type="checkbox" value="${esc(x)}" ${prefs.countries?.includes(x) ? 'checked' : ''}> ${esc(x)}</label>`).join('')}</div></div><div><strong>💼 Secteurs</strong><div class="preference-options">${types.map(x => `<label><input class="pref-type" type="checkbox" value="${esc(x)}" ${prefs.types?.includes(x) ? 'checked' : ''}> ${esc(x)}</label>`).join('')}</div></div></div><button type="button" onclick="savePreferences()">💾 Enregistrer mes préférences</button>`;
+}
 function jobMatchScore(job) {
-  const q = $("search")?.value.trim().toLowerCase() || "";
-  const country = $("countryFilter")?.value || "";
-  const type = $("typeFilter")?.value || "";
-  let score = 45;
-  if (country && job.country === country) score += 25;
-  if (type && job.type === type) score += 20;
+  const q = $('search')?.value.trim().toLowerCase() || '';
+  const country = $('countryFilter')?.value || '';
+  const type = $('typeFilter')?.value || '';
+  const prefs = getPreferences();
+  let score = 40;
+  if (country && job.country === country) score += 20;
+  if (type && job.type === type) score += 15;
+  if (prefs.countries?.includes(job.country)) score += 15;
+  if (prefs.types?.includes(job.type)) score += 10;
   if (q) {
     const hay = [job.title,job.country,job.city,job.type,job.contract,job.description,job.requirements].join(' ').toLowerCase();
     const words = q.split(/\s+/).filter(Boolean);
@@ -441,11 +464,12 @@ async function loadJobs() {
   }
   jobs = data || [];
   await populateFilters();
+  renderPreferences();
   displayJobs();
   renderSearchHistory();
 }
 
-window.showJob=showJob; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName;
+window.showJob=showJob; window.savePreferences=savePreferences; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName;
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
