@@ -201,9 +201,13 @@ function displayJobs(list = jobs) {
 async function showJob(id) {
   let j = jobs.find(x => x.id === id);
   if (!j) {
-    const {data,error} = await supabase.from("jobs").select("*,profiles!jobs_employer_id_fkey(company_name,company_logo_url,company_description,company_website,company_phone,company_email,company_city,company_country)").eq("id",id).maybeSingle();
+    const {data,error} = await supabase.from("jobs").select("*").eq("id",id).maybeSingle();
     if (error || !data) return;
     j = data;
+    if (j.employer_id) {
+      const {data:company} = await supabase.rpc("get_company_public_profile",{company_user_id:j.employer_id});
+      j = {...j, profiles: company || null};
+    }
   }
   const user = await currentUser();
   const alreadyApplied = user ? await hasApplied(id, user.id) : false;
