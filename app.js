@@ -764,10 +764,10 @@ async function renderDashboard() {
       <div class="dashboard-notifications"><div class="panel-heading"><div><span class="eyebrow">NOTIFICATIONS</span><h3>🔔 Nouveautés</h3></div><span class="notification-count">${buildUserNotifications(apps).length}</span></div>
         ${buildUserNotifications(apps).length ? buildUserNotifications(apps).map(a => `<div class="notification-row"><span>${a.status === "Acceptée" ? "🟢" : "🔴"}</span><div><strong>${esc(a.jobs?.title || "Votre candidature")}</strong><p>Votre candidature est maintenant <b>${esc(a.status || "En cours")}</b>.</p></div><button onclick="markNotificationRead('${notificationKey(a)}')">✓ Lu</button></div>`).join("") : '<p class="small-note">Aucune nouvelle notification.</p>'}</div>
       <div class="dashboard-stats">
-        <button class="stat-card" onclick="document.getElementById('offres').scrollIntoView({behavior:'smooth'})"><span>📩</span><strong>${totalApps}</strong><small>Candidatures</small></button>
-        <button class="stat-card" onclick="document.getElementById('offres').scrollIntoView({behavior:'smooth'})"><span>🟡</span><strong>${pending}</strong><small>En cours</small></button>
-        <button class="stat-card"><span>🟢</span><strong>${accepted}</strong><small>Acceptées</small></button>
-        <button class="stat-card"><span>⭐</span><strong>${favoriteCount}</strong><small>Favoris</small></button>
+        <button class="stat-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth'})"><span>📩</span><strong>${totalApps}</strong><small>Candidatures</small></button>
+        <button class="stat-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth'})"><span>🟡</span><strong>${pending}</strong><small>En cours</small></button>
+        <button class="stat-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth'})"><span>🟢</span><strong>${accepted}</strong><small>Acceptées</small></button>
+        <button class="stat-card" onclick="document.getElementById('offres')?.scrollIntoView({behavior:'smooth'})"><span>⭐</span><strong>${favoriteCount}</strong><small>Favoris</small></button>
       </div>
       <section class="candidate-profile-editor">
         <div class="panel-heading"><div><span class="eyebrow">PROFIL PROFESSIONNEL</span><h3>👤 Mon profil</h3><p class="small-note">Complétez votre profil pour mieux présenter votre candidature.</p></div><span class="completion-mini">${profileCompletion}%</span></div>
