@@ -493,7 +493,7 @@ async function saveCompanyProfile(e){
       </div>
       <div class="dashboard-stats">
         <div class="stat-card"><span>💼</span><strong>${jobList.length}</strong><small>Mes offres</small></div>
-        <div class="stat-card"><span>📩</span><strong>${list.length}</strong><small>Candidatures</small></div>
+        <div class="stat-card employer-inbox-stat"><span>📩</span><strong>${list.length}</strong><small>Candidatures reçues</small>${list.filter(a => (a.status || "En cours") === "En cours").length ? `<em>${list.filter(a => (a.status || "En cours") === "En cours").length} à traiter</em>` : ""}</div>
         <div class="stat-card"><span>🟡</span><strong>${list.filter(a=>(a.status||"En cours")==="En cours").length}</strong><small>En cours</small></div>
         <div class="stat-card"><span>🟢</span><strong>${list.filter(a=>a.status==="Acceptée").length}</strong><small>Acceptées</small></div>
         <div class="stat-card"><span>🔴</span><strong>${list.filter(a=>a.status==="Refusée").length}</strong><small>Refusées</small></div>
