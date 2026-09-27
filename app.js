@@ -983,12 +983,19 @@ function resetView() {
 }
 
 async function loadJobs() {
-  const {data,error} = await supabase.from("jobs").select("*,profiles!jobs_employer_id_fkey(company_name,company_logo_url,company_description,company_website,company_phone,company_email,company_city,company_country)").order("id");
+  const {data,error} = await supabase.from("jobs").select("*").order("id");
   if (error) {
     $("jobs").innerHTML = '<div class="empty-state"><h3>Impossible de charger les offres</h3><p>Vérifiez la connexion à la base de données.</p></div>';
     return;
   }
-  jobs = (data || []).filter(job => job.is_active !== false);
+  const rawJobs = (data || []).filter(job => job.is_active !== false);
+  const employerIds = [...new Set(rawJobs.map(job => job.employer_id).filter(Boolean))];
+  const companyProfiles = await Promise.all(employerIds.map(async employerId => {
+    const {data:company} = await supabase.rpc("get_company_public_profile", {company_user_id: employerId});
+    return [employerId, company || null];
+  }));
+  const companyMap = new Map(companyProfiles);
+  jobs = rawJobs.map(job => ({...job, profiles: companyMap.get(job.employer_id) || null}));
   await populateFilters();
   renderPreferences();
   displayJobs();
