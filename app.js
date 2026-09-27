@@ -63,10 +63,17 @@ function applicationStatusLabel(status) {
 
 function notificationKey(app) { return String(app.id) + ':' + String(app.status || 'En cours'); }
 
-function markNotificationRead(key) {
-  const next = [...new Set([...getReadNotifications(), key])];
-  localStorage.setItem("workTravelReadNotifications", JSON.stringify(next));
-  renderDashboard();
+async function markNotificationRead(key) {
+  const user = await currentUser();
+  if (!user) return renderAuth("login");
+  if (String(key).startsWith("db:")) {
+    const id = Number(String(key).slice(3));
+    if (Number.isFinite(id)) await supabase.from("notifications").update({is_read:true}).eq("id",id).eq("user_id",user.id);
+  } else {
+    const next = [...new Set([...getReadNotifications(), key])];
+    localStorage.setItem("workTravelReadNotifications", JSON.stringify(next));
+  }
+  await renderDashboard();
 }
 
 function notificationMessage(app) {
@@ -79,6 +86,7 @@ function notificationMessage(app) {
 async function markAllNotificationsRead() {
   const user = await currentUser();
   if (!user) return renderAuth('login');
+  await supabase.from('notifications').update({is_read:true}).eq('user_id',user.id).eq('is_read',false);
   const {data:apps} = await supabase.from('applications').select('id,status').eq('user_id',user.id);
   const keys = (apps || []).filter(a => (a.status || 'En cours') !== 'En cours').map(notificationKey);
   const next = [...new Set([...getReadNotifications(), ...keys])];
@@ -86,7 +94,10 @@ async function markAllNotificationsRead() {
   await renderDashboard();
 }
 
-function buildUserNotifications(apps) {
+async function buildUserNotifications(apps) {
+  const user = await currentUser();
+  const db = user ? await supabase.from('notifications').select('id,title,message,created_at,is_read,application_id,type').eq('user_id',user.id).order('created_at',{ascending:false}).limit(8) : {data:[]};
+  if (db.data?.length) return db.data;
   const read = getReadNotifications();
   return (apps || []).filter(a => { const status = a.status || "En cours"; return status !== "En cours" && !read.includes(notificationKey(a)); }).slice(0, 5);
 }
