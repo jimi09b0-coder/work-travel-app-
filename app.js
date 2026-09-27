@@ -238,6 +238,9 @@ async function applyJob(e, id) {
   e.preventDefault();
   const user = await currentUser();
   if (!user) { openAccount("login"); return; }
+  const {data:job,error:jobError} = await supabase.from("jobs").select("id,title,is_active").eq("id",id).maybeSingle();
+  if (jobError || !job) { alert("Cette offre n'est plus disponible."); return; }
+  if (job.is_active === false) { alert("Cette offre est actuellement fermée. Vous ne pouvez plus envoyer de candidature."); return; }
   if (await hasApplied(id, user.id)) { alert("Vous avez déjà postulé à cette offre."); return; }
   const cover_letter = $("coverLetter").value.trim();
   const availability = $("applicationAvailability").value;
