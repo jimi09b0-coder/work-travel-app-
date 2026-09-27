@@ -100,7 +100,12 @@ function toggleFavoritesOnly() {
 }
 
 function toggleFavorite(id) {
+  const job = jobs.find(j => Number(j.id) === Number(id));
   const favorites = getFavorites();
+  if (job?.is_active === false && !favorites.includes(Number(id))) {
+    showNotification("Cette offre est fermée et ne peut pas être ajoutée aux favoris.", "info");
+    return;
+  }
   const next = favorites.includes(Number(id)) ? favorites.filter(x => x !== Number(id)) : [...favorites, Number(id)];
   localStorage.setItem("workTravelFavorites", JSON.stringify(next));
   searchJobs();
