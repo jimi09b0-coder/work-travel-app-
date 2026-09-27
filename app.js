@@ -755,14 +755,9 @@ async function renderAdminPanel(){
 async function reviewEmployerRequest(id,status){
   const user=await currentUser(); if(!user||!["approved","rejected"].includes(status))return;
   if(!confirm(status==="approved"?"Approuver cette entreprise ?":"Refuser cette demande ?"))return;
-  const {data:req,error:readError}=await supabase.from("employer_requests").select("user_id").eq("id",id).maybeSingle();
-  if(readError||!req)return alert("Demande introuvable.");
-  const {error}=await supabase.from("employer_requests").update({status,reviewed_at:new Date().toISOString()}).eq("id",id);
+  const {error}=await supabase.rpc("review_employer_request",{request_id:id,review_status:status});
   if(error)return alert("Impossible de traiter la demande : "+error.message);
-  if(status==="approved"){
-    const {error:roleError}=await supabase.from("profiles").update({role:"employer"}).eq("id",req.user_id);
-    if(roleError)return alert("Demande approuvée, mais activation impossible : "+roleError.message);
-  }
+  showNotification(status==="approved"?"Entreprise approuvée et compte employeur activé.":"Demande refusée.","success");
   await renderAdminPanel();
 }
 
