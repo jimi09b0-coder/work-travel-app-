@@ -101,6 +101,12 @@ async function buildUserNotifications(apps) {
   const read = getReadNotifications();
   return (apps || []).filter(a => { const status = a.status || "En cours"; return status !== "En cours" && !read.includes(notificationKey(a)); }).slice(0, 5);
 }
+async function getUnreadNotificationCount() {
+  const user = await currentUser();
+  if (!user) return 0;
+  const {count} = await supabase.from('notifications').select('id',{count:'exact',head:true}).eq('user_id',user.id).eq('is_read',false);
+  return count || 0;
+}
 function showNotification(message, type="info") {
   const old = document.querySelector(".app-notification");
   if (old) old.remove();
