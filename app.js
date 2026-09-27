@@ -515,6 +515,7 @@ async function saveCompanyProfile(e){
             <option value="newest">Plus récentes</option><option value="oldest">Plus anciennes</option><option value="name">Nom du candidat</option>
           </select>
           <button type="button" class="secondary-button" onclick="exportEmployerApplicationsCSV()">⬇️ Exporter CSV</button>
+          <button type="button" class="secondary-button" onclick="resetEmployerApplicationFilters()">↺ Réinitialiser</button>
         </div>
         <p id="employerApplicationResultCount" class="filter-result-count">${list.length} candidature(s) affichée(s)</p>
         <div id="employerApplicationResults">${cards || '<p class="small-note">Aucune candidature reçue sur vos offres.</p>'}<p id="employerApplicationEmpty" class="filter-empty-state" hidden>Aucun résultat ne correspond aux filtres sélectionnés.</p></div>
@@ -571,6 +572,18 @@ function exportEmployerApplicationsCSV() {
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+}
+
+function resetEmployerApplicationFilters() {
+  const search = $("employerApplicationSearch");
+  const status = $("employerApplicationStatus");
+  const job = $("employerApplicationJob");
+  const sort = $("employerApplicationSort");
+  if (search) search.value = "";
+  if (status) status.value = "";
+  if (job) job.value = "";
+  if (sort) sort.value = "newest";
+  sortEmployerApplications();
 }
 
 function filterEmployerApplications() {
@@ -934,7 +947,7 @@ async function loadJobs() {
   renderSearchHistory();
 }
 
-window.exportEmployerApplicationsCSV=exportEmployerApplicationsCSV; window.showJob=showJob; window.savePreferences=savePreferences; window.saveEmployerJob=saveEmployerJob; window.editEmployerJob=editEmployerJob; window.resetEmployerJobForm=resetEmployerJobForm; window.deleteEmployerJob=deleteEmployerJob; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV; window.renderEmployerDashboard=renderEmployerDashboard; window.saveCompanyProfile=saveCompanyProfile; window.renderAdminPanel=renderAdminPanel; window.reviewEmployerRequest=reviewEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.showCompanyProfile=showCompanyProfile; window.submitEmployerRequest=submitEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.submitEmployerRequest=submitEmployerRequest; window.updateApplicationStatus=updateApplicationStatus;
+window.exportEmployerApplicationsCSV=exportEmployerApplicationsCSV; window.resetEmployerApplicationFilters=resetEmployerApplicationFilters; window.showJob=showJob; window.savePreferences=savePreferences; window.saveEmployerJob=saveEmployerJob; window.editEmployerJob=editEmployerJob; window.resetEmployerJobForm=resetEmployerJobForm; window.deleteEmployerJob=deleteEmployerJob; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV; window.renderEmployerDashboard=renderEmployerDashboard; window.saveCompanyProfile=saveCompanyProfile; window.renderAdminPanel=renderAdminPanel; window.reviewEmployerRequest=reviewEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.showCompanyProfile=showCompanyProfile; window.submitEmployerRequest=submitEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.submitEmployerRequest=submitEmployerRequest; window.updateApplicationStatus=updateApplicationStatus;
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
