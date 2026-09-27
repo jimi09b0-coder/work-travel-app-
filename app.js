@@ -174,7 +174,7 @@ function displayJobs(list = jobs) {
     </article>`).join("");
 }
 
-async async async function showJob(id) {
+async function showJob(id) {
   let j = jobs.find(x => x.id === id);
   if (!j) {
     const {data,error} = await supabase.from("jobs").select("*,profiles!jobs_employer_id_fkey(company_name,company_logo_url,company_description,company_website,company_phone,company_email,company_city,company_country)").eq("id",id).maybeSingle();
@@ -257,7 +257,7 @@ async function applyJob(e, id) {
   const phone = $("applicationPhone").value.trim();
   if (!cover_letter || !availability) return alert("Veuillez compléter la lettre de motivation et votre disponibilité.");
   if (cover_letter.length < 30) return alert("Votre lettre de motivation doit contenir au moins 30 caractères.");
-  const { data: profile, error: profileError } = await supabase.from("profiles").select("full_name,phone,headline,bio,skills,languages,experience,education,cv_path,role").eq("id", user.id).maybeSingle();
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("full_name,phone,headline,bio,skills,languages,experience,education,cv_path,role,is_admin").eq("id", user.id).maybeSingle();
   if (profileError) return alert("Impossible de charger votre profil : " + profileError.message);
   if (!profile?.cv_path) return alert("Ajoutez votre CV dans votre espace candidat avant d'envoyer une candidature.");
   const cvName = profile.cv_path.split("/").pop().replace(/^[0-9a-f-]+-/i, "") || "CV";
