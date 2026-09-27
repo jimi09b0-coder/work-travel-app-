@@ -804,6 +804,7 @@ async function renderDashboard() {
   const accepted = apps?.filter(a => a.status === "Acceptée").length || 0;
   const refused = apps?.filter(a => a.status === "Refusée").length || 0;
   const favoriteCount = getFavorites().length;
+  const notifications = await buildUserNotifications(apps);
   const profileCompletion = getProfileCompletion(profile, name !== "Candidat" ? name : "");
   const latestApps = (apps || []).slice(0, 5);
   $("account").innerHTML = `
@@ -813,8 +814,8 @@ async function renderDashboard() {
         <div class="account-actions"><button class="refresh-button" onclick="renderDashboard()">↻ Actualiser</button><button class="back-button" onclick="logout()">Se déconnecter</button></div>
       </div>
       <div class="dashboard-welcome"><div><strong>Votre espace candidat</strong><p>Suivez vos candidatures, préparez votre départ et gardez votre profil prêt pour les prochaines opportunités.</p></div><div class="completion"><div><span>Profil complété</span><strong>${profileCompletion}%</strong></div><div class="progress-track"><span style="width:${profileCompletion}%"></span></div><small>${profileCompletion === 100 ? "Profil prêt pour postuler." : "Ajoutez votre nom et votre CV pour compléter votre profil."}</small></div></div>
-      <div class="dashboard-notifications"><div class="panel-heading"><div><span class="eyebrow">NOTIFICATIONS</span><h3>🔔 Nouveautés</h3></div><span class="notification-count">${buildUserNotifications(apps).length}</span>${buildUserNotifications(apps).length ? '<button type="button" class="link-button notification-read-all" onclick="markAllNotificationsRead()">✓ Tout marquer comme lu</button>' : ""}</div>
-        ${buildUserNotifications(apps).length ? buildUserNotifications(apps).map(a => `<div class="notification-row"><span>${a.status === "Acceptée" ? "🟢" : "🔴"}</span><div><strong>${esc(a.jobs?.title || "Votre candidature")}</strong><p>${esc(notificationMessage(a))}</p></div><button onclick="markNotificationRead('${notificationKey(a)}')">✓ Lu</button></div>`).join("") : '<p class="small-note">Aucune nouvelle notification.</p>'}</div>
+      <div class="dashboard-notifications"><div class="panel-heading"><div><span class="eyebrow">NOTIFICATIONS</span><h3>🔔 Nouveautés</h3></div><span class="notification-count">${notifications.length}</span>${notifications.length ? '<button type="button" class="link-button notification-read-all" onclick="markAllNotificationsRead()">✓ Tout marquer comme lu</button>' : ""}</div>
+        ${notifications.length ? notifications.map(a => `<div class="notification-row"><span>${a.status === "Acceptée" ? "🟢" : "🔴"}</span><div><strong>${esc(a.jobs?.title || "Votre candidature")}</strong><p>${esc(notificationMessage(a))}</p></div><button onclick="markNotificationRead('${notificationKey(a)}')">✓ Lu</button></div>`).join("") : '<p class="small-note">Aucune nouvelle notification.</p>'}</div>
       <div class="dashboard-stats">
         <button class="stat-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth'})"><span>📩</span><strong>${totalApps}</strong><small>Candidatures</small></button>
         <button class="stat-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth'})"><span>🟡</span><strong>${pending}</strong><small>En cours</small></button>
