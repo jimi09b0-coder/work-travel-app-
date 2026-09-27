@@ -434,12 +434,14 @@ async function saveCompanyProfile(e){
 
   const jobCards = jobList.map(j => {
     const s = jobStats[j.id] || {total:0,pending:0,accepted:0,refused:0};
-    return `<article class="employer-job-card" data-job-card-id="${j.id}">
-      <div><h3>${esc(j.title)}</h3><p>📍 ${esc(j.city)}, ${esc(j.country)} · 💼 ${esc(j.type)} · 🕐 ${esc(j.contract)}</p></div>
+    const active = j.is_active !== false;
+    return `<article class="employer-job-card ${active ? "" : "job-closed"}" data-job-card-id="${j.id}">
+      <div><h3>${esc(j.title)} <span class="job-activity-badge">${active ? "🟢 Active" : "⚪ Fermée"}</span></h3><p>📍 ${esc(j.city)}, ${esc(j.country)} · 💼 ${esc(j.type)} · 🕐 ${esc(j.contract)}</p></div>
       <div class="employer-job-count">${s.total} candidature(s)</div>
       <div class="employer-job-status-summary"><span>🟡 ${s.pending}</span><span>🟢 ${s.accepted}</span><span>🔴 ${s.refused}</span></div>
       <div class="employer-job-actions">
         <button type="button" onclick="focusEmployerApplications(${j.id})">📩 Voir les candidatures</button>
+        <button type="button" onclick="toggleEmployerJob(${j.id},${active})">${active ? "⏸️ Fermer l'offre" : "▶️ Réactiver"}</button>
         <button type="button" onclick="editEmployerJob(${j.id})">✏️ Modifier</button>
         <button type="button" class="danger-button" onclick="deleteEmployerJob(${j.id})">🗑️ Supprimer</button>
       </div>
@@ -599,6 +601,18 @@ function resetEmployerJobForm() {
   if (form) form.reset();
   if ($("employerJobId")) $("employerJobId").value = "";
   if ($("employerJobContract")) $("employerJobContract").value = "Temps plein";
+}
+
+async function toggleEmployerJob(id, active) {
+  const user = await currentUser();
+  if (!user) return renderAuth("login");
+  const message = active ? "Fermer cette offre ? Elle ne sera plus visible aux candidats." : "Réactiver cette offre ?";
+  if (!confirm(message)) return;
+  const {error} = await supabase.from("jobs").update({is_active: !active}).eq("id",id).eq("employer_id",user.id);
+  if (error) return alert("Impossible de modifier le statut de l'offre : " + error.message);
+  showNotification(active ? "Offre fermée." : "Offre réactivée.", "success");
+  await loadJobs();
+  await renderEmployerDashboard();
 }
 
 async function deleteEmployerJob(id) {
@@ -873,7 +887,7 @@ async function loadJobs() {
     $("jobs").innerHTML = '<div class="empty-state"><h3>Impossible de charger les offres</h3><p>Vérifiez la connexion à la base de données.</p></div>';
     return;
   }
-  jobs = data || [];
+  jobs = (data || []).filter(job => job.is_active !== false);
   await populateFilters();
   renderPreferences();
   displayJobs();
