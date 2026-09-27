@@ -907,11 +907,20 @@ async function saveCV(e) {
   if (file.size > 5 * 1024 * 1024) return alert("Le CV doit faire moins de 5 Mo.");
   const safe = file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
   const path = `${user.id}/${crypto.randomUUID()}-${safe}`;
-  const { error:uploadError } = await supabase.storage.from("cvs").upload(path,file,{upsert:false,contentType:file.type});
+  const {data:previousProfile,error:loadError} = await supabase.from("profiles").select("cv_path").eq("id",user.id).maybeSingle();
+  if (loadError) return alert("Impossible de vérifier votre CV actuel : " + loadError.message);
+  const {error:uploadError} = await supabase.storage.from("cvs").upload(path,file,{upsert:false,contentType:file.type});
   if (uploadError) return alert("Échec du téléchargement : " + uploadError.message);
-  const { error:profileError } = await supabase.from("profiles").update({cv_path:path,updated_at:new Date().toISOString()}).eq("id",user.id);
-  if (profileError) return alert("CV envoyé mais profil non mis à jour : " + profileError.message);
+  const {error:profileError} = await supabase.from("profiles").update({cv_path:path,updated_at:new Date().toISOString()}).eq("id",user.id);
+  if (profileError) {
+    await supabase.storage.from("cvs").remove([path]);
+    return alert("CV envoyé mais profil non mis à jour : " + profileError.message);
+  }
+  if (previousProfile?.cv_path && previousProfile.cv_path !== path) {
+    await supabase.storage.from("cvs").remove([previousProfile.cv_path]);
+  }
   $("cvStatus").innerHTML = `CV enregistré : ${esc(file.name)} <button type="button" class="cv-link" onclick="openCV()">📄 Ouvrir mon CV</button>`;
+  showNotification("CV enregistré avec succès.","success");
 }
 
 async function logout() {
