@@ -52,6 +52,13 @@ function getReadNotifications() {
   try { return JSON.parse(localStorage.getItem("workTravelReadNotifications") || "[]"); } catch { return []; }
 }
 
+function applicationStatusLabel(status) {
+  const value = status || 'En cours';
+  if (value === 'Acceptée') return '🟢 Acceptée';
+  if (value === 'Refusée') return '🔴 Refusée';
+  return '🟡 En cours';
+}
+
 function notificationKey(app) { return String(app.id) + ':' + String(app.status || 'En cours'); }
 
 function markNotificationRead(key) {
