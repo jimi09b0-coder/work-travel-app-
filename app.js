@@ -384,7 +384,7 @@ async function renderEmployerDashboard() {
   if (profile?.role !== "employer") return renderDashboard();
 
   const [{data:ownedJobs,error:jobsError},{data:apps,error:appsError}] = await Promise.all([
-    supabase.from("jobs").select("id,title,country,city,type,contract,description,requirements,created_at,employer_id").eq("employer_id",user.id).order("created_at",{ascending:false}),
+    supabase.from("jobs").select("id,title,country,city,type,contract,description,requirements,created_at,employer_id,is_active").eq("employer_id",user.id).order("created_at",{ascending:false}),
     supabase.from("applications").select("id,created_at,status,cover_letter,availability,phone,profile_snapshot,cv_path,cv_name,jobs!inner(id,title,city,country,employer_id)").eq("jobs.employer_id",user.id).order("created_at",{ascending:false})
   ]);
   if (jobsError) return alert("Impossible de charger vos offres : " + jobsError.message);
@@ -582,9 +582,15 @@ async function saveEmployerJob(e) {
   await renderEmployerDashboard();
 }
 
-function editEmployerJob(id) {
-  const job = jobs.find(j => Number(j.id) === Number(id));
-  if (!job) return;
+async function editEmployerJob(id) {
+  let job = jobs.find(j => Number(j.id) === Number(id));
+  if (!job) {
+    const user = await currentUser();
+    if (!user) return renderAuth("login");
+    const {data,error} = await supabase.from("jobs").select("id,title,country,city,type,contract,description,requirements,is_active").eq("id",id).eq("employer_id",user.id).maybeSingle();
+    if (error || !data) return alert("Offre introuvable.");
+    job = data;
+  }
   $("employerJobId").value = job.id;
   $("employerJobTitle").value = job.title || "";
   $("employerJobCountry").value = job.country || "";
