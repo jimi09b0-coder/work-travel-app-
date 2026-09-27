@@ -145,3 +145,10 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
 .travel-section{box-shadow:0 12px 35px rgba(23,105,224,.06)}
 footer{margin-top:10px}
 @media(max-width:760px){.hero h1{font-size:clamp(2.1rem,12vw,3.2rem)}.hero-content p{font-size:1rem}.navbar{padding:17px 16px}.logo{font-size:1.25rem}.search-section{margin-top:-25px}.job-card:hover{transform:none}}
+
+.admin-dashboard .dashboard-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+.admin-dashboard .stat-card{position:relative}
+.admin-dashboard .stat-card em{display:block;margin-top:4px;font-size:.72rem;color:var(--muted);font-style:normal}
+.admin-request-card.admin-request-pending{border-color:#b8d3ff;box-shadow:0 8px 22px rgba(23,105,224,.08)}
+@media(max-width:900px){.admin-dashboard .dashboard-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.admin-dashboard .dashboard-stats{grid-template-columns:1fr}}
