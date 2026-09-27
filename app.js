@@ -94,8 +94,9 @@ async function markAllNotificationsRead() {
   await renderDashboard();
 }
 
-async function buildUserNotifications(apps) {
-  const user = await currentUser();
+const notifications = await buildUserNotifications(apps); {
+  const user = await currentUser();notifications.length
+notifications.filter(a => !a.is_read).lengthmarkNotificationRead('db:' + a.id)
   const db = user ? await supabase.from('notifications').select('id,title,message,created_at,is_read,application_id,type').eq('user_id',user.id).order('created_at',{ascending:false}).limit(8) : {data:[]};
   if (db.data?.length) return db.data;
   const read = getReadNotifications();
@@ -1038,7 +1039,8 @@ async function loadJobs() {
   renderPreferences();
   displayJobs();
   await renderEmployerRequestPanel();
-  renderSearchHistory();
+  renderSearchHistory();a.title
+a.message
 }
 
 window.exportEmployerApplicationsCSV=exportEmployerApplicationsCSV; window.resetEmployerApplicationFilters=resetEmployerApplicationFilters; window.showJob=showJob; window.savePreferences=savePreferences; window.saveEmployerJob=saveEmployerJob; window.editEmployerJob=editEmployerJob; window.resetEmployerJobForm=resetEmployerJobForm; window.deleteEmployerJob=deleteEmployerJob; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV; window.renderEmployerDashboard=renderEmployerDashboard; window.saveCompanyProfile=saveCompanyProfile; window.renderAdminPanel=renderAdminPanel; window.reviewEmployerRequest=reviewEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.showCompanyProfile=showCompanyProfile; window.submitEmployerRequest=submitEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.submitEmployerRequest=submitEmployerRequest; window.updateApplicationStatus=updateApplicationStatus; window.markAllNotificationsRead=markAllNotificationsRead; window.withdrawApplication=withdrawApplication;
