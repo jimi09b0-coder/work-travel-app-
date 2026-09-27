@@ -764,7 +764,7 @@ async function renderDashboard() {
   const user = await currentUser();
   if (!user) return renderAuth("login");
   const [{data:profile}, {data:apps, error}] = await Promise.all([
-    supabase.from("profiles").select("full_name,phone,headline,bio,skills,languages,experience,education,cv_path,role").eq("id",user.id).maybeSingle(),
+    supabase.from("profiles").select("full_name,phone,headline,bio,skills,languages,experience,education,cv_path,role,is_admin").eq("id",user.id).maybeSingle(),
     supabase.from("applications").select("id,job_id,created_at,status,cover_letter,availability,phone,profile_snapshot,cv_path,cv_name,jobs(title,city,country)").eq("user_id",user.id).order("created_at",{ascending:false})
   ]);
   if (error) return alert("Erreur lors du chargement du compte : " + error.message);
