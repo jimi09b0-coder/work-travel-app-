@@ -94,13 +94,15 @@ async function markAllNotificationsRead() {
   await renderDashboard();
 }
 
-const notifications = await buildUserNotifications(apps); {
-  const user = await currentUser();notifications.length
-notifications.filter(a => !a.is_read).lengthmarkNotificationRead('db:' + a.id)
+async function buildUserNotifications(apps) {
+  const user = await currentUser();
   const db = user ? await supabase.from('notifications').select('id,title,message,created_at,is_read,application_id,type').eq('user_id',user.id).order('created_at',{ascending:false}).limit(8) : {data:[]};
   if (db.data?.length) return db.data;
   const read = getReadNotifications();
-  return (apps || []).filter(a => { const status = a.status || "En cours"; return status !== "En cours" && !read.includes(notificationKey(a)); }).slice(0, 5);
+  return (apps || []).filter(a => {
+    const status = a.status || 'En cours';
+    return status !== 'En cours' && !read.includes(notificationKey(a));
+  }).slice(0, 5);
 }
 async function getUnreadNotificationCount() {
   const user = await currentUser();
