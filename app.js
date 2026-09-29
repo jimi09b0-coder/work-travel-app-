@@ -715,6 +715,33 @@ function resetEmployerJobForm() {
   if ($("employerJobContract")) $("employerJobContract").value = "Temps plein";
 }
 
+async function updateApplicationStatus(id, status) {
+  const user = await currentUser();
+  if (!user) return renderAuth("login");
+  const allowed = ["En cours", "Acceptée", "Refusée"];
+  if (!allowed.includes(status)) return;
+
+  const {data:app,error:loadError} = await supabase
+    .from("applications")
+    .select("id,status,jobs!inner(id,title,employer_id)")
+    .eq("id",id)
+    .eq("jobs.employer_id",user.id)
+    .maybeSingle();
+
+  if (loadError || !app) return alert("Candidature introuvable ou accès non autorisé.");
+  if ((app.status || "En cours") === status) return;
+
+  const {error} = await supabase
+    .from("applications")
+    .update({status})
+    .eq("id",id);
+
+  if (error) return alert("Impossible de modifier le statut : " + error.message);
+
+  showNotification("Candidature mise à jour : " + status + ".", "success");
+  await renderEmployerDashboard();
+}
+
 async function toggleEmployerJob(id, active) {
   const user = await currentUser();
   if (!user) return renderAuth("login");
