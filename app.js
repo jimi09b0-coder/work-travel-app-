@@ -1031,7 +1031,7 @@ async function logout() {
 async function searchJobs(saveHistory = false) {
   const raw = $("search").value.trim();
   const t = raw.toLowerCase(), c = $("countryFilter").value, ty = $("typeFilter").value;
-  const words = t.split(/\\s+/).filter(Boolean);
+  const words = t.split(/\s+/).filter(Boolean);
   const list = jobs.filter(j => {
     const haystack = [j.title,j.country,j.city,j.type,j.contract,j.description,j.requirements].join(" ").toLowerCase();
     const matchesText = !words.length || words.every(word => haystack.includes(word));
