@@ -107,6 +107,7 @@ async function buildUserNotifications(apps) {
     ...a,
     title: 'Mise à jour de candidature',
     message: notificationMessage(a),
+    id: 'legacy:' + String(a.id),
     is_read: false,
     type: 'application_status'
   }));
