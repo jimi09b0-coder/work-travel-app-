@@ -468,7 +468,7 @@ function safeHtml(v){return esc(v || "");}
 async function saveCompanyProfile(e){
   e.preventDefault(); const user=await currentUser(); if(!user)return renderAuth("login");
   const payload={company_name:$("companyName").value.trim(),company_logo_url:$("companyLogo").value.trim(),company_description:$("companyDescription").value.trim(),company_website:$("companyWebsite").value.trim(),company_phone:$("companyPhone").value.trim(),company_email:$("companyEmail").value.trim(),company_city:$("companyCity").value.trim(),company_country:$("companyCountry").value.trim()};
-  const {error}=await supabase.from("profiles").update(payload).eq("id",user.id);
+  const {error}=await supabase.rpc("update_company_profile",{p_company_name:payload.company_name,p_company_logo_url:payload.company_logo_url,p_company_description:payload.company_description,p_company_website:payload.company_website,p_company_phone:payload.company_phone,p_company_email:payload.company_email,p_company_city:payload.company_city,p_company_country:payload.company_country});
   if(error)return alert("Impossible d'enregistrer les informations : "+error.message);
   showNotification("Profil entreprise enregistré.","success"); await renderEmployerDashboard();
 }
