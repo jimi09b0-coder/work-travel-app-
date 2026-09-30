@@ -1,3 +1,66 @@
+
+const I18N = {
+  fr: {
+    nav_jobs:"Offres", nav_travel:"Voyage", nav_account:"Mon compte",
+    hero_badge:"🇪🇺 Europe • Emploi • Voyage", hero_title:"Travaillez en Europe,\n", hero_text:"Trouvez un emploi, préparez votre départ et gérez vos candidatures au même endroit.", hero_cta:"🔎 Voir les offres",
+    useful_eyebrow:"LIENS UTILES", useful_title:"🌐 Sites officiels pour travailler et préparer son départ", useful_text:"Accédez directement aux portails européens et nationaux de l’emploi.",
+    jobs_eyebrow:"OPPORTUNITÉS", search_title:"🔎 Rechercher un emploi", search_text:"Filtrez les offres par métier, pays, ville ou secteur.",
+    search_placeholder:"Métier, pays ou ville...", all_countries:"Tous les pays", all_sectors:"Tous les secteurs",
+    travel_eyebrow:"PRÉPARER SON DÉPART", travel_title:"🧳 Votre checklist de voyage", travel_text:"Préparez votre installation en Europe avec une checklist simple et pratique.",
+    progress:"Progression", travel_empty_title:"Choisissez votre destination", travel_empty_text:"Vous obtiendrez une checklist adaptée à votre départ.",
+    about_eyebrow:"WORK TRAVEL", about_title:"Votre projet européen, au même endroit", about_text:"Créez votre profil, ajoutez votre CV et gardez une trace de vos candidatures.",
+    footer_text:"Travail et voyage en Europe", language_name:"Français"
+  },
+  en: {
+    nav_jobs:"Jobs", nav_travel:"Travel", nav_account:"My account",
+    hero_badge:"🇪🇺 Europe • Jobs • Travel", hero_title:"Work in Europe,", hero_text:"Find a job, prepare your move, and manage your applications in one place.", hero_cta:"🔎 View jobs",
+    useful_eyebrow:"USEFUL LINKS", useful_title:"🌐 Official sites for work and relocation", useful_text:"Go directly to European and national employment portals.",
+    jobs_eyebrow:"OPPORTUNITIES", search_title:"🔎 Search for a job", search_text:"Filter jobs by role, country, city or sector.",
+    search_placeholder:"Job, country or city...", all_countries:"All countries", all_sectors:"All sectors",
+    travel_eyebrow:"PREPARE YOUR MOVE", travel_title:"🧳 Your travel checklist", travel_text:"Prepare your move to Europe with a simple, practical checklist.",
+    progress:"Progress", travel_empty_title:"Choose your destination", travel_empty_text:"You will get a checklist tailored to your move.",
+    about_eyebrow:"WORK TRAVEL", about_title:"Your European project, in one place", about_text:"Create your profile, add your CV and keep track of your applications.",
+    footer_text:"Work and travel in Europe", language_name:"English"
+  },
+  ar: {
+    nav_jobs:"الوظائف", nav_travel:"السفر", nav_account:"حسابي",
+    hero_badge:"🇪🇺 أوروبا • العمل • السفر", hero_title:"اعمل في أوروبا،", hero_text:"ابحث عن وظيفة، حضّر سفرك، وأدر طلباتك من مكان واحد.", hero_cta:"🔎 عرض الوظائف",
+    useful_eyebrow:"روابط مفيدة", useful_title:"🌐 مواقع رسمية للعمل والاستقرار", useful_text:"انتقل مباشرة إلى بوابات التوظيف الأوروبية والوطنية.",
+    jobs_eyebrow:"الفرص", search_title:"🔎 ابحث عن وظيفة", search_text:"صفِّ الوظائف حسب المهنة أو الدولة أو المدينة أو القطاع.",
+    search_placeholder:"المهنة أو الدولة أو المدينة...", all_countries:"كل الدول", all_sectors:"كل القطاعات",
+    travel_eyebrow:"الاستعداد للسفر", travel_title:"🧳 قائمة تجهيز السفر", travel_text:"جهّز انتقالك إلى أوروبا من خلال قائمة بسيطة وعملية.",
+    progress:"التقدم", travel_empty_title:"اختر وجهتك", travel_empty_text:"ستظهر لك قائمة تجهيز مناسبة لرحلتك.",
+    about_eyebrow:"WORK TRAVEL", about_title:"مشروعك الأوروبي في مكان واحد", about_text:"أنشئ ملفك، أضف سيرتك الذاتية، وتابع طلبات التوظيف.",
+    footer_text:"العمل والسفر في أوروبا", language_name:"العربية"
+  }
+};
+function getLanguage(){ return localStorage.getItem("workTravelLanguage") || "fr"; }
+function setLanguage(lang){
+  const selected = I18N[lang] ? lang : "fr";
+  localStorage.setItem("workTravelLanguage", selected);
+  applyLanguage();
+}
+function applyLanguage(){
+  const lang = getLanguage(), dict = I18N[lang] || I18N.fr;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  document.body.classList.toggle("rtl-language", lang === "ar");
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.dataset.i18n, value = dict[key];
+    if (value == null) return;
+    if (key === "hero_title") {
+      const titleSpan = el.querySelector("span");
+      if (titleSpan) titleSpan.textContent = lang === "fr" ? "vivez votre aventure." : lang === "en" ? "live your adventure." : "عِش مغامرتك.";
+      el.childNodes[0].nodeValue = value + " ";
+    } else el.textContent = value;
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+    const value = dict[el.dataset.i18nPlaceholder]; if (value) el.placeholder = value;
+  });
+  const select=$("languageSelect"); if(select) select.value=lang;
+  document.title = lang==="ar" ? "Work Travel | العمل والسفر" : lang==="en" ? "Work Travel | Jobs & Travel" : "Work Travel | Emploi & Voyage";
+}
+
 import { supabase } from "./supabase-config.js";
 
 let jobs = [];
@@ -1131,6 +1194,7 @@ async function loadJobs() {
 window.exportEmployerApplicationsCSV=exportEmployerApplicationsCSV; window.resetEmployerApplicationFilters=resetEmployerApplicationFilters; window.focusEmployerApplications=focusEmployerApplications; window.toggleEmployerJob=toggleEmployerJob; window.filterEmployerApplications=filterEmployerApplications; window.sortEmployerApplications=sortEmployerApplications; window.renderDashboard=renderDashboard; window.markNotificationRead=markNotificationRead; window.showJob=showJob; window.savePreferences=savePreferences; window.saveEmployerJob=saveEmployerJob; window.editEmployerJob=editEmployerJob; window.resetEmployerJobForm=resetEmployerJobForm; window.deleteEmployerJob=deleteEmployerJob; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV; window.renderEmployerDashboard=renderEmployerDashboard; window.saveCompanyProfile=saveCompanyProfile; window.renderAdminPanel=renderAdminPanel; window.reviewEmployerRequest=reviewEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.showCompanyProfile=showCompanyProfile; window.submitEmployerRequest=submitEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.submitEmployerRequest=submitEmployerRequest; window.updateApplicationStatus=updateApplicationStatus; window.markAllNotificationsRead=markAllNotificationsRead; window.withdrawApplication=withdrawApplication;
 
 document.addEventListener("DOMContentLoaded", async () => {
+  applyLanguage();
   await loadJobs();
   const user = await currentUser();
   if (user) await renderDashboard();
