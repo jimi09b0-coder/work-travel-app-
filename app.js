@@ -424,6 +424,37 @@ function openAccount(mode="register") {
   });
 }
 
+function renderPasswordRecovery() {
+  $("account").innerHTML = `
+    <div class="account-card">
+      <span class="eyebrow">ESPACE CANDIDAT</span>
+      <h2>🔁 Réinitialiser le mot de passe</h2>
+      <p>Choisissez un nouveau mot de passe pour votre compte.</p>
+      <form class="application-form" id="recoveryForm">
+        <input id="recoveryPassword" type="password" placeholder="Nouveau mot de passe" minlength="6" required>
+        <button type="submit">Enregistrer le nouveau mot de passe</button>
+      </form>
+      <button class="link-button" onclick="renderAuth('login')">← Retour à la connexion</button>
+    </div>`;
+  $("recoveryForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const password = $("recoveryPassword").value;
+    if (password.length < 6) return alert("Le mot de passe doit contenir au moins 6 caractères.");
+    const {error} = await supabase.auth.updateUser({password});
+    if (error) return alert(error.message);
+    await supabase.auth.signOut();
+    renderAuth("login", "Mot de passe mis à jour. Vous pouvez vous reconnecter.");
+  });
+}
+async function forgotPassword() {
+  const email = (window.prompt("Adresse e-mail du compte :") || "").trim().toLowerCase();
+  if (!email) return;
+  const redirectTo = window.location.origin + window.location.pathname;
+  const {error} = await supabase.auth.resetPasswordForEmail(email, {redirectTo});
+  if (error) return alert(error.message);
+  renderAuth("login", "Un lien de réinitialisation a été envoyé si cette adresse correspond à un compte.");
+}
+
 function renderAuth(mode="register", message="") {
   $("account").innerHTML = `
     <div class="account-card">
@@ -441,6 +472,14 @@ function renderAuth(mode="register", message="") {
       <p class="demo-note">Compte sécurisé par Supabase Auth. Vos données sont accessibles depuis vos différents appareils.</p>
     </div>`;
   $("authForm").addEventListener("submit", e => mode === "login" ? login(e) : register(e));
+  if (mode === "login") {
+    const forgot = document.createElement("button");
+    forgot.type = "button";
+    forgot.className = "link-button";
+    forgot.textContent = "Mot de passe oublié ?";
+    forgot.addEventListener("click", forgotPassword);
+    $("authForm").after(forgot);
+  }
 }
 
 async function register(e) {
@@ -1223,7 +1262,7 @@ async function loadJobs() {
   renderSearchHistory();
 }
 
-window.exportEmployerApplicationsCSV=exportEmployerApplicationsCSV; window.resetEmployerApplicationFilters=resetEmployerApplicationFilters; window.focusEmployerApplications=focusEmployerApplications; window.toggleEmployerJob=toggleEmployerJob; window.filterEmployerApplications=filterEmployerApplications; window.sortEmployerApplications=sortEmployerApplications; window.renderDashboard=renderDashboard; window.markNotificationRead=markNotificationRead; window.showJob=showJob; window.savePreferences=savePreferences; window.saveEmployerJob=saveEmployerJob; window.editEmployerJob=editEmployerJob; window.resetEmployerJobForm=resetEmployerJobForm; window.deleteEmployerJob=deleteEmployerJob; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV; window.renderEmployerDashboard=renderEmployerDashboard; window.saveCompanyProfile=saveCompanyProfile; window.renderAdminPanel=renderAdminPanel; window.reviewEmployerRequest=reviewEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.showCompanyProfile=showCompanyProfile; window.submitEmployerRequest=submitEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.submitEmployerRequest=submitEmployerRequest; window.updateApplicationStatus=updateApplicationStatus; window.markAllNotificationsRead=markAllNotificationsRead; window.withdrawApplication=withdrawApplication;
+window.forgotPassword=forgotPassword; window.renderPasswordRecovery=renderPasswordRecovery; window.exportEmployerApplicationsCSV=exportEmployerApplicationsCSV; window.resetEmployerApplicationFilters=resetEmployerApplicationFilters; window.focusEmployerApplications=focusEmployerApplications; window.toggleEmployerJob=toggleEmployerJob; window.filterEmployerApplications=filterEmployerApplications; window.sortEmployerApplications=sortEmployerApplications; window.renderDashboard=renderDashboard; window.markNotificationRead=markNotificationRead; window.showJob=showJob; window.savePreferences=savePreferences; window.saveEmployerJob=saveEmployerJob; window.editEmployerJob=editEmployerJob; window.resetEmployerJobForm=resetEmployerJobForm; window.deleteEmployerJob=deleteEmployerJob; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV; window.renderEmployerDashboard=renderEmployerDashboard; window.saveCompanyProfile=saveCompanyProfile; window.renderAdminPanel=renderAdminPanel; window.reviewEmployerRequest=reviewEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.showCompanyProfile=showCompanyProfile; window.submitEmployerRequest=submitEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.submitEmployerRequest=submitEmployerRequest; window.updateApplicationStatus=updateApplicationStatus; window.markAllNotificationsRead=markAllNotificationsRead; window.withdrawApplication=withdrawApplication;
 
 document.addEventListener("DOMContentLoaded", async () => {
   applyLanguage();
