@@ -154,3 +154,22 @@ footer{margin-top:10px}
 @media(max-width:560px){.admin-dashboard .dashboard-stats{grid-template-columns:1fr}}
 .notification-row.is-read{opacity:.72}
 .notification-read-state{font-size:.78rem;font-weight:700;color:var(--muted);white-space:nowrap}
+
+/* Mobile + accessibility hardening */
+img{max-width:100%;height:auto}
+html{scroll-padding-top:16px}
+button,a,input,select,textarea{touch-action:manipulation}
+@media(max-width:640px){
+  .app-notification{left:12px;right:12px;bottom:12px;max-width:none}
+  .job-detail-card,.company-page{padding:18px}
+  .job-detail-top h2{font-size:1.55rem}
+  .company-page-head{align-items:flex-start;flex-direction:column}
+  .company-page-head img,.company-logo-large{width:64px;height:64px}
+  .application-history-grid,.employer-application-grid{grid-template-columns:1fr}
+  .notification-read-state{white-space:normal}
+  .travel-empty{padding:26px 18px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
