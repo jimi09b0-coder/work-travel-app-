@@ -983,7 +983,7 @@ async function deleteCV() {
   if (!confirm("Supprimer votre CV enregistré ?")) return;
   const { error: storageError } = await supabase.storage.from("cvs").remove([profile.cv_path]);
   if (storageError) return alert("Impossible de supprimer le CV : " + storageError.message);
-  const { error: updateError } = await supabase.from("profiles").update({cv_path:null,updated_at:new Date().toISOString()}).eq("id",user.id);
+  const { error: updateError } = await supabase.rpc("update_own_cv_path",{p_cv_path:null});
   if (updateError) return alert("Le fichier a été supprimé, mais le profil n'a pas pu être mis à jour : " + updateError.message);
   await renderDashboard();
 }
@@ -1011,7 +1011,7 @@ async function saveCV(e) {
   if (loadError) return alert("Impossible de vérifier votre CV actuel : " + loadError.message);
   const {error:uploadError} = await supabase.storage.from("cvs").upload(path,file,{upsert:false,contentType:file.type});
   if (uploadError) return alert("Échec du téléchargement : " + uploadError.message);
-  const {error:profileError} = await supabase.from("profiles").update({cv_path:path,updated_at:new Date().toISOString()}).eq("id",user.id);
+  const {error:profileError} = await supabase.rpc("update_own_cv_path",{p_cv_path:path});
   if (profileError) {
     await supabase.storage.from("cvs").remove([path]);
     return alert("CV envoyé mais profil non mis à jour : " + profileError.message);
