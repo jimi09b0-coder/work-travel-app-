@@ -77,9 +77,11 @@ async function currentUser() {
 
 async function populateFilters() {
   const countries = [...new Set(jobs.map(j => j.country))].sort();
-  const types = [...new Set(jobs.map(j => j.type))].sort();
+  const types = [...new Set(jobs.map(j => j.type).filter(Boolean))].sort();
+  const currencies = [...new Set(jobs.map(j => j.salary_currency).filter(Boolean))].sort();
   $("countryFilter").innerHTML = '<option value="">Tous les pays</option>' + countries.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
   $("typeFilter").innerHTML = '<option value="">Tous les secteurs</option>' + types.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join("");
+  if ($("currencyFilter")) $("currencyFilter").innerHTML = '<option value="">Toutes les devises</option>' + currencies.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
 }
 
 function getSearchHistory() {
@@ -255,10 +257,12 @@ function jobMatchScore(job) {
   const q = $('search')?.value.trim().toLowerCase() || '';
   const country = $('countryFilter')?.value || '';
   const type = $('typeFilter')?.value || '';
+  const remote = $('remoteFilter')?.value || '';
   const prefs = getPreferences();
   let score = 40;
   if (country && job.country === country) score += 20;
   if (type && job.type === type) score += 15;
+  if (remote && job.remote_type === remote) score += 10;
   if (prefs.countries?.includes(job.country)) score += 15;
   if (prefs.types?.includes(job.type)) score += 10;
   if (q) {
@@ -287,7 +291,7 @@ function displayJobs(list = jobs) {
     <article class="job-card">
       <button class="favorite-button ${isFavorite(j.id) ? "is-favorite" : ""}" onclick="toggleFavorite(${j.id})" title="Ajouter aux favoris">${isFavorite(j.id) ? "★" : "☆"}</button>
       <div class="job-card-title"><h3>${esc(j.title)}</h3><span class="match-score">${jobMatchScore(j)}% · ${matchLabel(jobMatchScore(j))}</span></div>
-      <div class="job-meta"><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><span>💼 ${esc(j.type)}</span><span>🕐 ${esc(j.contract)}</span></div>
+      <div class="job-meta"><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><span>💼 ${esc(j.type)}</span><span>🕐 ${esc(j.contract)}</span><span>🌐 ${esc(j.remote_type === "remote" ? "À distance" : j.remote_type === "hybrid" ? "Hybride" : "Présentiel")}</span>${j.salary_currency && (j.salary_min != null || j.salary_max != null) ? `<span>💰 ${j.salary_min != null ? Number(j.salary_min).toLocaleString() : ""}${j.salary_max != null ? "–"+Number(j.salary_max).toLocaleString() : ""} ${esc(j.salary_currency)}</span>` : ""}</div>
       <p>${esc(j.description)}</p>
       ${j.profiles?.company_name ? `<div class="job-company-mini">${safeExternalUrl(j.profiles.company_logo_url) ? `<img src="${esc(safeExternalUrl(j.profiles.company_logo_url))}" alt="">` : "<span>🏢</span>"}<div><strong>${esc(j.profiles.company_name)}</strong><small>${esc(j.profiles.company_city || j.profiles.company_country || "Entreprise")}</small></div></div>` : ""}
       <button onclick="showJob(${j.id})">Voir les détails →</button>
@@ -1101,11 +1105,12 @@ async function logout() {
 async function searchJobs(saveHistory = false) {
   const raw = $("search").value.trim();
   const t = raw.toLowerCase(), c = $("countryFilter").value, ty = $("typeFilter").value;
+  const remote = $("remoteFilter")?.value || "", currency = $("currencyFilter")?.value || "";
   const words = t.split(/\s+/).filter(Boolean);
   const list = jobs.filter(j => {
     const haystack = [j.title,j.country,j.city,j.type,j.contract,j.description,j.requirements].join(" ").toLowerCase();
     const matchesText = !words.length || words.every(word => haystack.includes(word));
-    return matchesText && (!c || j.country === c) && (!ty || j.type === ty) && (!favoritesOnly || isFavorite(j.id));
+    return matchesText && (!c || j.country === c) && (!ty || j.type === ty) && (!remote || j.remote_type === remote) && (!currency || j.salary_currency === currency) && (!favoritesOnly || isFavorite(j.id));
   });
   displayJobs(list);
   if (saveHistory && raw) saveSearchHistory(raw);
@@ -1163,7 +1168,7 @@ function updateTravelProgress() {
 }
 
 function resetView() {
-  $("search").value = ""; $("countryFilter").value = ""; $("typeFilter").value = ""; favoritesOnly = false; if ($("favoritesFilter")) $("favoritesFilter").classList.remove("active"); displayJobs(jobs);
+  $("search").value = ""; $("countryFilter").value = ""; $("typeFilter").value = ""; if ($("remoteFilter")) $("remoteFilter").value = ""; if ($("currencyFilter")) $("currencyFilter").value = ""; favoritesOnly = false; if ($("favoritesFilter")) $("favoritesFilter").classList.remove("active"); displayJobs(jobs);
   $("offres").scrollIntoView({behavior:"smooth"});
 }
 
