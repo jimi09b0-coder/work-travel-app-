@@ -205,3 +205,14 @@ button{min-height:40px}
 .useful-site-card strong{font-size:1rem}
 .useful-site-card span{font-size:.9rem;line-height:1.45;opacity:.78}
 footer{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:center}
+
+.external-search-box{max-width:1100px;margin:24px auto 8px;padding:22px;border:1px solid rgba(23,105,224,.14);border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+.external-search-heading h3{margin:5px 0 6px}
+.external-search-heading p{margin:0;opacity:.76}
+.external-search-form{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.external-search-form label{display:flex;flex-direction:column;gap:7px;font-weight:600}
+.external-search-form input{width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(0,0,0,.14);border-radius:12px;font:inherit}
+.external-search-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:10px}
+.external-search-actions button{cursor:pointer}
+.external-search-actions .secondary{opacity:.88}
+@media(max-width:720px){.external-search-form{grid-template-columns:1fr}.external-search-actions{grid-column:auto}.external-search-actions button{width:100%}}
