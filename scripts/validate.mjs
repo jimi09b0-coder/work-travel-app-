@@ -9,6 +9,9 @@ for (const file of required) {
 
 const html = fs.readFileSync(path.join(root,'index.html'),'utf8');
 const js = fs.readFileSync(path.join(root,'app.js'),'utf8');
+const css = fs.readFileSync(path.join(root,'style.css'),'utf8');
+if (!css.includes('@media(prefers-reduced-motion:reduce)')) throw new Error('Missing reduced-motion accessibility rule.');
+if (!html.includes('name="viewport"')) throw new Error('Missing responsive viewport meta tag.');
 
 const ids = [...html.matchAll(/\bid=["']([^"']+)["']/gi)].map(m => m[1]);
 const duplicates = [...new Set(ids.filter((id,i) => ids.indexOf(id) !== i))];
