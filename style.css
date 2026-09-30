@@ -173,3 +173,27 @@ button,a,input,select,textarea{touch-action:manipulation}
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
+
+/* Accessibility and mobile interaction hardening */
+html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+button,input,select,textarea{touch-action:manipulation}
+button{min-height:40px}
+@media(max-width:560px){
+  .results-actions{width:100%}
+  .results-actions button{flex:1 1 auto}
+  .job-card-title{padding-right:34px}
+  .match-score{font-size:.68rem;padding:4px 6px}
+  .application-history-grid{grid-template-columns:1fr}
+  .company-page{padding:18px}
+  .company-page-head{align-items:flex-start}
+  .company-page-head img,.company-logo-large{width:64px;height:64px}
+  .travel-tool{gap:16px}
+  .app-notification{left:12px;right:12px;bottom:12px;width:auto}
+}
+@media(max-width:380px){
+  .nav-links{gap:8px}
+  .nav-links a{font-size:.82rem}
+  .hero-button{width:100%;text-align:center}
+  .results-actions button{font-size:.78rem;padding:8px 7px}
+}
