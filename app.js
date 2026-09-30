@@ -1163,6 +1163,21 @@ function openExternalJobSearch(country) {
     url = search
       ? "https://empleate.gob.es/empleo/?search=#/buscarOferta?search=" + encodeURIComponent(search)
       : "https://empleate.gob.es/empleo/#/buscarOferta";
+  } else if (country === "LinkedIn") {
+    url = "https://www.linkedin.com/jobs/search-jobs-worldwide";
+    const params = [];
+    if (query) params.push("keywords=" + q);
+    if (location) params.push("location=" + loc);
+    if (params.length) url += "?" + params.join("&");
+  } else if (country === "Indeed") {
+    url = "https://www.indeed.com/jobs";
+    const params = [];
+    if (query) params.push("q=" + q);
+    if (location) params.push("l=" + loc);
+    if (params.length) url += "?" + params.join("&");
+    else url = "https://www.indeed.com/worldwide";
+  } else if (country === "UN") {
+    url = "https://careers.un.org/";
   }
   if (!url) return;
   window.open(url, "_blank", "noopener,noreferrer");
