@@ -482,7 +482,7 @@ async function saveCompanyProfile(e){
 
   const cards = list.map(a => {
     const current = a.status || "En cours";
-    return `<article class="employer-application-card" data-search="${esc([a.profile_snapshot?.full_name,a.profile_snapshot?.headline,a.jobs?.title,a.jobs?.city,a.jobs?.country].filter(Boolean).join(" "))}" data-status="${esc(current)}" data-job-id="${esc(a.jobs?.id || "")}">
+    return `<article class="employer-application-card" data-search="${esc([a.profile_snapshot?.full_name,a.profile_snapshot?.headline,a.jobs?.title,a.jobs?.city,a.jobs?.country].filter(Boolean).join(" "))}" data-status="${esc(current)}" data-job-id="${esc(a.jobs?.id || "")}" data-candidate-name="${esc(a.profile_snapshot?.full_name || "")}" data-job-title="${esc(a.jobs?.title || "")}" data-created-at="${esc(a.created_at || "")}" data-phone="${esc(a.phone || "")}" data-availability="${esc(a.availability || "")}">
       <div class="employer-application-head"><div>
         <h3>${esc(a.profile_snapshot?.full_name || "Candidat")}</h3>
         <p>${esc(a.profile_snapshot?.headline || "Profil candidat")} · ${esc(a.jobs?.title || "Offre")}</p>
