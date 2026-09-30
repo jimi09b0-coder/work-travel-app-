@@ -21,6 +21,9 @@
 <a class="useful-site-card" href="https://www.arbeitsagentur.de/jobsuche/" target="_blank" rel="noopener noreferrer"><strong>🇩🇪 Bundesagentur für Arbeit</strong><span>Jobbörse officielle allemande</span></a>
 <a class="useful-site-card" href="https://www.sepe.es/" target="_blank" rel="noopener noreferrer"><strong>🇪🇸 SEPE</strong><span>Service public de l’emploi en Espagne</span></a>
 <a class="useful-site-card" href="https://europa.eu/youreurope/citizens/work/work-abroad/index_en.htm" target="_blank" rel="noopener noreferrer"><strong>🛂 Your Europe</strong><span>Informations officielles sur le travail à l’étranger</span></a>
+<a class="useful-site-card" href="https://www.linkedin.com/jobs/search-jobs-worldwide" target="_blank" rel="noopener noreferrer"><strong>💼 LinkedIn Jobs</strong><span>Recherche d’emplois à l’international</span></a>
+<a class="useful-site-card" href="https://www.indeed.com/worldwide" target="_blank" rel="noopener noreferrer"><strong>🌎 Indeed Worldwide</strong><span>Portails Indeed disponibles par pays</span></a>
+<a class="useful-site-card" href="https://careers.un.org/" target="_blank" rel="noopener noreferrer"><strong>🏛️ UN Careers</strong><span>Opportunités de carrière des Nations Unies</span></a>
 </div>
 </section>
 <section class="search-section" id="offres">
@@ -40,6 +43,9 @@
       <button type="button" onclick="openExternalJobSearch('Espagne')">🇪🇸 Espagne</button>
       <button type="button" onclick="openExternalJobSearch('Allemagne')">🇩🇪 Allemagne</button>
       <button type="button" class="secondary" onclick="openExternalJobSearch('EURES')">🇪🇺 EURES Europe</button>
+      <button type="button" onclick="openExternalJobSearch('LinkedIn')">💼 LinkedIn Worldwide</button>
+      <button type="button" onclick="openExternalJobSearch('Indeed')">🌎 Indeed Worldwide</button>
+      <button type="button" class="secondary" onclick="openExternalJobSearch('UN')">🏛️ UN Careers</button>
     </div>
   </div>
 </div>
@@ -47,7 +53,7 @@
 </section>
 <section class="account-section" id="compte"><div id="account"></div></section>
 <section class="travel-section" id="voyage"><div class="travel-heading"><span class="eyebrow">PRÉPARER SON DÉPART</span><h2>🧳 Votre checklist de voyage</h2><p>Préparez votre installation en Europe avec une checklist simple et pratique.</p></div>
-<div class="travel-tool"><div class="travel-country"><label for="travelCountry">🌍 Destination</label><select id="travelCountry" onchange="updateTravelGuide()"><option value="">Choisir un pays</option><option value="Belgique">🇧🇪 Belgique</option><option value="France">🇫🇷 France</option><option value="Espagne">🇪🇸 Espagne</option><option value="Allemagne">🇩🇪 Allemagne</option></select></div><div class="travel-progress"><div><span>Progression</span><strong id="travelProgress">0%</strong></div><div class="progress-track"><span id="travelProgressBar" style="width:0%"></span></div></div></div>
+<div class="travel-tool"><div class="travel-country"><label for="travelCountry">🌍 Destination</label><input id="travelCountry" list="countryOptions" placeholder="Choisir ou écrire un pays" onchange="updateTravelGuide()" autocomplete="country-name"><datalist id="countryOptions"><option value="Algérie"><option value="Belgique"><option value="France"><option value="Espagne"><option value="Allemagne"><option value="Italie"><option value="Portugal"><option value="Pays-Bas"><option value="Suisse"><option value="Royaume-Uni"><option value="Irlande"><option value="Canada"><option value="États-Unis"><option value="Australie"><option value="Nouvelle-Zélande"><option value="Émirats arabes unis"><option value="Arabie saoudite"><option value="Qatar"><option value="Maroc"><option value="Tunisie"><option value="Égypte"><option value="Afrique du Sud"><option value="Japon"><option value="Corée du Sud"><option value="Chine"><option value="Inde"><option value="Singapour"><option value="Brésil"><option value="Mexique"><option value="Argentine"><option value="Turquie"><option value="Suède"><option value="Norvège"><option value="Danemark"><option value="Finlande"><option value="Autriche"><option value="Pologne"><option value="Tchéquie"><option value="Grèce"><option value="Roumanie"><option value="Hongrie"></datalist></div><div class="travel-progress"><div><span>Progression</span><strong id="travelProgress">0%</strong></div><div class="progress-track"><span id="travelProgressBar" style="width:0%"></span></div></div></div>
 <div id="travelGuide" class="travel-guide"><div class="travel-empty"><span>🗺️</span><h3>Choisissez votre destination</h3><p>Vous obtiendrez une checklist adaptée à votre départ.</p></div></div></section>
 <section class="about-section"><span class="eyebrow">WORK TRAVEL</span><h2>Votre projet européen, au même endroit</h2><p>Créez votre profil, ajoutez votre CV et gardez une trace de vos candidatures.</p></section>
 </main><footer><strong>🌍 Work Travel</strong><span>Travail et voyage en Europe</span></footer>
