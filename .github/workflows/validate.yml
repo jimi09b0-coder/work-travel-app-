@@ -16,5 +16,5 @@ jobs:
           node-version: 20
       - name: Check JavaScript syntax
         run: node --check app.js
-      - name: Check required files
-        run: test -f index.html && test -f style.css && test -f supabase-config.js
+      - name: Run frontend consistency validation
+        run: node scripts/validate.mjs
