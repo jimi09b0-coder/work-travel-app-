@@ -1133,3 +1133,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!session) renderAuth("login");
   });
 });
+
+function openExternalJobSearch(country) {
+  const query = (document.getElementById("externalSearchQuery")?.value || document.getElementById("search")?.value || "").trim();
+  const location = (document.getElementById("externalSearchLocation")?.value || "").trim();
+  const q = encodeURIComponent(query);
+  const loc = encodeURIComponent(location);
+  const countryMap = {Belgique:"be",France:"fr",Espagne:"es",Allemagne:"de"};
+  let url = "";
+  if (country === "EURES") {
+    url = "https://europa.eu/eures/portal/jv-se/search?page=1&resultsPerPage=25&orderBy=BEST_MATCH";
+    if (query) url += "&keywordsEverywhere=" + q;
+    const code = countryMap[document.getElementById("countryFilter")?.value] || "";
+    if (code) url += "&locationCodes=" + code;
+    url += "&lang=en";
+  } else if (country === "France") {
+    url = "https://candidat.francetravail.fr/offres/recherche?offresPartenaires=false";
+    if (query) url += "&libMetier=" + q;
+  } else if (country === "Allemagne") {
+    url = "https://www.arbeitsagentur.de/jobsuche/suche?angebotsart=1&suchbereich=jobs";
+    if (query) url += "&was=" + q;
+    if (location) url += "&wo=" + loc;
+  } else if (country === "Belgique") {
+    url = query
+      ? "https://www.vdab.be/vindeenjob/jobs/" + query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"")
+      : "https://www.vdab.be/vindeenjob/search.aspx";
+  } else if (country === "Espagne") {
+    url = "https://empleate.gob.es/";
+  }
+  if (!url) return;
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+window.openExternalJobSearch = openExternalJobSearch;
