@@ -216,3 +216,11 @@ footer{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-cont
 .external-search-actions button{cursor:pointer}
 .external-search-actions .secondary{opacity:.88}
 @media(max-width:720px){.external-search-form{grid-template-columns:1fr}.external-search-actions{grid-column:auto}.external-search-actions button{width:100%}}
+
+.language-switcher{display:inline-flex;align-items:center;gap:5px;margin-inline-start:8px}
+.language-switcher select{padding:7px 8px;border-radius:10px;border:1px solid rgba(0,0,0,.14);background:#fff;font:inherit}
+.rtl-language{direction:rtl}
+.rtl-language .nav-links{flex-direction:row-reverse}
+.rtl-language .hero-content,.rtl-language .section-heading,.rtl-language .travel-heading,.rtl-language .about-section{text-align:right}
+.rtl-language .useful-sites-grid,.rtl-language .jobs-grid{text-align:right}
+@media(max-width:720px){.language-switcher{margin-inline-start:0}}
