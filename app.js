@@ -358,7 +358,7 @@ async function hasApplied(jobId, userId) {
 async function openApplicationForm(id) {
   let j = jobs.find(x => Number(x.id) === Number(id));
   if (!j) {
-    const {data,error} = await supabase.from("jobs").select("id,title,country,city,type,contract,description,requirements,is_active").eq("id",id).maybeSingle();
+    const {data,error} = await supabase.from("jobs").select("id,title,country,country_code,city,type,contract,remote_type,salary_min,salary_max,salary_currency,description,requirements,is_active").eq("id",id).maybeSingle();
     if (error || !data) return alert("Cette offre n'est plus disponible.");
     j = data;
   }
@@ -532,7 +532,7 @@ async function renderEmployerDashboard() {
   if (profile?.role !== "employer") return renderDashboard();
 
   const [{data:ownedJobs,error:jobsError},{data:apps,error:appsError}] = await Promise.all([
-    supabase.from("jobs").select("id,title,country,city,type,contract,description,requirements,created_at,employer_id,is_active").eq("employer_id",user.id).order("created_at",{ascending:false}),
+    supabase.from("jobs").select("id,title,country,country_code,city,type,contract,remote_type,salary_min,salary_max,salary_currency,description,requirements,created_at,employer_id,is_active").eq("employer_id",user.id).order("created_at",{ascending:false}),
     supabase.from("applications").select("id,created_at,status,cover_letter,availability,phone,profile_snapshot,cv_path,cv_name,jobs!inner(id,title,city,country,employer_id)").eq("jobs.employer_id",user.id).order("created_at",{ascending:false})
   ]);
   if (jobsError) return alert("Impossible de charger vos offres : " + jobsError.message);
@@ -631,9 +631,14 @@ async function saveCompanyProfile(e){
           <div class="profile-form-grid">
             <label>💼 Intitulé<input id="employerJobTitle" required maxlength="120"></label>
             <label>🌍 Pays<input id="employerJobCountry" required maxlength="80"></label>
+            <label>🔤 Code pays<input id="employerJobCountryCode" maxlength="2" placeholder="FR, DE, CA"></label>
             <label>📍 Ville<input id="employerJobCity" required maxlength="80"></label>
             <label>🏷️ Secteur<input id="employerJobType" required maxlength="80" placeholder="Hôtellerie, Logistique..."></label>
             <label>🕐 Contrat<input id="employerJobContract" required maxlength="80" value="Temps plein"></label>
+            <label>🌐 Mode de travail<select id="employerJobRemoteType"><option value="onsite">Présentiel</option><option value="hybrid">Hybride</option><option value="remote">À distance</option></select></label>
+            <label>💰 Salaire minimum<input id="employerJobSalaryMin" type="number" min="0" step="0.01" placeholder="Ex. 1800"></label>
+            <label>💰 Salaire maximum<input id="employerJobSalaryMax" type="number" min="0" step="0.01" placeholder="Ex. 2600"></label>
+            <label>💱 Devise<select id="employerJobSalaryCurrency"><option value="">Choisir</option><option>EUR</option><option>USD</option><option>GBP</option><option>CAD</option><option>AUD</option><option>CHF</option><option>AED</option><option>SAR</option><option>QAR</option><option>JPY</option><option>CNY</option><option>SEK</option><option>NOK</option><option>DKK</option><option>PLN</option><option>TRY</option><option>DZD</option></select></label>
           </div>
           <label>📝 Description<textarea id="employerJobDescription" rows="5" required maxlength="3000"></textarea></label>
           <label>✅ Conditions & exigences<textarea id="employerJobRequirements" rows="4" required maxlength="2000"></textarea></label>
@@ -753,16 +758,28 @@ async function saveEmployerJob(e) {
   const user = await currentUser();
   if (!user) return renderAuth("login");
   const id = $("employerJobId").value;
+  const salaryMinRaw = $("employerJobSalaryMin")?.value.trim() || "";
+  const salaryMaxRaw = $("employerJobSalaryMax")?.value.trim() || "";
   const payload = {
     title: $("employerJobTitle").value.trim(),
     country: $("employerJobCountry").value.trim(),
+    country_code: (($("employerJobCountryCode")?.value.trim() || "").toUpperCase() || null),
     city: $("employerJobCity").value.trim(),
     type: $("employerJobType").value.trim(),
     contract: $("employerJobContract").value.trim(),
+    remote_type: $("employerJobRemoteType")?.value || "onsite",
+    salary_min: salaryMinRaw === "" ? null : Number(salaryMinRaw),
+    salary_max: salaryMaxRaw === "" ? null : Number(salaryMaxRaw),
+    salary_currency: $("employerJobSalaryCurrency")?.value || null,
     description: $("employerJobDescription").value.trim(),
     requirements: $("employerJobRequirements").value.trim()
   };
-  if (Object.values(payload).some(v => !v)) return alert("Veuillez compléter tous les champs.");
+  if (!payload.title || !payload.country || !payload.city || !payload.type || !payload.contract || !payload.description || !payload.requirements) return alert("Veuillez compléter les champs obligatoires.");
+  if (payload.country_code && !/^[A-Z]{2}$/.test(payload.country_code)) return alert("Le code pays doit contenir 2 lettres, par exemple FR ou CA.");
+  if (payload.salary_min !== null && (!Number.isFinite(payload.salary_min) || payload.salary_min < 0)) return alert("Salaire minimum invalide.");
+  if (payload.salary_max !== null && (!Number.isFinite(payload.salary_max) || payload.salary_max < 0)) return alert("Salaire maximum invalide.");
+  if (payload.salary_min !== null && payload.salary_max !== null && payload.salary_max < payload.salary_min) return alert("Le salaire maximum doit être supérieur ou égal au salaire minimum.");
+  if ((payload.salary_min !== null || payload.salary_max !== null) && !payload.salary_currency) return alert("Choisissez la devise du salaire.");
   const query = id
     ? supabase.from("jobs").update(payload).eq("id",id).eq("employer_id",user.id)
     : supabase.from("jobs").insert({...payload,employer_id:user.id});
@@ -785,9 +802,14 @@ async function editEmployerJob(id) {
   $("employerJobId").value = job.id;
   $("employerJobTitle").value = job.title || "";
   $("employerJobCountry").value = job.country || "";
+  $("employerJobCountryCode").value = job.country_code || "";
   $("employerJobCity").value = job.city || "";
   $("employerJobType").value = job.type || "";
   $("employerJobContract").value = job.contract || "";
+  $("employerJobRemoteType").value = job.remote_type || "onsite";
+  $("employerJobSalaryMin").value = job.salary_min ?? "";
+  $("employerJobSalaryMax").value = job.salary_max ?? "";
+  $("employerJobSalaryCurrency").value = job.salary_currency || "";
   $("employerJobDescription").value = job.description || "";
   $("employerJobRequirements").value = job.requirements || "";
   $("employerJobTitle").focus();
@@ -798,6 +820,11 @@ function resetEmployerJobForm() {
   if (form) form.reset();
   if ($("employerJobId")) $("employerJobId").value = "";
   if ($("employerJobContract")) $("employerJobContract").value = "Temps plein";
+  if ($("employerJobCountryCode")) $("employerJobCountryCode").value = "";
+  if ($("employerJobRemoteType")) $("employerJobRemoteType").value = "onsite";
+  if ($("employerJobSalaryMin")) $("employerJobSalaryMin").value = "";
+  if ($("employerJobSalaryMax")) $("employerJobSalaryMax").value = "";
+  if ($("employerJobSalaryCurrency")) $("employerJobSalaryCurrency").value = "";
 }
 
 async function updateApplicationStatus(id, status) {
