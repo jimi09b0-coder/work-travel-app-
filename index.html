@@ -27,6 +27,22 @@
 <div class="section-heading"><span class="eyebrow">OPPORTUNITÉS</span><h2>🔎 Rechercher un emploi</h2><p>Filtrez les offres par métier, pays, ville ou secteur.</p></div>
 <div class="filters"><label class="search-input"><span>🔍</span><input type="search" id="search" placeholder="Métier, pays ou ville..." oninput="searchJobs()" onkeydown="if(event.key==='Enter') searchJobs(true)"></label>
 <select id="countryFilter" onchange="searchJobs()"><option value="">Tous les pays</option></select><select id="typeFilter" onchange="searchJobs()"><option value="">Tous les secteurs</option></select></div><div id="searchHistory" class="search-history"></div>
+<div class="external-search-box" aria-labelledby="externalSearchTitle">
+  <div class="external-search-heading">
+    <div><span class="eyebrow">RECHERCHE EXTERNE</span><h3 id="externalSearchTitle">🌐 Rechercher directement sur les sites officiels</h3><p>Utilisez un métier et, si besoin, une ville. Le bouton ouvre la recherche correspondante.</p></div>
+  </div>
+  <div class="external-search-form">
+    <label>💼 Métier / mot-clé<input id="externalSearchQuery" type="search" placeholder="Ex. chauffeur, cuisine, informatique"></label>
+    <label>📍 Ville / région<input id="externalSearchLocation" type="search" placeholder="Ex. Paris, Berlin, Bruxelles"></label>
+    <div class="external-search-actions">
+      <button type="button" onclick="openExternalJobSearch('Belgique')">🇧🇪 Belgique</button>
+      <button type="button" onclick="openExternalJobSearch('France')">🇫🇷 France</button>
+      <button type="button" onclick="openExternalJobSearch('Espagne')">🇪🇸 Espagne</button>
+      <button type="button" onclick="openExternalJobSearch('Allemagne')">🇩🇪 Allemagne</button>
+      <button type="button" class="secondary" onclick="openExternalJobSearch('EURES')">🇪🇺 EURES Europe</button>
+    </div>
+  </div>
+</div>
 <div id="preferencesBox" class="preferences-box"></div><div class="results-bar"><h2>💼 Offres d'emploi</h2><div class="results-actions"><button id="favoritesFilter" class="favorites-filter" onclick="toggleFavoritesOnly()">☆ Favoris (<span id="favoritesCount">0</span>)</button><button class="clear-favorites" onclick="clearFavorites()">🗑️ Vider</button><span id="resultsCount"></span></div></div><div id="jobs" class="jobs-grid"></div>
 </section>
 <section class="account-section" id="compte"><div id="account"></div></section>
