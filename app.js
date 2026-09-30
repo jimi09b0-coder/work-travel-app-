@@ -461,6 +461,7 @@ function renderAuth(mode="register", message="") {
       <span class="eyebrow">ESPACE CANDIDAT</span>
       <h2>${mode === "login" ? "🔐 Connexion" : "👤 Créer mon compte"}</h2>
       <p>${mode === "login" ? "Connectez-vous pour gérer votre profil et vos candidatures." : "Créez un profil pour postuler et enregistrer votre CV."}</p>
+      <p id="authMessage" class="auth-error" hidden></p>
       ${message ? `<p class="success-note">${esc(message)}</p>` : ""}
       <form class="application-form" id="authForm">
         <input id="authName" type="text" placeholder="Nom complet" ${mode === "login" ? 'style="display:none"' : "required"}>
@@ -482,28 +483,66 @@ function renderAuth(mode="register", message="") {
   }
 }
 
+function authMessage(message, type="error") {
+  const box = document.getElementById("authMessage");
+  if (!box) return;
+  box.className = type === "error" ? "auth-error" : "success-note";
+  box.textContent = message;
+  box.hidden = !message;
+}
+function friendlyAuthError(error) {
+  const message = String(error?.message || "");
+  const lower = message.toLowerCase();
+  if (lower.includes("invalid login credentials")) return "E-mail ou mot de passe incorrect.";
+  if (lower.includes("email not confirmed")) return "Votre e-mail n’est pas encore confirmé. Consultez votre boîte mail puis réessayez.";
+  if (lower.includes("user already registered")) return "Un compte existe déjà avec cet e-mail. Utilisez « Se connecter ».";
+  if (lower.includes("rate limit")) return "Trop de tentatives. Attendez quelques minutes puis réessayez.";
+  if (lower.includes("network")) return "Connexion réseau impossible. Vérifiez Internet puis réessayez.";
+  return message || "Une erreur d’authentification est survenue.";
+}
 async function register(e) {
   e.preventDefault();
-  const name = $("authName").value.trim();
-  const email = $("authEmail").value.trim().toLowerCase();
-  const password = $("authPassword").value;
-  if (password.length < 6) return alert("Le mot de passe doit contenir au moins 6 caractères.");
-  const { data, error } = await supabase.auth.signUp({email, password, options:{data:{full_name:name}}});
-  if (error) return alert(error.message);
-  if (!data.session) {
-    renderAuth("login", "Compte créé. Vérifiez votre e-mail pour confirmer votre adresse avant de vous connecter.");
-    return;
+  authMessage("");
+  const name = $("authName")?.value.trim() || "";
+  const email = $("authEmail")?.value.trim().toLowerCase() || "";
+  const password = $("authPassword")?.value || "";
+  if (!name) return authMessage("Veuillez saisir votre nom complet.");
+  if (!email) return authMessage("Veuillez saisir votre adresse e-mail.");
+  if (password.length < 6) return authMessage("Le mot de passe doit contenir au moins 6 caractères.");
+  const button = $("authForm")?.querySelector('button[type="submit"]');
+  if (button) { button.disabled = true; button.textContent = "Création du compte…"; }
+  try {
+    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: name } } });
+    if (error) return authMessage(friendlyAuthError(error));
+    if (data?.session) return await renderDashboard();
+    renderAuth("login", "Compte créé. Vérifiez votre e-mail si une confirmation est demandée, puis connectez-vous.");
+  } catch (error) {
+    authMessage(friendlyAuthError(error));
+  } finally {
+    const currentButton = $("authForm")?.querySelector('button[type="submit"]');
+    if (currentButton) { currentButton.disabled = false; currentButton.textContent = "Créer mon compte"; }
   }
-  await renderDashboard();
 }
-
 async function login(e) {
   e.preventDefault();
-  const email = $("authEmail").value.trim().toLowerCase();
-  const password = $("authPassword").value;
-  const { error } = await supabase.auth.signInWithPassword({email, password});
-  if (error) return alert(error.message);
-  await renderDashboard();
+  authMessage("");
+  const email = $("authEmail")?.value.trim().toLowerCase() || "";
+  const password = $("authPassword")?.value || "";
+  if (!email) return authMessage("Veuillez saisir votre adresse e-mail.");
+  if (!password) return authMessage("Veuillez saisir votre mot de passe.");
+  const button = $("authForm")?.querySelector('button[type="submit"]');
+  if (button) { button.disabled = true; button.textContent = "Connexion…"; }
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return authMessage(friendlyAuthError(error));
+    if (!data?.user) return authMessage("Connexion non confirmée. Réessayez.");
+    await renderDashboard();
+  } catch (error) {
+    authMessage(friendlyAuthError(error));
+  } finally {
+    const currentButton = $("authForm")?.querySelector('button[type="submit"]');
+    if (currentButton) { currentButton.disabled = false; currentButton.textContent = "Se connecter"; }
+  }
 }
 
 function getProfileCompletion(profile, fallbackName="") {
@@ -1269,8 +1308,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadJobs();
   const user = await currentUser();
   if (user) await renderDashboard();
-  supabase.auth.onAuthStateChange((_event, session) => {
-    if (!session) renderAuth("login");
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if (event === "PASSWORD_RECOVERY") return renderPasswordRecovery();
+    if (session && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) return renderDashboard();
+    if (!session && event === "SIGNED_OUT") renderAuth("login");
   });
 });
 
