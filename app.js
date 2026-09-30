@@ -1155,11 +1155,14 @@ function openExternalJobSearch(country) {
     if (query) url += "&was=" + q;
     if (location) url += "&wo=" + loc;
   } else if (country === "Belgique") {
-    url = query
-      ? "https://www.vdab.be/vindeenjob/jobs/" + query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"")
-      : "https://www.vdab.be/vindeenjob/search.aspx";
+    const belgiumSearch = [query, location].filter(Boolean).join(" ");
+    const slug = belgiumSearch.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+    url = slug ? "https://www.vdab.be/vindeenjob/jobs/" + slug : "https://www.vdab.be/vindeenjob/search.aspx";
   } else if (country === "Espagne") {
-    url = "https://empleate.gob.es/";
+    const search = [query, location].filter(Boolean).join(" ").trim();
+    url = search
+      ? "https://empleate.gob.es/empleo/?search=#/buscarOferta?search=" + encodeURIComponent(search)
+      : "https://empleate.gob.es/empleo/#/buscarOferta";
   }
   if (!url) return;
   window.open(url, "_blank", "noopener,noreferrer");
