@@ -197,3 +197,11 @@ button{min-height:40px}
   .hero-button{width:100%;text-align:center}
   .results-actions button{font-size:.78rem;padding:8px 7px}
 }
+
+.useful-sites-section{padding:48px 20px}
+.useful-sites-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;max-width:1100px;margin:0 auto}
+.useful-site-card{display:flex;flex-direction:column;gap:8px;padding:18px;border:1px solid rgba(23,105,224,.14);border-radius:16px;text-decoration:none;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.05);transition:transform .18s ease,box-shadow .18s ease}
+.useful-site-card:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(0,0,0,.08)}
+.useful-site-card strong{font-size:1rem}
+.useful-site-card span{font-size:.9rem;line-height:1.45;opacity:.78}
+footer{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:center}
