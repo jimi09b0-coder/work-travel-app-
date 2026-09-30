@@ -232,17 +232,17 @@ function displayJobs(list = jobs) {
 }
 
 async function showJob(id) {
+  const user = await currentUser();
   let j = jobs.find(x => x.id === id);
   if (!j) {
     const {data,error} = await supabase.from("jobs").select("*").eq("id",id).maybeSingle();
     if (error || !data) return;
     j = data;
-    if (j.employer_id) {
+    if (j.employer_id && user) {
       const {data:company} = await supabase.rpc("get_company_public_profile",{company_user_id:j.employer_id});
       j = {...j, profiles: company || null};
     }
   }
-  const user = await currentUser();
   const alreadyApplied = user ? await hasApplied(id, user.id) : false;
   const similar = jobs.filter(x => x.id !== id && (x.country === j.country || x.type === j.type)).slice(0,3);
   const jobClosed = j.is_active === false;
@@ -261,6 +261,8 @@ async function showJob(id) {
 }
 
 async function showCompanyProfile(userId) {
+  const viewer = await currentUser();
+  if (!viewer) return renderAuth("login");
   const {data:company,error}=await supabase.rpc("get_company_public_profile",{company_user_id:userId}).maybeSingle();
   if(error||!company?.company_name) return;
   const {data:companyJobs,error:jobsError}=await supabase.from("jobs").select("id,title,city,country,type,contract,is_active,created_at,employer_id").eq("employer_id",userId).eq("is_active",true).order("created_at",{ascending:false});
@@ -1110,10 +1112,13 @@ async function loadJobs() {
   }
   const rawJobs = (data || []).filter(job => job.is_active !== false);
   const employerIds = [...new Set(rawJobs.map(job => job.employer_id).filter(Boolean))];
-  const companyProfiles = await Promise.all(employerIds.map(async employerId => {
-    const {data:company} = await supabase.rpc("get_company_public_profile", {company_user_id: employerId});
-    return [employerId, company || null];
-  }));
+  const viewer = await currentUser();
+  const companyProfiles = viewer
+    ? await Promise.all(employerIds.map(async employerId => {
+        const {data:company} = await supabase.rpc("get_company_public_profile", {company_user_id: employerId});
+        return [employerId, company || null];
+      }))
+    : [];
   const companyMap = new Map(companyProfiles);
   jobs = rawJobs.map(job => ({...job, profiles: companyMap.get(job.employer_id) || null}));
   await populateFilters();
