@@ -226,7 +226,7 @@ function displayJobs(list = jobs) {
       <div class="job-card-title"><h3>${esc(j.title)}</h3><span class="match-score">${jobMatchScore(j)}% · ${matchLabel(jobMatchScore(j))}</span></div>
       <div class="job-meta"><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><span>💼 ${esc(j.type)}</span><span>🕐 ${esc(j.contract)}</span></div>
       <p>${esc(j.description)}</p>
-      ${j.profiles?.company_name ? `<div class="job-company-mini">${j.profiles.company_logo_url ? `<img src="${esc(j.profiles.company_logo_url)}" alt="">` : "<span>🏢</span>"}<div><strong>${esc(j.profiles.company_name)}</strong><small>${esc(j.profiles.company_city || j.profiles.company_country || "Entreprise")}</small></div></div>` : ""}
+      ${j.profiles?.company_name ? `<div class="job-company-mini">${safeExternalUrl(j.profiles.company_logo_url) ? `<img src="${esc(safeExternalUrl(j.profiles.company_logo_url))}" alt="">` : "<span>🏢</span>"}<div><strong>${esc(j.profiles.company_name)}</strong><small>${esc(j.profiles.company_city || j.profiles.company_country || "Entreprise")}</small></div></div>` : ""}
       <button onclick="showJob(${j.id})">Voir les détails →</button>
     </article>`).join("");
 }
@@ -250,7 +250,7 @@ async function showJob(id) {
     <article class="job-detail-card">
       <div class="job-detail-top"><div><span class="eyebrow">OFFRE D'EMPLOI</span><h2>${esc(j.title)} ${jobClosed ? '<span class="job-activity-badge">⚪ Offre fermée</span>' : '<span class="job-activity-badge">🟢 Offre active</span>'}</h2><div class="job-meta"><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><span>💼 ${esc(j.type)}</span><span>🕐 ${esc(j.contract)}</span></div></div><button class="favorite-button ${isFavorite(j.id) ? "is-favorite" : ""}" onclick="toggleFavorite(${j.id})">${isFavorite(j.id) ? "★" : "☆"}</button></div>
       <div class="job-detail-grid"><div>
-        ${j.profiles?.company_name ? `<section class="job-company-profile"><div class="company-profile-head">${j.profiles.company_logo_url ? `<img src="${esc(j.profiles.company_logo_url)}" alt="">` : `<div class="company-logo-placeholder">🏢</div>`}<div><span class="eyebrow">ENTREPRISE</span><h3>${esc(j.profiles.company_name)}</h3><p>📍 ${esc(j.profiles.company_city || "")}${j.profiles.company_city && j.profiles.company_country ? ", " : ""}${esc(j.profiles.company_country || "")}</p></div></div>${j.profiles.company_description ? `<p>${esc(j.profiles.company_description)}</p>` : ""}<button type="button" class="company-profile-link" onclick="showCompanyProfile('${j.employer_id}')">Voir le profil de l’entreprise →</button><div class="company-links">${j.profiles.company_website ? `<a href="${esc(safeExternalUrl(j.profiles.company_website))}" target="_blank" rel="noopener noreferrer">🌐 Site web</a>` : ""}${j.profiles.company_phone ? `<span>📞 ${esc(j.profiles.company_phone)}</span>` : ""}${j.profiles.company_email ? `<span>✉️ ${esc(j.profiles.company_email)}</span>` : ""}</div></section>` : ""}
+        ${j.profiles?.company_name ? `<section class="job-company-profile"><div class="company-profile-head">${safeExternalUrl(j.profiles.company_logo_url) ? `<img src="${esc(safeExternalUrl(j.profiles.company_logo_url))}" alt="">` : `<div class="company-logo-placeholder">🏢</div>`}<div><span class="eyebrow">ENTREPRISE</span><h3>${esc(j.profiles.company_name)}</h3><p>📍 ${esc(j.profiles.company_city || "")}${j.profiles.company_city && j.profiles.company_country ? ", " : ""}${esc(j.profiles.company_country || "")}</p></div></div>${j.profiles.company_description ? `<p>${esc(j.profiles.company_description)}</p>` : ""}<button type="button" class="company-profile-link" onclick="showCompanyProfile('${j.employer_id}')">Voir le profil de l’entreprise →</button><div class="company-links">${j.profiles.company_website ? `<a href="${esc(safeExternalUrl(j.profiles.company_website))}" target="_blank" rel="noopener noreferrer">🌐 Site web</a>` : ""}${j.profiles.company_phone ? `<span>📞 ${esc(j.profiles.company_phone)}</span>` : ""}${j.profiles.company_email ? `<span>✉️ ${esc(j.profiles.company_email)}</span>` : ""}</div></section>` : ""}
         <section class="detail-section"><h3>📝 Description</h3><p>${esc(j.description)}</p></section>
         <section class="detail-section"><h3>✅ Conditions & exigences</h3><p>${esc(j.requirements)}</p></section>
         <section class="detail-section"><h3>🧳 Préparer votre départ</h3><div class="travel-mini"><span>📄 Documents</span><span>🏠 Logement</span><span>🚌 Transport</span><span>🛡️ Assurance</span></div></section>
@@ -268,7 +268,7 @@ async function showCompanyProfile(userId) {
   $("jobs").innerHTML=`
     <article class="company-page">
       <div class="company-page-head">
-        ${company.company_logo_url ? `<img src="${esc(company.company_logo_url)}" alt="">` : '<div class="company-logo-large">🏢</div>'}
+        ${safeExternalUrl(company.company_logo_url) ? `<img src="${esc(safeExternalUrl(company.company_logo_url))}" alt="">` : '<div class="company-logo-large">🏢</div>'}
         <div><span class="eyebrow">ENTREPRISE</span><h2>${esc(company.company_name)}</h2><p>📍 ${esc(company.company_city||"")}${company.company_city&&company.company_country?", ":""}${esc(company.company_country||"")}</p></div>
       </div>
       ${company.company_description ? `<section class="company-page-section"><h3>À propos</h3><p>${esc(company.company_description)}</p></section>` : ""}
@@ -286,9 +286,14 @@ async function hasApplied(jobId, userId) {
   return !!data;
 }
 
-function openApplicationForm(id) {
-  const j = jobs.find(x => x.id === id);
-  if (!j) return;
+async function openApplicationForm(id) {
+  let j = jobs.find(x => Number(x.id) === Number(id));
+  if (!j) {
+    const {data,error} = await supabase.from("jobs").select("id,title,country,city,type,contract,description,requirements,is_active").eq("id",id).maybeSingle();
+    if (error || !data) return alert("Cette offre n'est plus disponible.");
+    j = data;
+  }
+  if (j.is_active === false) return alert("Cette offre est actuellement fermée.");
   $("jobs").innerHTML = `
     <article class="job-card application-card">
       <span class="eyebrow">CANDIDATURE</span><h2>📩 Postuler à « ${esc(j.title)} »</h2>
