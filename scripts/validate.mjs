@@ -39,6 +39,17 @@ const ignored = new Set(['if','searchJobs','resetView','openAccount','toggleFavo
 const missingHandlers = [...new Set(inlineHandlers.filter(name => !ignored.has(name) && !knownGlobals.has(name) && !functionNames.has(name)))];
 if (missingHandlers.length) throw new Error(`Unknown inline handler(s): ${missingHandlers.join(', ')}`);
 
+for (const match of js.matchAll(/target=["']_blank["'][^>]*>/gi)) {
+  if (!/\brel=["'][^"']*noopener(?:\s+|\b)[^"']*["']/i.test(match[0])) {
+    throw new Error('Generated target=_blank link in app.js is missing rel=noopener.');
+  }
+}
+
+for (const match of js.matchAll(/href=["']\$\{[^}]+\}["']/g)) {
+  if (!/safeExternalUrl/.test(js.slice(Math.max(0, match.index - 500), match.index + 500))) {
+    throw new Error('Generated external href should pass through safeExternalUrl().');
+  }
+}
 for (const match of html.matchAll(/<a\b[^>]*target=["']_blank["'][^>]*>/gi)) {
   if (!/\brel=["'][^"']*noopener(?:\s+|\b)[^"']*["']/i.test(match[0])) {
     throw new Error('External target=_blank link is missing rel=noopener.');
