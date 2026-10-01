@@ -494,11 +494,31 @@ function friendlyAuthError(error) {
   const message = String(error?.message || "");
   const lower = message.toLowerCase();
   if (lower.includes("invalid login credentials")) return "E-mail ou mot de passe incorrect.";
-  if (lower.includes("email not confirmed")) return "Votre e-mail n’est pas encore confirmé. Consultez votre boîte mail puis réessayez.";
+  if (lower.includes("email not confirmed")) return "Votre e-mail n’est pas encore confirmé.";
   if (lower.includes("user already registered")) return "Un compte existe déjà avec cet e-mail. Utilisez « Se connecter ».";
   if (lower.includes("rate limit")) return "Trop de tentatives. Attendez quelques minutes puis réessayez.";
-  if (lower.includes("network")) return "Connexion réseau impossible. Vérifiez Internet puis réessayez.";
+  if (lower.includes("network") || lower.includes("fetch")) return "Connexion réseau impossible. Vérifiez Internet puis réessayez.";
   return message || "Une erreur d’authentification est survenue.";
+}
+async function resendConfirmation(email) {
+  const value = String(email || "").trim().toLowerCase();
+  if (!value) return authMessage("Saisissez votre adresse e-mail pour recevoir le lien de confirmation.");
+  const { error } = await supabase.auth.resend({ type: "signup", email: value });
+  if (error) return authMessage(friendlyAuthError(error));
+  authMessage("Nouveau lien de confirmation envoyé. Vérifiez aussi le dossier spam.", "success");
+}
+function showResendConfirmation(email) {
+  const form = $("authForm");
+  if (!form) return;
+  const old = document.getElementById("resendConfirmation");
+  if (old) old.remove();
+  const button = document.createElement("button");
+  button.id = "resendConfirmation";
+  button.type = "button";
+  button.className = "link-button";
+  button.textContent = "📩 Renvoyer l’e-mail de confirmation";
+  button.addEventListener("click", () => resendConfirmation(email));
+  form.after(button);
 }
 async function register(e) {
   e.preventDefault();
@@ -512,15 +532,21 @@ async function register(e) {
   const button = $("authForm")?.querySelector('button[type="submit"]');
   if (button) { button.disabled = true; button.textContent = "Création du compte…"; }
   try {
-    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: name } } });
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: name } }
+    });
     if (error) return authMessage(friendlyAuthError(error));
     if (data?.session) return await renderDashboard();
-    renderAuth("login", "Compte créé. Vérifiez votre e-mail si une confirmation est demandée, puis connectez-vous.");
+    renderAuth("login", "Compte créé. Vérifiez votre e-mail puis utilisez le bouton de renvoi si nécessaire.");
+    $("authEmail").value = email;
+    showResendConfirmation(email);
   } catch (error) {
     authMessage(friendlyAuthError(error));
   } finally {
     const currentButton = $("authForm")?.querySelector('button[type="submit"]');
-    if (currentButton) { currentButton.disabled = false; currentButton.textContent = "Créer mon compte"; }
+    if (currentButton) { currentButton.disabled = false; currentButton.textContent = "Se connecter"; }
   }
 }
 async function login(e) {
@@ -534,7 +560,11 @@ async function login(e) {
   if (button) { button.disabled = true; button.textContent = "Connexion…"; }
   try {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return authMessage(friendlyAuthError(error));
+    if (error) {
+      authMessage(friendlyAuthError(error));
+      if (String(error?.message || "").toLowerCase().includes("email not confirmed")) showResendConfirmation(email);
+      return;
+    }
     if (!data?.user) return authMessage("Connexion non confirmée. Réessayez.");
     await renderDashboard();
   } catch (error) {
@@ -1305,14 +1335,14 @@ window.forgotPassword=forgotPassword; window.renderPasswordRecovery=renderPasswo
 
 document.addEventListener("DOMContentLoaded", async () => {
   applyLanguage();
-  await loadJobs();
-  const user = await currentUser();
-  if (user) await renderDashboard();
   supabase.auth.onAuthStateChange(async (event, session) => {
     if (event === "PASSWORD_RECOVERY") return renderPasswordRecovery();
     if (session && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) return renderDashboard();
     if (!session && event === "SIGNED_OUT") renderAuth("login");
   });
+  await loadJobs();
+  const user = await currentUser();
+  if (user) await renderDashboard();
 });
 
 function openExternalJobSearch(country) {
