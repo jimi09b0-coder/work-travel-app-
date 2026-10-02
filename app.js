@@ -552,7 +552,7 @@ async function register(e) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: name } }
+      options: { data: { full_name: name }, emailRedirectTo: window.location.origin + window.location.pathname }
     });
     if (error) return authMessage(friendlyAuthError(error));
     if (data?.session) return await renderDashboard();
@@ -1352,6 +1352,7 @@ window.forgotPassword=forgotPassword; window.renderPasswordRecovery=renderPasswo
 
 document.addEventListener("DOMContentLoaded", async () => {
   applyLanguage();
+  handleAuthRedirectError();
   supabase.auth.onAuthStateChange(async (event, session) => {
     if (event === "PASSWORD_RECOVERY") return renderPasswordRecovery();
     if (session && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) return renderDashboard();
