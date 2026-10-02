@@ -446,6 +446,23 @@ function renderPasswordRecovery() {
     renderAuth("login", "Mot de passe mis à jour. Vous pouvez vous reconnecter.");
   });
 }
+function handleAuthRedirectError() {
+  const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
+  if (!hash) return false;
+  const params = new URLSearchParams(hash);
+  const error = params.get("error");
+  if (!error) return false;
+  const description = params.get("error_description");
+  const code = params.get("error_code");
+  const message = code === "otp_expired"
+    ? "Le lien de confirmation a expiré ou a déjà été utilisé. Demandez un nouveau lien."
+    : description
+      ? decodeURIComponent(description.replace(/\\+/g, " "))
+      : "Le lien d’authentification n’est plus valide. Réessayez.";
+  renderAuth("login", message);
+  return true;
+}
+
 async function forgotPassword() {
   const email = (window.prompt("Adresse e-mail du compte :") || "").trim().toLowerCase();
   if (!email) return;
