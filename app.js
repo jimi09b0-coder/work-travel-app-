@@ -1384,6 +1384,7 @@ function bindStaticAuth() {
         }
         return;
       }
+      if (!button) { if (message) { message.textContent = "Impossible d’activer le bouton de création du compte."; message.hidden = false; } return; }
       button.disabled = true;
       button.textContent = "Création du compte…";
       try {
