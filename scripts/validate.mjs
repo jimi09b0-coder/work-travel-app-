@@ -35,8 +35,9 @@ const inlineHandlers = [...html.matchAll(/\bon(?:click|change|input|keydown|subm
   .flatMap(m => [...m[1].matchAll(/\b([A-Za-z_$][\w$]*)\s*\(/g)].map(x => x[1]));
 const knownGlobals = new Set([...js.matchAll(/\bwindow\.([A-Za-z_$][\w$]*)\s*=/g)].map(m => m[1]));
 const functionNames = new Set([...js.matchAll(/(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m => m[1]));
+const inlineFunctionNames = new Set([...html.matchAll(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m => m[1]));
 const ignored = new Set(['if','searchJobs','resetView','openAccount','toggleFavoritesOnly','clearFavorites','updateTravelGuide']);
-const missingHandlers = [...new Set(inlineHandlers.filter(name => !ignored.has(name) && !knownGlobals.has(name) && !functionNames.has(name)))];
+const missingHandlers = [...new Set(inlineHandlers.filter(name => !ignored.has(name) && !knownGlobals.has(name) && !functionNames.has(name) && !inlineFunctionNames.has(name)))];
 if (missingHandlers.length) throw new Error(`Unknown inline handler(s): ${missingHandlers.join(', ')}`);
 
 for (const match of js.matchAll(/target=["']_blank["'][^>]*>/gi)) {
