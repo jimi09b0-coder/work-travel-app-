@@ -71,8 +71,13 @@ const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 function safeExternalUrl(value) { const raw=String(value || '').trim(); if (!raw) return ''; try { const url=new URL(raw, window.location.origin); return ['http:','https:'].includes(url.protocol) ? url.href : ''; } catch { return ''; } }
 
 async function currentUser() {
-  const { data } = await supabase.auth.getUser();
-  return data.user || null;
+  try {
+    const { data, error } = await supabase.auth.getUser();
+    if (error) return null;
+    return data.user || null;
+  } catch {
+    return null;
+  }
 }
 
 async function populateFilters() {
@@ -417,10 +422,12 @@ async function applyJob(e, id) {
   $("compte").scrollIntoView({behavior:"smooth"});
 }
 function openAccount(mode="register") {
+  // Afficher immédiatement l'espace compte : ne pas bloquer l'interface
+  // en attendant la réponse réseau de Supabase.
+  renderAuth(mode);
+  $("compte").scrollIntoView({behavior:"smooth"});
   currentUser().then(user => {
     if (user) renderDashboard();
-    else renderAuth(mode);
-    $("compte").scrollIntoView({behavior:"smooth"});
   });
 }
 
@@ -489,7 +496,11 @@ function renderAuth(mode="register", message="") {
       <button class="link-button" onclick="renderAuth('${mode === "login" ? "register" : "login"}')">${mode === "login" ? "Créer un compte" : "J'ai déjà un compte"}</button>
       <p class="demo-note">Compte sécurisé par Supabase Auth. Vos données sont accessibles depuis vos différents appareils.</p>
     </div>`;
-  $("authForm").addEventListener("submit", e => mode === "login" ? login(e) : register(e));
+  const authForm = $("authForm");
+  if (authForm) {
+    authForm.noValidate = true;
+    authForm.addEventListener("submit", e => mode === "login" ? login(e) : register(e));
+  }
   if (mode === "login") {
     const forgot = document.createElement("button");
     forgot.type = "button";
@@ -563,7 +574,10 @@ async function register(e) {
     authMessage(friendlyAuthError(error));
   } finally {
     const currentButton = $("authForm")?.querySelector('button[type="submit"]');
-    if (currentButton) { currentButton.disabled = false; currentButton.textContent = "Se connecter"; }
+    if (currentButton) {
+      currentButton.disabled = false;
+      currentButton.textContent = "Créer mon compte";
+    }
   }
 }
 async function login(e) {
