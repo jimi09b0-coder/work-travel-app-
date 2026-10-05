@@ -39,3 +39,5 @@ Avant une mise en production, effectuer un test navigateur complet des parcours 
 - Frontend consistency validation checks required assets, duplicate HTML IDs, local references, inline handlers, external `_blank` links, responsive viewport support, and reduced-motion support.
 - Supabase credentials in the frontend are limited to the publishable key; service-role credentials must never be committed.
 - Final release still requires a real browser smoke test covering authentication, candidate application flow, employer workflow, admin review, notifications, CV upload/download, and mobile layouts.
+
+
