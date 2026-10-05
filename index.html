@@ -73,20 +73,19 @@
 </main><footer><strong>🌍 Work Travel</strong><span data-i18n="footer_text">Travail et voyage en Europe</span></footer>
 <script>
 function directSignup(){
-  const form=document.getElementById("staticAuthForm"), msg=document.getElementById("staticAuthMessage"), btn=document.getElementById("directSignupButton");
+  const msg=document.getElementById("staticAuthMessage"), btn=document.getElementById("directSignupButton");
   const name=(document.getElementById("staticAuthName")?.value||"").trim();
   const email=(document.getElementById("staticAuthEmail")?.value||"").trim().toLowerCase();
   const password=document.getElementById("staticAuthPassword")?.value||"";
-  if(msg){msg.hidden=true;msg.textContent=""}
+  if(msg){msg.hidden=true;msg.textContent="";msg.className="auth-error"}
   if(!name||!email||password.length<6){if(msg){msg.textContent=!name?"Veuillez saisir votre nom complet.":!email?"Veuillez saisir votre adresse e-mail.":"Le mot de passe doit contenir au moins 6 caractères.";msg.hidden=false}return false}
-  btn.disabled=true;btn.textContent="Création du compte…";
-  if(msg){msg.textContent="Connexion au serveur…";msg.hidden=false;msg.className="success-note"}
-  const controller=new AbortController();
-  const timeout=setTimeout(()=>controller.abort(),15000);
-  fetch("https://zwdixozyrvhmjrhboqti.supabase.co/auth/v1/signup",{method:"POST",headers:{"Content-Type":"application/json","apikey":"sb_publishable_b3p64FMUtYtk0ejBuZAPtw_nn_lHTZ0","Authorization":"Bearer sb_publishable_b3p64FMUtYtk0ejBuZAPtw_nn_lHTZ0"},body:JSON.stringify({email:email,password:password,data:{full_name:name},gotrue_meta_security:{},redirect_to:window.location.origin+window.location.pathname}),signal:controller.signal})
+  if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email)){if(msg){msg.textContent="Veuillez saisir une adresse e-mail valide.";msg.hidden=false}return false}
+  btn.disabled=true;btn.textContent="Création du compte…"; if(msg){msg.textContent="Connexion au serveur…";msg.hidden=false;msg.className="success-note"}
+  const controller=new AbortController(); const timeout=setTimeout(()=>controller.abort(),15000);
+  fetch("https://zwdixozyrvhmjrhboqti.supabase.co/auth/v1/signup",{method:"POST",headers:{"Content-Type":"application/json","apikey":"sb_publishable_b3p64FMUtYtk0ejBuZAPtw_nn_lHTZ0","Authorization":"Bearer sb_publishable_b3p64FMUtYtk0ejBuZAPtw_nn_lHTZ0"},body:JSON.stringify({email,password,data:{full_name:name},gotrue_meta_security:{},redirect_to:window.location.origin+window.location.pathname}),signal:controller.signal})
   .then(async r=>{const d=await r.json();if(!r.ok)throw new Error(d.msg||d.message||d.error_description||"Impossible de créer le compte.");return d})
-  .then(d=>{if(msg){msg.textContent=d.access_token?"Compte créé.":"Compte créé. Vérifiez votre e-mail pour confirmer votre adresse.";msg.hidden=false;msg.className="success-note"};if(d.access_token) window.location.reload()})
+  .then(d=>{if(msg){msg.textContent=d.access_token?"Compte créé avec succès.":"Compte créé. Vérifiez votre e-mail pour confirmer votre adresse.";msg.hidden=false;msg.className="success-note"};if(d.access_token)window.location.reload()})
   .catch(e=>{if(msg){msg.textContent=e.name==="AbortError"?"Le serveur ne répond pas. Réessayez dans quelques secondes.":e.message;msg.hidden=false;msg.className="auth-error"}})
-  .finally(()=>{clearTimeout(timeout);btn.disabled=false;btn.textContent="Créer mon compte"});
+  .finally(()=>{clearTimeout(timeout);btn.disabled=false;btn.textContent="Créer mon compte"}); return false;
 }
 </script><script type="module" src="app.js"></script></body></html>
