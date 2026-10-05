@@ -8,7 +8,7 @@
 <body><a class="skip-link" href="#offres">Aller directement aux offres</a>
 <header class="hero">
 <nav class="navbar"><a class="logo" href="#" onclick="resetView();return false;">🌍 Work Travel</a>
-<div class="nav-links"><a href="#offres" data-i18n="nav_jobs">Offres</a><a href="#voyage" data-i18n="nav_travel">Voyage</a><a href="#compte" onclick="openAccount();return false;" data-i18n="nav_account">Mon compte</a>
+<div class="nav-links"><a href="#offres" data-i18n="nav_jobs">Offres</a><a href="#voyage" data-i18n="nav_travel">Voyage</a><a href="#compte" onclick="if(window.openAccount){openAccount();return false;}" data-i18n="nav_account">Mon compte</a>
 <label class="language-switcher" aria-label="Language"><span>🌐</span><select id="languageSelect" onchange="setLanguage(this.value)"><option value="fr">FR</option><option value="en">EN</option><option value="ar">AR</option></select></label></div></nav>
 <div class="hero-content"><span class="badge" data-i18n="hero_badge">🇪🇺 Europe • Emploi • Voyage</span><h1><span data-i18n="hero_title">Travaillez en Europe,<br><span>vivez votre aventure.</span></span></h1><p data-i18n="hero_text">Trouvez un emploi, préparez votre départ et gérez vos candidatures au même endroit.</p><a class="hero-button" href="#offres" data-i18n="hero_cta">🔎 Voir les offres</a></div>
 </header>
