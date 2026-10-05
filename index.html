@@ -52,7 +52,20 @@
 </div>
 <div id="preferencesBox" class="preferences-box"></div><div class="results-bar"><h2>💼 Offres d'emploi</h2><div class="results-actions"><button id="favoritesFilter" class="favorites-filter" onclick="toggleFavoritesOnly()">☆ Favoris (<span id="favoritesCount">0</span>)</button><button class="clear-favorites" onclick="clearFavorites()">🗑️ Vider</button><span id="resultsCount"></span></div></div><div id="jobs" class="jobs-grid"></div>
 </section>
-<section class="account-section" id="compte"><div id="account"></div></section>
+<section class="account-section" id="compte"><div id="account">
+<div class="account-card" id="accountFallback">
+<span class="eyebrow">ESPACE CANDIDAT</span>
+<h2>👤 Créer mon compte</h2>
+<p>Créez votre compte pour gérer votre profil et vos candidatures.</p>
+<p id="staticAuthMessage" class="auth-error" hidden></p>
+<form class="application-form" id="staticAuthForm">
+<input id="staticAuthName" type="text" placeholder="Nom complet" required>
+<input id="staticAuthEmail" type="email" placeholder="Adresse e-mail" required>
+<input id="staticAuthPassword" type="password" placeholder="Mot de passe (6 caractères minimum)" minlength="6" required>
+<button type="submit">Créer mon compte</button>
+</form>
+<button type="button" class="link-button" id="staticLoginButton">J'ai déjà un compte</button>
+</div></div></section>
 <section class="travel-section" id="voyage"><div class="travel-heading"><span class="eyebrow" data-i18n="travel_eyebrow">PRÉPARER SON DÉPART</span><h2 data-i18n="travel_title">🧳 Votre checklist de voyage</h2><p data-i18n="travel_text">Préparez votre installation en Europe avec une checklist simple et pratique.</p></div>
 <div class="travel-tool"><div class="travel-country"><label for="travelCountry">🌍 Destination</label><input id="travelCountry" list="countryOptions" placeholder="Choisir ou écrire un pays" onchange="updateTravelGuide()" autocomplete="country-name"><datalist id="countryOptions"><option value="Algérie"><option value="Belgique"><option value="France"><option value="Espagne"><option value="Allemagne"><option value="Italie"><option value="Portugal"><option value="Pays-Bas"><option value="Suisse"><option value="Royaume-Uni"><option value="Irlande"><option value="Canada"><option value="États-Unis"><option value="Australie"><option value="Nouvelle-Zélande"><option value="Émirats arabes unis"><option value="Arabie saoudite"><option value="Qatar"><option value="Maroc"><option value="Tunisie"><option value="Égypte"><option value="Afrique du Sud"><option value="Japon"><option value="Corée du Sud"><option value="Chine"><option value="Inde"><option value="Singapour"><option value="Brésil"><option value="Mexique"><option value="Argentine"><option value="Turquie"><option value="Suède"><option value="Norvège"><option value="Danemark"><option value="Finlande"><option value="Autriche"><option value="Pologne"><option value="Tchéquie"><option value="Grèce"><option value="Roumanie"><option value="Hongrie"></datalist></div><div class="travel-progress"><div><span data-i18n="progress">Progression</span><strong id="travelProgress">0%</strong></div><div class="progress-track"><span id="travelProgressBar" style="width:0%"></span></div></div></div>
 <div id="travelGuide" class="travel-guide"><div class="travel-empty"><span>🗺️</span><h3>Choisissez votre destination</h3><p>Vous obtiendrez une checklist adaptée à votre départ.</p></div></div></section>
