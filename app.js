@@ -1364,8 +1364,63 @@ async function loadJobs() {
 
 window.forgotPassword=forgotPassword; window.renderPasswordRecovery=renderPasswordRecovery; window.exportEmployerApplicationsCSV=exportEmployerApplicationsCSV; window.resetEmployerApplicationFilters=resetEmployerApplicationFilters; window.focusEmployerApplications=focusEmployerApplications; window.toggleEmployerJob=toggleEmployerJob; window.filterEmployerApplications=filterEmployerApplications; window.sortEmployerApplications=sortEmployerApplications; window.renderDashboard=renderDashboard; window.markNotificationRead=markNotificationRead; window.showJob=showJob; window.savePreferences=savePreferences; window.saveEmployerJob=saveEmployerJob; window.editEmployerJob=editEmployerJob; window.resetEmployerJobForm=resetEmployerJobForm; window.deleteEmployerJob=deleteEmployerJob; window.jobMatchScore=jobMatchScore; window.saveSearchHistory=saveSearchHistory; window.useSearchHistory=useSearchHistory; window.clearSearchHistory=clearSearchHistory; window.showNotification=showNotification; window.openApplicationForm=openApplicationForm; window.applyJob=applyJob; window.updateTravelGuide=updateTravelGuide; window.toggleTravelItem=toggleTravelItem; window.clearTravelChecklist=clearTravelChecklist; window.openAccount=openAccount; window.renderAuth=renderAuth; window.logout=logout; window.resetView=resetView; window.searchJobs=searchJobs; window.openCV=openCV; window.deleteCV=deleteCV; window.toggleFavorite=toggleFavorite; window.toggleFavoritesOnly=toggleFavoritesOnly; window.clearFavorites=clearFavorites; window.updateProfileName=updateProfileName; window.saveCandidateProfile=saveCandidateProfile; window.openApplicationCV=openApplicationCV; window.renderEmployerDashboard=renderEmployerDashboard; window.saveCompanyProfile=saveCompanyProfile; window.renderAdminPanel=renderAdminPanel; window.reviewEmployerRequest=reviewEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.showCompanyProfile=showCompanyProfile; window.submitEmployerRequest=submitEmployerRequest; window.renderEmployerRequestPanel=renderEmployerRequestPanel; window.showEmployerRequestForm=showEmployerRequestForm; window.submitEmployerRequest=submitEmployerRequest; window.updateApplicationStatus=updateApplicationStatus; window.markAllNotificationsRead=markAllNotificationsRead; window.withdrawApplication=withdrawApplication;
 
+function bindStaticAuth() {
+  const form = $("staticAuthForm");
+  const loginButton = $("staticLoginButton");
+  if (form && !form.dataset.bound) {
+    form.dataset.bound = "1";
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      const name = $("staticAuthName")?.value.trim() || "";
+      const email = $("staticAuthEmail")?.value.trim().toLowerCase() || "";
+      const password = $("staticAuthPassword")?.value || "";
+      const message = $("staticAuthMessage");
+      const button = form.querySelector('button[type="submit"]');
+      if (message) { message.hidden = true; message.textContent = ""; }
+      if (!name || !email || password.length < 6) {
+        if (message) {
+          message.textContent = !name ? "Veuillez saisir votre nom complet." : !email ? "Veuillez saisir votre adresse e-mail." : "Le mot de passe doit contenir au moins 6 caractères.";
+          message.hidden = false;
+        }
+        return;
+      }
+      button.disabled = true;
+      button.textContent = "Création du compte…";
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { full_name: name },
+            emailRedirectTo: window.location.origin + window.location.pathname
+          }
+        });
+        if (error) throw error;
+        if (data?.session) {
+          await renderDashboard();
+        } else {
+          renderAuth("login", "Compte créé. Vérifiez votre e-mail pour confirmer votre adresse.");
+        }
+      } catch (error) {
+        if (message) {
+          message.textContent = friendlyAuthError(error);
+          message.hidden = false;
+        }
+      } finally {
+        button.disabled = false;
+        button.textContent = "Créer mon compte";
+      }
+    });
+  }
+  if (loginButton && !loginButton.dataset.bound) {
+    loginButton.dataset.bound = "1";
+    loginButton.addEventListener("click", () => renderAuth("login"));
+  }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   applyLanguage();
+  bindStaticAuth();
   handleAuthRedirectError();
   supabase.auth.onAuthStateChange(async (event, session) => {
     if (event === "PASSWORD_RECOVERY") return renderPasswordRecovery();
