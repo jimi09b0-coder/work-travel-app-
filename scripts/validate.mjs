@@ -26,7 +26,7 @@ const duplicates = [...new Set(ids.filter((id,i) => ids.indexOf(id) !== i))];
 if (duplicates.length) throw new Error(`Duplicate HTML id(s): ${duplicates.join(', ')}`);
 
 for (const match of html.matchAll(/<(?:script|link)\b[^>]*(?:src|href)=["']([^"'#]+)["'][^>]*>/gi)) {
-  const ref = match[1];
+  const ref = match[1].split('?')[0];
   if (/^(?:https?:|data:|#)/i.test(ref)) continue;
   if (!fs.existsSync(path.join(root,ref))) throw new Error(`Missing local asset: ${ref}`);
 }
