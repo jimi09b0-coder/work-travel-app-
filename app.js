@@ -447,10 +447,19 @@ function renderPasswordRecovery() {
     e.preventDefault();
     const password = $("recoveryPassword").value;
     if (password.length < 6) return alert("Le mot de passe doit contenir au moins 6 caractères.");
-    const {error} = await supabase.auth.updateUser({password});
-    if (error) return alert(error.message);
-    await supabase.auth.signOut();
-    renderAuth("login", "Mot de passe mis à jour. Vous pouvez vous reconnecter.");
+    const button = $("recoveryForm")?.querySelector('button[type="submit"]');
+    if (button) { button.disabled = true; button.textContent = "Mise à jour…"; }
+    try {
+      const {error} = await supabase.auth.updateUser({password});
+      if (error) return alert(friendlyAuthError(error));
+      await supabase.auth.signOut();
+      renderAuth("login", "Mot de passe mis à jour. Vous pouvez vous reconnecter.");
+    } catch (error) {
+      alert(friendlyAuthError(error));
+    } finally {
+      const currentButton = $("recoveryForm")?.querySelector('button[type="submit"]');
+      if (currentButton) { currentButton.disabled = false; currentButton.textContent = "Enregistrer le nouveau mot de passe"; }
+    }
   });
 }
 function handleAuthRedirectError() {
@@ -476,7 +485,7 @@ function handleAuthRedirectError() {
 async function forgotPassword() {
   const email = (window.prompt("Adresse e-mail du compte :") || "").trim().toLowerCase();
   if (!email) return;
-  if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+  if (!/^[^\s@]+@[^\s@]+\\.[^\s@]+$/.test(email)) {
     return alert("Cette adresse e-mail semble incomplète. Vérifiez-la puis réessayez.");
   }
   const redirectTo = window.location.origin + window.location.pathname;
@@ -542,7 +551,7 @@ function friendlyAuthError(error) {
 async function resendConfirmation(email) {
   const value = String(email || "").trim().toLowerCase();
   if (!value) return authMessage("Saisissez votre adresse e-mail pour recevoir le lien de confirmation.");
-  if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value)) {
+  if (!/^[^\s@]+@[^\s@]+\\.[^\s@]+$/.test(value)) {
     return authMessage("Cette adresse e-mail semble incomplète. Vérifiez la partie avant et après @, puis le domaine (ex. exemple@gmail.com).");
   }
   const button = document.getElementById("resendConfirmation");
@@ -578,7 +587,7 @@ async function register(e) {
   const password = $("authPassword")?.value || "";
   if (!name) return authMessage("Veuillez saisir votre nom complet.");
   if (!email) return authMessage("Veuillez saisir votre adresse e-mail.");
-  if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return authMessage("L’adresse e-mail semble incorrecte. Vérifiez-la (ex. exemple@gmail.com).");
+  if (!/^[^\s@]+@[^\s@]+\\.[^\s@]+$/.test(email)) return authMessage("L’adresse e-mail semble incorrecte. Vérifiez-la (ex. exemple@gmail.com).");
   if (password.length < 6) return authMessage("Le mot de passe doit contenir au moins 6 caractères.");
   const button = $("authForm")?.querySelector('button[type="submit"]');
   if (button) { button.disabled = true; button.textContent = "Création du compte…"; }
@@ -1474,9 +1483,9 @@ async function directSignup() {
   const message = document.getElementById("staticAuthMessage");
   const button = document.getElementById("directSignupButton");
   if (message) { message.hidden = true; message.textContent = ""; }
-  if (!name || !email || password.length < 6 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+  if (!name || !email || password.length < 6 || !/^[^\s@]+@[^\s@]+\\.[^\s@]+$/.test(email)) {
     if (message) {
-      message.textContent = !name ? "Veuillez saisir votre nom complet." : !email ? "Veuillez saisir votre adresse e-mail." : !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email) ? "L’adresse e-mail semble incorrecte. Vérifiez-la (ex. exemple@gmail.com)." : "Le mot de passe doit contenir au moins 6 caractères.";
+      message.textContent = !name ? "Veuillez saisir votre nom complet." : !email ? "Veuillez saisir votre adresse e-mail." : !/^[^\s@]+@[^\s@]+\\.[^\s@]+$/.test(email) ? "L’adresse e-mail semble incorrecte. Vérifiez-la (ex. exemple@gmail.com)." : "Le mot de passe doit contenir au moins 6 caractères.";
       message.hidden = false;
     }
     return false;
