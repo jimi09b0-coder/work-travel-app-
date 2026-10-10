@@ -1285,7 +1285,7 @@ async function searchJobs(saveHistory = false) {
 
 
 function normalizeSmartText(value) {
-  return String(value || "").toLocaleLowerCase("fr").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").replace(/[^a-z0-9\\s-]/g, " ").replace(/\\s+/g, " ").trim();
+  return String(value || "").toLocaleLowerCase("fr").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s-]/g, " ").replace(/\s+/g, " ").trim();
 }
 
 function runSmartSearch(input) {
@@ -1321,11 +1321,11 @@ function runSmartSearch(input) {
     }
   }
 
-  cleaned = cleaned.replace(/\\b(je cherche|je veux|recherche|trouver|trouve|emploi|emplois|travail|offre|offres|job|jobs|poste|postes|en|au|aux|dans|pour|avec|de|du|des|la|le|les|un|une|a|et|mon|ma|mes)\\b/g, " ")
-    .replace(/\\s+/g, " ").trim();
+  cleaned = cleaned.replace(/\b(je cherche|je veux|recherche|trouver|trouve|emploi|emplois|travail|offre|offres|job|jobs|poste|postes|en|au|aux|dans|pour|avec|de|du|des|la|le|les|un|une|a|et|mon|ma|mes)\b/g, " ")
+    .replace(/\s+/g, " ").trim();
   $("search").value = cleaned;
   searchJobs();
-  const terms = cleaned.split(/\\s+/).filter(Boolean);
+  const terms = cleaned.split(/\s+/).filter(Boolean);
   const count = jobs.filter(job => {
     const hay = normalizeSmartText([job.title,job.country,job.city,job.type,job.contract,job.description,job.requirements].join(" "));
     return terms.every(term => hay.includes(term)) &&
