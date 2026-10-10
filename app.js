@@ -542,6 +542,7 @@ function friendlyAuthError(error) {
   const lower = message.toLowerCase();
   if (lower.includes("invalid login credentials")) return "E-mail ou mot de passe incorrect.";
   if (lower.includes("email not confirmed")) return "Votre e-mail n’est pas encore confirmé.";
+  if (lower.includes("email address not authorized") || lower.includes("email not authorized")) return "Le service e-mail de test de Supabase peut refuser les adresses qui ne font pas partie de l’équipe. Pour envoyer des confirmations à tous les utilisateurs, configurez un serveur SMTP personnalisé dans les paramètres Auth de Supabase.";
   if (lower.includes("user already registered")) return "Un compte existe déjà avec cet e-mail. Utilisez « Se connecter ».";
   if ((lower.includes("email address") && lower.includes("invalid")) || String(error?.code || "").toLowerCase() === "email_address_invalid") return "Supabase a refusé cette adresse. Gmail est normalement accepté : vérifiez les espaces et les fautes de frappe. Si le refus continue, consultez les journaux Auth du projet Supabase pour voir la cause exacte (format, domaine de test ou réglage du fournisseur).";
   if (lower.includes("rate limit")) return "Trop de tentatives. Attendez quelques minutes puis réessayez.";
