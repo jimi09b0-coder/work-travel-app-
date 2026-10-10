@@ -50,6 +50,7 @@ if (!js.includes('async function directSignup()') || !js.includes('await directS
 if (!js.includes('showResendConfirmation(email)')) throw new Error('Signup confirmation resend action is missing.');
 if (!js.includes('function handleAuthRedirectError()') || !js.includes('new URLSearchParams(window.location.search)')) throw new Error('Supabase auth redirect errors must be handled in both query and fragment parameters.');
 if (/\\\\s/.test(js)) throw new Error('Email validation regexes must use the JavaScript whitespace escape \\s, not a literal backslash and s.');
+if (js.includes(String.raw`\\.`)) throw new Error('Email validation regexes must escape a dot as \\. in JavaScript regex literals.');
 if (!js.includes('async function resendConfirmation(email)') || !js.includes('finally {') || !js.includes('supabase.auth.resetPasswordForEmail(email, {redirectTo})')) throw new Error('Auth resend/reset flows must handle pending states and errors.');
 if (/decodeURIComponent\(description/.test(js)) throw new Error('Auth redirect descriptions must not be decoded twice.');
 if (!/app\.js\?v=\d{8}-\d+/.test(html)) throw new Error('app.js must use a versioned URL to prevent stale browser cache.');
