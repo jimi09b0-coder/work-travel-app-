@@ -524,6 +524,7 @@ function friendlyAuthError(error) {
   if (lower.includes("invalid login credentials")) return "E-mail ou mot de passe incorrect.";
   if (lower.includes("email not confirmed")) return "Votre e-mail n’est pas encore confirmé.";
   if (lower.includes("user already registered")) return "Un compte existe déjà avec cet e-mail. Utilisez « Se connecter ».";
+  if (lower.includes("email address") && lower.includes("invalid")) return "Cette adresse e-mail est refusée par le service. Vérifiez qu’elle est écrite correctement et essayez une autre adresse valide si le problème continue.";
   if (lower.includes("rate limit")) return "Trop de tentatives. Attendez quelques minutes puis réessayez.";
   if (lower.includes("network") || lower.includes("fetch")) return "Connexion réseau impossible. Vérifiez Internet puis réessayez.";
   return message || "Une erreur d’authentification est survenue.";
@@ -1386,8 +1387,14 @@ async function directSignup() {
       options: { data: { full_name: name }, emailRedirectTo: window.location.origin + window.location.pathname }
     });
     if (error) throw error;
-    if (data?.session) await renderDashboard();
-    else renderAuth("login", "Compte créé. Vérifiez votre e-mail pour confirmer votre adresse.");
+    if (data?.session) {
+      await renderDashboard();
+    } else {
+      renderAuth("login", "Compte créé. Vérifiez votre e-mail puis utilisez le bouton de renvoi si nécessaire.");
+      const emailField = $("authEmail");
+      if (emailField) emailField.value = email;
+      showResendConfirmation(email);
+    }
   } catch (error) {
     if (message) { message.textContent = friendlyAuthError(error); message.hidden = false; }
   } finally {
