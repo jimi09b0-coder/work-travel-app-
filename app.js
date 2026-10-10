@@ -1283,6 +1283,85 @@ async function searchJobs(saveHistory = false) {
   if (saveHistory && raw) saveSearchHistory(raw);
 }
 
+
+function normalizeSmartText(value) {
+  return String(value || "").toLocaleLowerCase("fr").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").replace(/[^a-z0-9\\s-]/g, " ").replace(/\\s+/g, " ").trim();
+}
+
+function runSmartSearch(input) {
+  const prompt = String(input || "").trim();
+  const feedback = $("smartSearchFeedback");
+  if (!prompt) {
+    if (feedback) feedback.textContent = "Saisissez un métier, un pays ou un mode de travail.";
+    $("smartSearchInput")?.focus();
+    return;
+  }
+  let cleaned = normalizeSmartText(prompt);
+  const countrySelect = $("countryFilter");
+  const countryOptions = countrySelect ? [...countrySelect.options].filter(option => option.value) : [];
+  const countryMatch = countryOptions.sort((a,b) => b.value.length - a.value.length)
+    .find(option => cleaned.includes(normalizeSmartText(option.value)));
+  if (countryMatch) {
+    countrySelect.value = countryMatch.value;
+    cleaned = cleaned.replace(normalizeSmartText(countryMatch.value), " ");
+  }
+
+  const remoteSelect = $("remoteFilter");
+  const remotePatterns = [
+    {value:"remote", patterns:["a distance","teletravail","travail a domicile","remote","depuis chez soi"]},
+    {value:"hybrid", patterns:["hybride","hybrid"]},
+    {value:"onsite", patterns:["presentiel","sur site","sur place"]}
+  ];
+  for (const mode of remotePatterns) {
+    const pattern = mode.patterns.find(term => cleaned.includes(term));
+    if (pattern) {
+      if (remoteSelect) remoteSelect.value = mode.value;
+      cleaned = cleaned.replace(pattern, " ");
+      break;
+    }
+  }
+
+  cleaned = cleaned.replace(/\\b(je cherche|je veux|recherche|trouver|trouve|emploi|emplois|travail|offre|offres|job|jobs|poste|postes|en|au|aux|dans|pour|avec|de|du|des|la|le|les|un|une|a|et|mon|ma|mes)\\b/g, " ")
+    .replace(/\\s+/g, " ").trim();
+  $("search").value = cleaned;
+  searchJobs();
+  const terms = cleaned.split(/\\s+/).filter(Boolean);
+  const count = jobs.filter(job => {
+    const hay = normalizeSmartText([job.title,job.country,job.city,job.type,job.contract,job.description,job.requirements].join(" "));
+    return terms.every(term => hay.includes(term)) &&
+      (!countrySelect?.value || job.country === countrySelect.value) &&
+      (!remoteSelect?.value || job.remote_type === remoteSelect.value) &&
+      (!favoritesOnly || isFavorite(job.id));
+  }).length;
+  if (feedback) {
+    feedback.textContent = count
+      ? "Recherche appliquée : " + count + " offre(s) correspondent à vos critères. Les scores affichés sont des estimations basées sur vos filtres et préférences."
+      : "Aucune offre ne correspond exactement. Essayez un métier plus général ou changez le pays / mode de travail.";
+  }
+  $("offres")?.scrollIntoView({behavior:"smooth",block:"start"});
+}
+window.runSmartSearch = runSmartSearch;
+
+function bindSmartSearch() {
+  const form = $("smartSearchForm");
+  if (form && !form.dataset.bound) {
+    form.dataset.bound = "1";
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      runSmartSearch($("smartSearchInput")?.value);
+    });
+  }
+  document.querySelectorAll("[data-smart-query]").forEach(button => {
+    if (button.dataset.bound) return;
+    button.dataset.bound = "1";
+    button.addEventListener("click", () => {
+      const prompt = button.dataset.smartQuery || "";
+      if ($("smartSearchInput")) $("smartSearchInput").value = prompt;
+      runSmartSearch(prompt);
+    });
+  });
+}
+
 const travelItems = ["Passeport / pièce d'identité","Contrat ou promesse d'embauche","Justificatifs de logement","Assurance voyage / santé","Moyens de paiement","Adresse et trajet vers le logement","Copies numériques des documents","Numéros d'urgence et contacts utiles"];
 
 function updateTravelGuide() {
@@ -1423,6 +1502,7 @@ function bindStaticAuth() {
 document.addEventListener("DOMContentLoaded", async () => {
   applyLanguage();
   bindStaticAuth();
+  bindSmartSearch();
   handleAuthRedirectError();
   supabase.auth.onAuthStateChange(async (event, session) => {
     if (event === "PASSWORD_RECOVERY") return renderPasswordRecovery();
