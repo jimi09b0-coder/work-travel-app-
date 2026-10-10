@@ -101,3 +101,30 @@ footer{display:flex;justify-content:space-between;gap:10px;padding:28px max(24px
  footer{padding:24px 16px;flex-direction:column}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* Premium interface layer — feature ribbon, responsive polish and accessibility */
+:root{--radius:22px;--focus-ring:0 0 0 4px rgba(79,141,247,.22)}
+:focus-visible{outline:3px solid #75a9ff;outline-offset:3px}
+.navbar{backdrop-filter:blur(14px)}
+.hero{isolation:isolate}
+.hero-content{animation:heroReveal .7s ease-out both}
+.hero-content .hero-button{margin-bottom:8px}
+.feature-ribbon{position:relative;z-index:3;max-width:1132px;margin:-42px auto 36px;padding:0 18px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.feature-tile{min-width:0;display:flex;align-items:center;gap:13px;padding:18px 16px;background:rgba(255,255,255,.94);border:1px solid rgba(218,229,245,.95);border-radius:18px;box-shadow:0 14px 38px rgba(11,48,103,.10);backdrop-filter:blur(12px);transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.feature-tile:hover{transform:translateY(-4px);border-color:#b7d0f7;box-shadow:0 20px 42px rgba(11,48,103,.14)}
+.feature-icon{flex:0 0 44px;width:44px;height:44px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(135deg,#e8f1ff,#f5f9ff);font-size:1.35rem}
+.feature-tile strong,.feature-tile small{display:block}
+.feature-tile strong{font-size:.91rem;line-height:1.35}
+.feature-tile small{margin-top:4px;color:var(--muted);font-size:.76rem;line-height:1.4}
+.useful-sites-section{margin-top:24px}
+.useful-site-card:focus-visible,.hero-button:focus-visible{outline-offset:4px}
+.search-section{scroll-margin-top:18px}
+.account-section,.travel-section,.useful-sites-section,.about-section{scroll-margin-top:24px}
+.account-card,.travel-tool,.travel-guide,.preferences-box,.external-search-box{box-shadow:0 14px 38px rgba(20,33,61,.06)}
+.application-form input,.application-form textarea,.external-search-form input,.filters select,.search-input{transition:border-color .18s ease,box-shadow .18s ease,background .18s ease}
+.application-form input:focus,.application-form textarea:focus,.external-search-form input:focus,.filters select:focus{outline:none;border-color:#76a5ee;box-shadow:var(--focus-ring);background:#fff}
+@keyframes heroReveal{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:900px){.feature-ribbon{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:-28px}.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.search-input{grid-column:1/-1}.useful-sites-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.hero{min-height:490px;padding-bottom:70px}.navbar{padding:15px 16px;align-items:flex-start;gap:12px;flex-wrap:wrap}.nav-links{width:100%;justify-content:space-between;gap:4px}.nav-links>a{padding:7px 8px;font-size:.86rem}.hero-content{margin-top:48px;padding:0 18px}.hero h1{font-size:clamp(2.25rem,12vw,3.4rem);letter-spacing:-1.6px}.feature-ribbon{grid-template-columns:1fr;margin:-26px 10px 28px;padding:0;gap:9px}.feature-tile{padding:13px 14px}.feature-icon{width:40px;height:40px;flex-basis:40px}.useful-sites-section,.account-section,.travel-section,.about-section{margin:24px 14px}.search-section{margin:20px 12px 28px;padding:18px 14px;border-radius:22px}.useful-sites-grid,.jobs-grid,.profile-grid{grid-template-columns:1fr}.filters{grid-template-columns:1fr}.search-input{grid-column:auto}.external-search-box{padding:16px}.external-search-form{grid-template-columns:1fr}.external-search-actions{grid-column:auto}.results-bar{align-items:flex-start;gap:10px;flex-direction:column}.account-card{padding:21px}.application-row{grid-template-columns:1fr}.travel-tool{gap:15px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
