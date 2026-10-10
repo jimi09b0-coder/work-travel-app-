@@ -58,7 +58,7 @@ function applyLanguage(){
     const value = dict[el.dataset.i18nPlaceholder]; if (value) el.placeholder = value;
   });
   const select=$("languageSelect"); if(select) select.value=lang;
-  document.title = lang==="ar" ? "Work Travel | العمل والسفر" : lang==="en" ? "Work Travel | Jobs & Travel" : "Work Travel | Emploi & Voyage";
+  document.title = lang==="ar" ? "WorkWay Smart | العمل والسفر" : lang==="en" ? "WorkWay Smart | Jobs & Travel" : "WorkWay Smart | Emploi & Voyage";
 }
 
 import { supabase } from "./supabase-config.js";
