@@ -1402,48 +1402,9 @@ function bindStaticAuth() {
   const loginButton = $("staticLoginButton");
   if (form && !form.dataset.bound) {
     form.dataset.bound = "1";
-    form.addEventListener("submit", async e => {
-      e.preventDefault();
-      const name = $("staticAuthName")?.value.trim() || "";
-      const email = $("staticAuthEmail")?.value.trim().toLowerCase() || "";
-      const password = $("staticAuthPassword")?.value || "";
-      const message = $("staticAuthMessage");
-      const button = form.querySelector('button[type="submit"]');
-      if (message) { message.hidden = true; message.textContent = ""; }
-      if (!name || !email || password.length < 6) {
-        if (message) {
-          message.textContent = !name ? "Veuillez saisir votre nom complet." : !email ? "Veuillez saisir votre adresse e-mail." : "Le mot de passe doit contenir au moins 6 caractères.";
-          message.hidden = false;
-        }
-        return;
-      }
-      if (!button) { if (message) { message.textContent = "Impossible d’activer le bouton de création du compte."; message.hidden = false; } return; }
-      button.disabled = true;
-      button.textContent = "Création du compte…";
-      try {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { full_name: name },
-            emailRedirectTo: window.location.origin + window.location.pathname
-          }
-        });
-        if (error) throw error;
-        if (data?.session) {
-          await renderDashboard();
-        } else {
-          renderAuth("login", "Compte créé. Vérifiez votre e-mail pour confirmer votre adresse.");
-        }
-      } catch (error) {
-        if (message) {
-          message.textContent = friendlyAuthError(error);
-          message.hidden = false;
-        }
-      } finally {
-        button.disabled = false;
-        button.textContent = "Créer mon compte";
-      }
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      await directSignup();
     });
   }
   if (loginButton && !loginButton.dataset.bound) {
