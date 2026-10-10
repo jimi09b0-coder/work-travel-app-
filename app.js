@@ -534,7 +534,7 @@ function friendlyAuthError(error) {
   if (lower.includes("invalid login credentials")) return "E-mail ou mot de passe incorrect.";
   if (lower.includes("email not confirmed")) return "Votre e-mail n’est pas encore confirmé.";
   if (lower.includes("user already registered")) return "Un compte existe déjà avec cet e-mail. Utilisez « Se connecter ».";
-  if (lower.includes("email address") && lower.includes("invalid")) return "Cette adresse e-mail est refusée par le service. Vérifiez qu’elle est écrite correctement et essayez une autre adresse valide si le problème continue.";
+  if (lower.includes("email address") && lower.includes("invalid") || String(error?.code || "").toLowerCase() === "email_address_invalid") return "Supabase a refusé cette adresse e-mail. Si elle est bien écrite, le problème peut venir des réglages Auth/Email ou du service d’envoi dans Supabase, pas seulement d’une faute de frappe. Vérifiez Auth → Providers → Email et la configuration SMTP.";
   if (lower.includes("rate limit")) return "Trop de tentatives. Attendez quelques minutes puis réessayez.";
   if (lower.includes("network") || lower.includes("fetch")) return "Connexion réseau impossible. Vérifiez Internet puis réessayez.";
   return message || "Une erreur d’authentification est survenue.";
@@ -578,6 +578,7 @@ async function register(e) {
   const password = $("authPassword")?.value || "";
   if (!name) return authMessage("Veuillez saisir votre nom complet.");
   if (!email) return authMessage("Veuillez saisir votre adresse e-mail.");
+  if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return authMessage("L’adresse e-mail semble incorrecte. Vérifiez-la (ex. exemple@gmail.com).");
   if (password.length < 6) return authMessage("Le mot de passe doit contenir au moins 6 caractères.");
   const button = $("authForm")?.querySelector('button[type="submit"]');
   if (button) { button.disabled = true; button.textContent = "Création du compte…"; }
@@ -1473,9 +1474,9 @@ async function directSignup() {
   const message = document.getElementById("staticAuthMessage");
   const button = document.getElementById("directSignupButton");
   if (message) { message.hidden = true; message.textContent = ""; }
-  if (!name || !email || password.length < 6) {
+  if (!name || !email || password.length < 6 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
     if (message) {
-      message.textContent = !name ? "Veuillez saisir votre nom complet." : !email ? "Veuillez saisir votre adresse e-mail." : "Le mot de passe doit contenir au moins 6 caractères.";
+      message.textContent = !name ? "Veuillez saisir votre nom complet." : !email ? "Veuillez saisir votre adresse e-mail." : !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email) ? "L’adresse e-mail semble incorrecte. Vérifiez-la (ex. exemple@gmail.com)." : "Le mot de passe doit contenir au moins 6 caractères.";
       message.hidden = false;
     }
     return false;
