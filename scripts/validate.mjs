@@ -43,6 +43,7 @@ if (missingHandlers.length) throw new Error(`Unknown inline handler(s): ${missin
 const signupButton = html.match(/<button[^>]*id=["']directSignupButton["'][^>]*>/i)?.[0] || '';
 if (!signupButton || /\bonclick=/i.test(signupButton)) throw new Error('Signup must use the form submit handler, not a duplicate inline click handler.');
 if (!js.includes('async function directSignup()') || !js.includes('await directSignup();')) throw new Error('Signup handler is missing or not connected to the form.');
+if (!js.includes('showResendConfirmation(email)')) throw new Error('Signup confirmation resend action is missing.');
 if (!/app\.js\?v=\d{8}-\d+/.test(html)) throw new Error('app.js must use a versioned URL to prevent stale browser cache.');
 if (!/countryMap\s*=\s*\{/.test(js) || !js.includes('Portugal:"pt"')) throw new Error('Country-specific job search mappings are incomplete.');
 
