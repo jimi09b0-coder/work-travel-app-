@@ -1271,11 +1271,11 @@ async function logout() {
 
 async function searchJobs(saveHistory = false) {
   const raw = $("search").value.trim();
-  const t = raw.toLowerCase(), c = $("countryFilter").value, ty = $("typeFilter").value;
+  const t = normalizeSmartText(raw), c = $("countryFilter").value, ty = $("typeFilter").value;
   const remote = $("remoteFilter")?.value || "", currency = $("currencyFilter")?.value || "";
   const words = t.split(/\s+/).filter(Boolean);
   const list = jobs.filter(j => {
-    const haystack = [j.title,j.country,j.city,j.type,j.contract,j.description,j.requirements].join(" ").toLowerCase();
+    const haystack = normalizeSmartText([j.title,j.country,j.city,j.type,j.contract,j.description,j.requirements].join(" "));
     const matchesText = !words.length || words.every(word => haystack.includes(word));
     return matchesText && (!c || j.country === c) && (!ty || j.type === ty) && (!remote || j.remote_type === remote) && (!currency || j.salary_currency === currency) && (!favoritesOnly || isFavorite(j.id));
   });
