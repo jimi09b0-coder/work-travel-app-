@@ -476,10 +476,17 @@ function handleAuthRedirectError() {
 async function forgotPassword() {
   const email = (window.prompt("Adresse e-mail du compte :") || "").trim().toLowerCase();
   if (!email) return;
+  if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+    return alert("Cette adresse e-mail semble incomplète. Vérifiez-la puis réessayez.");
+  }
   const redirectTo = window.location.origin + window.location.pathname;
-  const {error} = await supabase.auth.resetPasswordForEmail(email, {redirectTo});
-  if (error) return alert(error.message);
-  renderAuth("login", "Un lien de réinitialisation a été envoyé si cette adresse correspond à un compte.");
+  try {
+    const {error} = await supabase.auth.resetPasswordForEmail(email, {redirectTo});
+    if (error) return alert(friendlyAuthError(error));
+    renderAuth("login", "Si cette adresse correspond à un compte, un lien de réinitialisation a été demandé. Vérifiez aussi les courriers indésirables.");
+  } catch (error) {
+    alert(friendlyAuthError(error));
+  }
 }
 
 function renderAuth(mode="register", message="") {
@@ -535,9 +542,20 @@ function friendlyAuthError(error) {
 async function resendConfirmation(email) {
   const value = String(email || "").trim().toLowerCase();
   if (!value) return authMessage("Saisissez votre adresse e-mail pour recevoir le lien de confirmation.");
-  const { error } = await supabase.auth.resend({ type: "signup", email: value });
-  if (error) return authMessage(friendlyAuthError(error));
-  authMessage("Nouveau lien de confirmation envoyé. Vérifiez aussi le dossier spam.", "success");
+  if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value)) {
+    return authMessage("Cette adresse e-mail semble incomplète. Vérifiez la partie avant et après @, puis le domaine (ex. exemple@gmail.com).");
+  }
+  const button = document.getElementById("resendConfirmation");
+  if (button) { button.disabled = true; button.textContent = "Envoi en cours…"; }
+  try {
+    const { error } = await supabase.auth.resend({ type: "signup", email: value });
+    if (error) return authMessage(friendlyAuthError(error));
+    authMessage("Demande envoyée. Vérifiez votre boîte de réception et le dossier spam.", "success");
+  } catch (error) {
+    authMessage(friendlyAuthError(error));
+  } finally {
+    if (button) { button.disabled = false; button.textContent = "📩 Renvoyer l’e-mail de confirmation"; }
+  }
 }
 function showResendConfirmation(email) {
   const form = $("authForm");
