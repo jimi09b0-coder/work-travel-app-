@@ -1432,7 +1432,7 @@ function openExternalJobSearch(country) {
   const location = (document.getElementById("externalSearchLocation")?.value || "").trim();
   const q = encodeURIComponent(query);
   const loc = encodeURIComponent(location);
-  const countryMap = {Belgique:"be",France:"fr",Espagne:"es",Allemagne:"de"};
+  const countryMap = {Belgique:"be",France:"fr",Espagne:"es",Allemagne:"de",Italie:"it","Pays-Bas":"nl",Suisse:"ch","Royaume-Uni":"gb",Irlande:"ie",Canada:"ca",Australie:"au","Nouvelle-Zélande":"nz","États-Unis":"us","Émirats arabes unis":"ae","Arabie saoudite":"sa",Qatar:"qa",Maroc:"ma",Tunisie:"tn",Égypte:"eg","Afrique du Sud":"za",Japon:"jp","Corée du Sud":"kr",Chine:"cn",Inde:"in",Singapour:"sg",Brésil:"br",Mexique:"mx",Argentine:"ar",Turquie:"tr",Suède:"se",Norvège:"no",Danemark:"dk",Finlande:"fi",Autriche:"at",Pologne:"pl",Tchéquie:"cz",Grèce:"gr",Roumanie:"ro",Hongrie:"hu"};
   let url = "";
   if (country === "EURES") {
     url = "https://europa.eu/eures/portal/jv-se/search?page=1&resultsPerPage=25&orderBy=BEST_MATCH";
@@ -1462,13 +1462,17 @@ function openExternalJobSearch(country) {
     if (query) params.push("keywords=" + q);
     if (location) params.push("location=" + loc);
     if (params.length) url += "?" + params.join("&");
-  } else if (country === "Indeed") {
-    url = "https://www.indeed.com/jobs";
+  } else if (country === "Indeed" || country === "IndeedPays") {
+    const selectedCountry = document.getElementById("countryFilter")?.value || "";
+    const code = country === "IndeedPays" ? countryMap[selectedCountry] : "";
+    const domainMap = {fr:"fr",de:"de",be:"be",es:"es",it:"it",nl:"nl",ch:"ch",gb:"uk",ie:"ie",ca:"ca",au:"au",nz:"nz",us:"www",ae:"ae",sa:"sa",ma:"ma",tn:"tn",za:"za",jp:"jp",in:"in",sg:"sg",br:"br",mx:"mx",tr:"tr",se:"se",no:"no",dk:"dk",fi:"fi",at:"at",pl:"pl",gr:"gr"};
+    const host = code ? (domainMap[code] || "www") + ".indeed.com" : "www.indeed.com";
+    url = "https://" + host + "/jobs";
     const params = [];
     if (query) params.push("q=" + q);
     if (location) params.push("l=" + loc);
     if (params.length) url += "?" + params.join("&");
-    else url = "https://www.indeed.com/worldwide";
+    else if (!code) url = "https://www.indeed.com/worldwide";
   } else if (country === "UN") {
     url = "https://careers.un.org/";
   }
