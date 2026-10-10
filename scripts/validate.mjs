@@ -40,6 +40,13 @@ const ignored = new Set(['if','searchJobs','resetView','openAccount','toggleFavo
 const missingHandlers = [...new Set(inlineHandlers.filter(name => !ignored.has(name) && !knownGlobals.has(name) && !functionNames.has(name) && !inlineFunctionNames.has(name)))];
 if (missingHandlers.length) throw new Error(`Unknown inline handler(s): ${missingHandlers.join(', ')}`);
 
+const signupButton = html.match(/<button[^>]*id=["']directSignupButton["'][^>]*>/i)?.[0] || '';
+if (!signupButton || /\bonclick=/i.test(signupButton)) throw new Error('Signup must use the form submit handler, not a duplicate inline click handler.');
+if (!js.includes('async function directSignup()') || !js.includes('await directSignup();')) throw new Error('Signup handler is missing or not connected to the form.');
+if (!/app\.js\?v=\d{8}-\d+/.test(html)) throw new Error('app.js must use a versioned URL to prevent stale browser cache.');
+if (!/countryMap\s*=\s*\{/.test(js) || !js.includes('Portugal:"pt"')) throw new Error('Country-specific job search mappings are incomplete.');
+
+
 for (const match of js.matchAll(/target=["']_blank["'][^>]*>/gi)) {
   if (!/\brel=["'][^"']*noopener(?:\s+|\b)[^"']*["']/i.test(match[0])) {
     throw new Error('Generated target=_blank link in app.js is missing rel=noopener.');
