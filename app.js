@@ -534,7 +534,7 @@ function friendlyAuthError(error) {
   if (lower.includes("invalid login credentials")) return "E-mail ou mot de passe incorrect.";
   if (lower.includes("email not confirmed")) return "Votre e-mail n’est pas encore confirmé.";
   if (lower.includes("user already registered")) return "Un compte existe déjà avec cet e-mail. Utilisez « Se connecter ».";
-  if (lower.includes("email address") && lower.includes("invalid") || String(error?.code || "").toLowerCase() === "email_address_invalid") return "Supabase a refusé cette adresse e-mail. Si elle est bien écrite, le problème peut venir des réglages Auth/Email ou du service d’envoi dans Supabase, pas seulement d’une faute de frappe. Vérifiez Auth → Providers → Email et la configuration SMTP.";
+  if ((lower.includes("email address") && lower.includes("invalid")) || String(error?.code || "").toLowerCase() === "email_address_invalid") return "Supabase a refusé cette adresse. Gmail est normalement accepté : vérifiez les espaces et les fautes de frappe. Si le refus continue, consultez les journaux Auth du projet Supabase pour voir la cause exacte (format, domaine de test ou réglage du fournisseur).";
   if (lower.includes("rate limit")) return "Trop de tentatives. Attendez quelques minutes puis réessayez.";
   if (lower.includes("network") || lower.includes("fetch")) return "Connexion réseau impossible. Vérifiez Internet puis réessayez.";
   return message || "Une erreur d’authentification est survenue.";
