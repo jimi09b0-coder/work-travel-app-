@@ -454,18 +454,21 @@ function renderPasswordRecovery() {
   });
 }
 function handleAuthRedirectError() {
+  // Supabase may return authentication errors in the URL fragment or query string.
+  // URLSearchParams already decodes parameter values; decoding again can throw.
   const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
-  if (!hash) return false;
-  const params = new URLSearchParams(hash);
-  const error = params.get("error");
+  const fragmentParams = new URLSearchParams(hash);
+  const queryParams = new URLSearchParams(window.location.search);
+  const error = fragmentParams.get("error") || queryParams.get("error");
   if (!error) return false;
-  const description = params.get("error_description");
-  const code = params.get("error_code");
+  const code = fragmentParams.get("error_code") || queryParams.get("error_code");
+  const description = fragmentParams.get("error_description") || queryParams.get("error_description");
+  const normalizedDescription = String(description || "").replace(/\\+/g, " ").trim();
   const message = code === "otp_expired"
     ? "Le lien de confirmation a expiré ou a déjà été utilisé. Demandez un nouveau lien."
-    : description
-      ? decodeURIComponent(description.replace(/\\+/g, " "))
-      : "Le lien d’authentification n’est plus valide. Réessayez.";
+    : code === "access_denied"
+      ? "Le lien d’authentification a été refusé ou a expiré. Demandez un nouveau lien puis réessayez."
+      : normalizedDescription || "Le lien d’authentification n’est plus valide. Réessayez.";
   renderAuth("login", message);
   return true;
 }
