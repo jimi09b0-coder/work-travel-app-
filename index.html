@@ -108,7 +108,7 @@
     const password = document.getElementById("staticAuthPassword").value || "";
     const show = text => { message.textContent = text; message.hidden = false; };
     if (!name) return show("Veuillez saisir votre nom complet.");
-    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return show("Adresse e-mail invalide. Vérifiez-la puis réessayez.");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return show("Adresse e-mail invalide. Vérifiez-la puis réessayez.");
     if (password.length < 6) return show("Le mot de passe doit contenir au moins 6 caractères.");
     busy = true;
     button.disabled = true;
