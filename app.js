@@ -1517,10 +1517,19 @@ window.directSignup = directSignup;
 
 function bindStaticAuth() {
   const form = $("staticAuthForm");
+  const button = $("directSignupButton");
   const loginButton = $("staticLoginButton");
   if (form && !form.dataset.bound) {
     form.dataset.bound = "1";
     form.addEventListener("submit", async event => {
+      event.preventDefault();
+      await directSignup();
+    });
+  }
+  // Fallback for mobile browsers where the form submit interaction can be swallowed.
+  if (button && !button.dataset.clickBound) {
+    button.dataset.clickBound = "1";
+    button.addEventListener("click", async event => {
       event.preventDefault();
       await directSignup();
     });
@@ -1531,20 +1540,37 @@ function bindStaticAuth() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-  applyLanguage();
-  bindStaticAuth();
-  bindSmartSearch();
-  handleAuthRedirectError();
-  supabase.auth.onAuthStateChange(async (event, session) => {
-    if (event === "PASSWORD_RECOVERY") return renderPasswordRecovery();
-    if (session && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) return renderDashboard();
-    if (!session && event === "SIGNED_OUT") renderAuth("login");
-  });
-  await loadJobs();
-  const user = await currentUser();
-  if (user) await renderDashboard();
-});
+let appInitialized = false;
+async function initializeApp() {
+  if (appInitialized) return;
+  appInitialized = true;
+  try {
+    applyLanguage();
+    bindStaticAuth();
+    bindSmartSearch();
+    handleAuthRedirectError();
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "PASSWORD_RECOVERY") return renderPasswordRecovery();
+      if (session && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) return renderDashboard();
+      if (!session && event === "SIGNED_OUT") renderAuth("login");
+    });
+    await loadJobs();
+    const user = await currentUser();
+    if (user) await renderDashboard();
+  } catch (error) {
+    console.error("WorkWay initialization failed:", error);
+    const message = $("staticAuthMessage");
+    if (message) {
+      message.textContent = "Le formulaire a rencontré un problème technique. Actualisez la page et réessayez. Si le problème continue, ouvrez le site dans Chrome.";
+      message.hidden = false;
+    }
+  }
+}
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeApp, { once: true });
+} else {
+  initializeApp();
+}
 
 function openExternalJobSearch(country) {
   const query = (document.getElementById("externalSearchQuery")?.value || document.getElementById("search")?.value || "").trim();
