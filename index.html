@@ -87,4 +87,55 @@
 <div id="travelGuide" class="travel-guide"><div class="travel-empty"><span>🗺️</span><h3>Choisissez votre destination</h3><p>Vous obtiendrez une checklist adaptée à votre départ.</p></div></div></section>
 <section class="about-section"><span class="eyebrow" data-i18n="about_eyebrow">WORK TRAVEL</span><h2 data-i18n="about_title">Votre projet européen, au même endroit</h2><p data-i18n="about_text">Créez votre profil, ajoutez votre CV et gardez une trace de vos candidatures.</p></section>
 </main><footer><strong>🌍 WorkWay</strong><span data-i18n="footer_text">Travail et voyage en Europe</span></footer>
-<script type="module" src="app.js?v=20261011-2"></script></body></html>
+<script>
+/* Classic-script safety net: keep signup usable if the ES module fails to load. */
+(function () {
+  const form = document.getElementById("staticAuthForm");
+  const button = document.getElementById("directSignupButton");
+  const message = document.getElementById("staticAuthMessage");
+  if (!form || !button || !message) return;
+  let busy = false;
+  async function fallbackSignup(event) {
+    if (typeof window.directSignup === "function") return;
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+    }
+    if (busy) return;
+    const name = (document.getElementById("staticAuthName").value || "").trim();
+    const email = (document.getElementById("staticAuthEmail").value || "").trim().toLowerCase();
+    const password = document.getElementById("staticAuthPassword").value || "";
+    const show = text => { message.textContent = text; message.hidden = false; };
+    if (!name) return show("Veuillez saisir votre nom complet.");
+    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return show("Adresse e-mail invalide. Vérifiez-la puis réessayez.");
+    if (password.length < 6) return show("Le mot de passe doit contenir au moins 6 caractères.");
+    busy = true;
+    button.disabled = true;
+    button.textContent = "Création du compte…";
+    message.hidden = true;
+    try {
+      const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+      const client = createClient("https://zwdixozyrvhmjrhboqti.supabase.co", "sb_publishable_b3p64FMUtYtk0ejBuZAPtw_nn_lHTZ0");
+      const { data, error } = await client.auth.signUp({
+        email, password,
+        options: { data: { full_name: name }, emailRedirectTo: window.location.origin + window.location.pathname }
+      });
+      if (error) throw error;
+      show(data && data.session
+        ? "Compte créé avec succès. Vous pouvez maintenant vous connecter."
+        : "Demande de création envoyée. Vérifiez votre boîte e-mail et les courriers indésirables pour confirmer votre adresse.");
+    } catch (error) {
+      const detail = (error && error.message) ? error.message : String(error || "Erreur inconnue");
+      show("Le formulaire de secours a détecté une erreur : " + detail);
+    } finally {
+      busy = false;
+      button.disabled = false;
+      button.textContent = "Créer mon compte";
+    }
+  }
+  form.addEventListener("submit", fallbackSignup, true);
+  button.addEventListener("click", fallbackSignup, true);
+})();
+</script>
+<script type="module" src="app.js?v=20261011-3"></script></body></html>
