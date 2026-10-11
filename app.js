@@ -518,7 +518,20 @@ function renderAuth(mode="register", message="") {
   const authForm = $("authForm");
   if (authForm) {
     authForm.noValidate = true;
-    authForm.addEventListener("submit", e => mode === "login" ? login(e) : register(e));
+    const submitAuth = async event => {
+      if (event) event.preventDefault();
+      const submitButton = authForm.querySelector('button[type="submit"]');
+      if (submitButton?.disabled) return;
+      if (mode === "login") await login(event || { preventDefault() {} });
+      else await register(event || { preventDefault() {} });
+    };
+    authForm.addEventListener("submit", submitAuth);
+    // Explicit click path improves reliability on mobile browsers and provides immediate feedback.
+    const submitButton = authForm.querySelector('button[type="submit"]');
+    if (submitButton) {
+      submitButton.type = "button";
+      submitButton.addEventListener("click", submitAuth);
+    }
   }
   if (mode === "login") {
     const forgot = document.createElement("button");
