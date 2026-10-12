@@ -2,36 +2,42 @@
 const I18N = {
   fr: {
     nav_jobs:"Offres", nav_travel:"Voyage", nav_account:"Mon compte",
-    hero_badge:"🇪🇺 Europe • Emploi • Voyage", hero_title:"Travaillez en Europe,\n", hero_text:"Trouvez un emploi, préparez votre départ et gérez vos candidatures au même endroit.", hero_cta:"🔎 Voir les offres",
-    useful_eyebrow:"LIENS UTILES", useful_title:"🌐 Sites officiels pour travailler et préparer son départ", useful_text:"Accédez directement aux portails européens et nationaux de l’emploi.",
+    hero_badge:"🌍 Monde entier • Emploi • Voyage", hero_title:"Travaillez partout dans le monde,\n", hero_text:"Explorez les opportunités internationales, préparez votre départ et suivez vos candidatures depuis un seul espace.", hero_cta:"🔎 Explorer les offres",
+    world_eyebrow:"PORTÉE MONDIALE", world_title:"🌍 Une plateforme, le monde entier", world_text:"Explorez les possibilités de travail et préparez votre mobilité sur plusieurs continents.", region_africa:"🌍 Afrique", region_europe:"🇪🇺 Europe", region_americas:"🌎 Amériques", region_asia:"🌏 Asie", region_middleeast:"🕌 Moyen-Orient", region_oceania:"🌊 Océanie",
+    feature_jobs_title:"Emploi international", feature_jobs_text:"Explorez les opportunités par pays", feature_search_title:"Recherche ciblée", feature_search_text:"Métier, ville et type de contrat", feature_apply_title:"Candidatures suivies", feature_apply_text:"Gardez vos démarches organisées", feature_travel_title:"Départ mieux préparé", feature_travel_text:"Checklist de voyage personnalisée",
+    useful_eyebrow:"LIENS UTILES", useful_title:"🌐 Sites officiels pour travailler et préparer son départ", useful_text:"Accédez à des portails officiels et internationaux pour explorer les possibilités selon votre destination.",
     jobs_eyebrow:"OPPORTUNITÉS", search_title:"🔎 Rechercher un emploi", search_text:"Filtrez les offres par métier, pays, ville ou secteur.",
     search_placeholder:"Métier, pays ou ville...", all_countries:"Tous les pays", all_sectors:"Tous les secteurs",
-    travel_eyebrow:"PRÉPARER SON DÉPART", travel_title:"🧳 Votre checklist de voyage", travel_text:"Préparez votre installation en Europe avec une checklist simple et pratique.",
+    travel_eyebrow:"PRÉPARER SON DÉPART", travel_title:"🧳 Votre checklist de voyage", travel_text:"Préparez votre départ à l’international avec une checklist simple et pratique.",
     progress:"Progression", travel_empty_title:"Choisissez votre destination", travel_empty_text:"Vous obtiendrez une checklist adaptée à votre départ.",
-    about_eyebrow:"WORK TRAVEL", about_title:"Votre projet européen, au même endroit", about_text:"Créez votre profil, ajoutez votre CV et gardez une trace de vos candidatures.",
-    footer_text:"Travail et voyage en Europe", language_name:"Français"
+    about_eyebrow:"WORK TRAVEL", about_title:"Votre projet international, au même endroit", about_text:"Créez votre profil, ajoutez votre CV et suivez vos candidatures à travers le monde.",
+    footer_text:"Travail et voyage dans le monde entier", language_name:"Français"
   },
   en: {
     nav_jobs:"Jobs", nav_travel:"Travel", nav_account:"My account",
-    hero_badge:"🇪🇺 Europe • Jobs • Travel", hero_title:"Work in Europe,", hero_text:"Find a job, prepare your move, and manage your applications in one place.", hero_cta:"🔎 View jobs",
-    useful_eyebrow:"USEFUL LINKS", useful_title:"🌐 Official sites for work and relocation", useful_text:"Go directly to European and national employment portals.",
+    hero_badge:"🌍 Worldwide • Jobs • Travel", hero_title:"Work anywhere in the world,", hero_text:"Explore international opportunities, prepare your move, and track applications in one place.", hero_cta:"🔎 Explore jobs",
+    world_eyebrow:"GLOBAL REACH", world_title:"🌍 One platform, the whole world", world_text:"Explore work opportunities and prepare to move across continents.", region_africa:"🌍 Africa", region_europe:"🇪🇺 Europe", region_americas:"🌎 The Americas", region_asia:"🌏 Asia", region_middleeast:"🕌 Middle East", region_oceania:"🌊 Oceania",
+    feature_jobs_title:"Global opportunities", feature_jobs_text:"Explore jobs by country", feature_search_title:"Focused search", feature_search_text:"Role, city and contract type", feature_apply_title:"Track applications", feature_apply_text:"Keep your next steps organized", feature_travel_title:"Plan your move", feature_travel_text:"A practical travel checklist",
+    useful_eyebrow:"USEFUL LINKS", useful_title:"🌐 Official sites for work and relocation", useful_text:"Explore official and international portals for opportunities in your destination.",
     jobs_eyebrow:"OPPORTUNITIES", search_title:"🔎 Search for a job", search_text:"Filter jobs by role, country, city or sector.",
     search_placeholder:"Job, country or city...", all_countries:"All countries", all_sectors:"All sectors",
-    travel_eyebrow:"PREPARE YOUR MOVE", travel_title:"🧳 Your travel checklist", travel_text:"Prepare your move to Europe with a simple, practical checklist.",
+    travel_eyebrow:"PREPARE YOUR MOVE", travel_title:"🧳 Your travel checklist", travel_text:"Prepare your international move with a simple, practical checklist.",
     progress:"Progress", travel_empty_title:"Choose your destination", travel_empty_text:"You will get a checklist tailored to your move.",
-    about_eyebrow:"WORK TRAVEL", about_title:"Your European project, in one place", about_text:"Create your profile, add your CV and keep track of your applications.",
-    footer_text:"Work and travel in Europe", language_name:"English"
+    about_eyebrow:"WORK TRAVEL", about_title:"Your global project, in one place", about_text:"Create your profile, add your CV and track applications around the world.",
+    footer_text:"Work and travel worldwide", language_name:"English"
   },
   ar: {
     nav_jobs:"الوظائف", nav_travel:"السفر", nav_account:"حسابي",
-    hero_badge:"🇪🇺 أوروبا • العمل • السفر", hero_title:"اعمل في أوروبا،", hero_text:"ابحث عن وظيفة، حضّر سفرك، وأدر طلباتك من مكان واحد.", hero_cta:"🔎 عرض الوظائف",
-    useful_eyebrow:"روابط مفيدة", useful_title:"🌐 مواقع رسمية للعمل والاستقرار", useful_text:"انتقل مباشرة إلى بوابات التوظيف الأوروبية والوطنية.",
+    hero_badge:"🌍 العالم كله • العمل • السفر", hero_title:"اعمل وسافر حول العالم،", hero_text:"اكتشف فرص العمل الدولية، واستعد لرحلتك، وتابع طلبات التوظيف من مكان واحد.", hero_cta:"🔎 استكشف الوظائف",
+    world_eyebrow:"انتشار عالمي", world_title:"🌍 منصة واحدة، والعالم كله أمامك", world_text:"استكشف فرص العمل وجهّز انتقالك بين مختلف قارات العالم.", region_africa:"🌍 أفريقيا", region_europe:"🇪🇺 أوروبا", region_americas:"🌎 الأمريكتان", region_asia:"🌏 آسيا", region_middleeast:"🕌 الشرق الأوسط", region_oceania:"🌊 أوقيانوسيا",
+    feature_jobs_title:"فرص عمل دولية", feature_jobs_text:"استكشف الفرص حسب الدولة", feature_search_title:"بحث دقيق", feature_search_text:"المهنة والمدينة ونوع العقد", feature_apply_title:"متابعة الطلبات", feature_apply_text:"نظّم خطوات التقديم", feature_travel_title:"استعداد أفضل للسفر", feature_travel_text:"قائمة تجهيز مخصصة للرحلة",
+    useful_eyebrow:"روابط مفيدة", useful_title:"🌐 مواقع رسمية للعمل والاستقرار", useful_text:"اكتشف بوابات التوظيف الرسمية والدولية حسب وجهتك.",
     jobs_eyebrow:"الفرص", search_title:"🔎 ابحث عن وظيفة", search_text:"صفِّ الوظائف حسب المهنة أو الدولة أو المدينة أو القطاع.",
     search_placeholder:"المهنة أو الدولة أو المدينة...", all_countries:"كل الدول", all_sectors:"كل القطاعات",
-    travel_eyebrow:"الاستعداد للسفر", travel_title:"🧳 قائمة تجهيز السفر", travel_text:"جهّز انتقالك إلى أوروبا من خلال قائمة بسيطة وعملية.",
+    travel_eyebrow:"الاستعداد للسفر", travel_title:"🧳 قائمة تجهيز السفر", travel_text:"جهّز سفرك وانتقالك إلى أي دولة من خلال قائمة بسيطة وعملية.",
     progress:"التقدم", travel_empty_title:"اختر وجهتك", travel_empty_text:"ستظهر لك قائمة تجهيز مناسبة لرحلتك.",
-    about_eyebrow:"WORK TRAVEL", about_title:"مشروعك الأوروبي في مكان واحد", about_text:"أنشئ ملفك، أضف سيرتك الذاتية، وتابع طلبات التوظيف.",
-    footer_text:"العمل والسفر في أوروبا", language_name:"العربية"
+    about_eyebrow:"WORK TRAVEL", about_title:"مشروعك الدولي في مكان واحد", about_text:"أنشئ ملفك، وأضف سيرتك الذاتية، وتابع طلبات التوظيف حول العالم.",
+    footer_text:"العمل والسفر حول العالم كله", language_name:"العربية"
   }
 };
 function getLanguage(){ return localStorage.getItem("workTravelLanguage") || "fr"; }
