@@ -167,3 +167,15 @@ footer{display:flex;justify-content:space-between;gap:10px;padding:28px max(24px
 .rtl-language .job-card h3{margin-right:0;margin-left:45px}
 .rtl-language .nav-links{direction:rtl}
 .rtl-language .results-actions{direction:rtl}
+
+
+/* Worldwide interface refresh — global regions, improved hierarchy and mobile comfort */
+.worldwide-strip{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);align-items:center;gap:24px;margin:0 24px 34px;padding:24px 27px;border:1px solid #dce8f8;border-radius:24px;background:linear-gradient(125deg,#fff 0%,#f3f8ff 55%,#eaf4ff 100%);box-shadow:0 12px 34px rgba(20,55,105,.06)}
+.worldwide-copy h2{margin:5px 0 7px}.worldwide-copy p{margin:0;color:var(--muted);max-width:480px;font-size:.94rem}
+.world-regions{display:flex;flex-wrap:wrap;gap:9px;justify-content:flex-end}
+.world-regions span{display:inline-flex;align-items:center;gap:7px;padding:10px 13px;border:1px solid #dce7f7;border-radius:999px;background:rgba(255,255,255,.9);color:#29466e;font-size:.86rem;font-weight:800;box-shadow:0 4px 12px rgba(25,63,118,.04)}
+.world-regions span:hover{border-color:#a9c6f2;background:#fff}
+.rtl-language .worldwide-copy{text-align:right}
+.rtl-language .world-regions{justify-content:flex-start;direction:rtl}
+@media(max-width:820px){.worldwide-strip{grid-template-columns:1fr;margin:0 18px 28px;padding:22px}.world-regions{justify-content:flex-start}}
+@media(max-width:560px){.worldwide-strip{margin:0 12px 24px;padding:18px;border-radius:20px}.world-regions{gap:7px}.world-regions span{padding:8px 10px;font-size:.8rem}}
