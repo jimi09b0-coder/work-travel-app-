@@ -19,6 +19,6 @@ jobs:
         with:
           node-version: 20
       - name: Check JavaScript syntax
-        run: node --check app.js
+        run: node --input-type=module --check < app.js
       - name: Run frontend consistency validation
         run: node scripts/validate.mjs
