@@ -1,6 +1,6 @@
-# Work Travel
+# Work Travel IA+
 
-Plateforme web de recherche d'emploi et de préparation au départ en Europe.
+Plateforme web de recherche d'emploi et de préparation au départ dans le monde 
 
 ## Fonctionnalités
 - Recherche et filtrage des offres d'emploi.
