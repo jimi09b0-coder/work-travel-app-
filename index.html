@@ -105,7 +105,7 @@
   if (!form || !button || !message) return;
   let busy = false;
   async function fallbackSignup(event) {
-    if (typeof window.directSignup === "function") return;
+    if (form.dataset.bound === "1") return;
     if (event) {
       event.preventDefault();
       event.stopPropagation();
@@ -147,4 +147,4 @@
   button.addEventListener("click", fallbackSignup, true);
 })();
 </script>
-<script type="module" src="app.js?v=20261012-2"></script></body></html>
+<script type="module" src="app.js?v=20261012-3"></script></body></html>
