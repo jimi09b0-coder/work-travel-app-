@@ -1400,20 +1400,20 @@ function runSmartSearch(input) {
   }
 
   const ArabicJobAliases = [
-    [/\bسائق(?:ة|ين)?\b/g, "chauffeur"],
-    [/\bممرض(?:ة|ين)?\b/g, "infirmier"],
-    [/\bطباخ(?:ة|ين)?\b/g, "cuisine"],
-    [/\bفنادق?|فندقة\b/g, "hôtellerie"],
-    [/\bمطاعم?\b/g, "restauration"],
-    [/\bعامل(?:ة|ين)?\b/g, "ouvrier"],
-    [/\bبناء\b/g, "construction"],
-    [/\bكهربائي(?:ة|ين)?\b/g, "électricien"],
-    [/\bلحام(?:ة|ين)?\b/g, "soudeur"],
-    [/\bمبرمج(?:ة|ين)?\b/g, "informatique"],
-    [/\bمحاسب(?:ة|ين)?\b/g, "comptable"],
-    [/\bتنظيف|نظافة\b/g, "nettoyage"],
-    [/\bزراعة|فلاحة\b/g, "agriculture"],
-    [/\bعن بُعد|عن بعد\b/g, "a distance"]
+    [/سائق(?:ة|ين)?/g, "chauffeur"],
+    [/ممرض(?:ة|ين)?/g, "infirmier"],
+    [/طباخ(?:ة|ين)?/g, "cuisine"],
+    [/فنادق?|فندقة/g, "hôtellerie"],
+    [/مطاعم?/g, "restauration"],
+    [/عامل(?:ة|ين)?/g, "ouvrier"],
+    [/بناء/g, "construction"],
+    [/كهربائي(?:ة|ين)?/g, "électricien"],
+    [/لحام(?:ة|ين)?/g, "soudeur"],
+    [/مبرمج(?:ة|ين)?/g, "informatique"],
+    [/محاسب(?:ة|ين)?/g, "comptable"],
+    [/تنظيف|نظافة/g, "nettoyage"],
+    [/زراعة|فلاحة/g, "agriculture"],
+    [/عن بُعد|عن بعد/g, "a distance"]
   ];
   for (const [pattern, replacement] of ArabicJobAliases) cleaned = cleaned.replace(pattern, replacement);
   cleaned = cleaned.replace(/\b(je cherche|je veux|recherche|trouver|trouve|emploi|emplois|travail|offre|offres|job|jobs|poste|postes|en|au|aux|dans|pour|avec|de|du|des|la|le|les|un|une|a|et|mon|ma|mes)\b/g, " ")
