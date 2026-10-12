@@ -1330,7 +1330,7 @@ async function searchJobs(saveHistory = false) {
 
 
 function normalizeSmartText(value) {
-  return String(value || "").toLocaleLowerCase("fr").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s-]/g, " ").replace(/\s+/g, " ").trim();
+  return String(value || "").toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\p{L}\p{N}\s-]/gu, " ").replace(/\s+/g, " ").trim();
 }
 
 function runSmartSearch(input) {
@@ -1344,11 +1344,44 @@ function runSmartSearch(input) {
   let cleaned = normalizeSmartText(prompt);
   const countrySelect = $("countryFilter");
   const countryOptions = countrySelect ? [...countrySelect.options].filter(option => option.value) : [];
-  const countryMatch = countryOptions.sort((a,b) => b.value.length - a.value.length)
-    .find(option => cleaned.includes(normalizeSmartText(option.value)));
+  const countryAliases = {
+    "France": ["فرنسا", "فرنسي", "فرنسية"],
+    "Belgique": ["بلجيكا", "بلجيكي", "بلجيكية"],
+    "Allemagne": ["ألمانيا", "المانيا", "ألماني", "الماني"],
+    "Espagne": ["إسبانيا", "اسبانيا", "إسباني", "اسباني"],
+    "Italie": ["إيطاليا", "ايطاليا"],
+    "Portugal": ["البرتغال"],
+    "Pays-Bas": ["هولندا"],
+    "Suisse": ["سويسرا"],
+    "Royaume-Uni": ["بريطانيا", "المملكة المتحدة", "انجلترا", "إنجلترا"],
+    "Canada": ["كندا"],
+    "États-Unis": ["أمريكا", "الولايات المتحدة"],
+    "Irlande": ["إيرلندا", "ايرلندا"],
+    "Suède": ["السويد"],
+    "Norvège": ["النرويج"],
+    "Danemark": ["الدنمارك"],
+    "Autriche": ["النمسا"],
+    "Pologne": ["بولندا"],
+    "Turquie": ["تركيا"]
+  };
+  const sortedCountryOptions = countryOptions.sort((a,b) => b.value.length - a.value.length);
+  let countryMatch = sortedCountryOptions.find(option => cleaned.includes(normalizeSmartText(option.value)));
+  let matchedCountryTerm = countryMatch ? normalizeSmartText(countryMatch.value) : "";
+  if (!countryMatch) {
+    outerCountry: for (const option of sortedCountryOptions) {
+      for (const alias of (countryAliases[option.value] || [])) {
+        const normalizedAlias = normalizeSmartText(alias);
+        if (normalizedAlias && cleaned.includes(normalizedAlias)) {
+          countryMatch = option;
+          matchedCountryTerm = normalizedAlias;
+          break outerCountry;
+        }
+      }
+    }
+  }
   if (countryMatch) {
     countrySelect.value = countryMatch.value;
-    cleaned = cleaned.replace(normalizeSmartText(countryMatch.value), " ");
+    cleaned = cleaned.replace(matchedCountryTerm, " ");
   }
 
   const remoteSelect = $("remoteFilter");
@@ -1366,6 +1399,23 @@ function runSmartSearch(input) {
     }
   }
 
+  const ArabicJobAliases = [
+    [/\bسائق(?:ة|ين)?\b/g, "chauffeur"],
+    [/\bممرض(?:ة|ين)?\b/g, "infirmier"],
+    [/\bطباخ(?:ة|ين)?\b/g, "cuisine"],
+    [/\bفنادق?|فندقة\b/g, "hôtellerie"],
+    [/\bمطاعم?\b/g, "restauration"],
+    [/\bعامل(?:ة|ين)?\b/g, "ouvrier"],
+    [/\bبناء\b/g, "construction"],
+    [/\bكهربائي(?:ة|ين)?\b/g, "électricien"],
+    [/\bلحام(?:ة|ين)?\b/g, "soudeur"],
+    [/\bمبرمج(?:ة|ين)?\b/g, "informatique"],
+    [/\bمحاسب(?:ة|ين)?\b/g, "comptable"],
+    [/\bتنظيف|نظافة\b/g, "nettoyage"],
+    [/\bزراعة|فلاحة\b/g, "agriculture"],
+    [/\bعن بُعد|عن بعد\b/g, "a distance"]
+  ];
+  for (const [pattern, replacement] of ArabicJobAliases) cleaned = cleaned.replace(pattern, replacement);
   cleaned = cleaned.replace(/\b(je cherche|je veux|recherche|trouver|trouve|emploi|emplois|travail|offre|offres|job|jobs|poste|postes|en|au|aux|dans|pour|avec|de|du|des|la|le|les|un|une|a|et|mon|ma|mes)\b/g, " ")
     .replace(/\s+/g, " ").trim();
   $("search").value = cleaned;
