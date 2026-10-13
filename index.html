@@ -145,6 +145,70 @@
   }
   form.addEventListener("submit", fallbackSignup, true);
   button.addEventListener("click", fallbackSignup, true);
+
+  // If the module script fails to load, keep the login path usable too.
+  const loginButton = document.getElementById("staticLoginButton");
+  let fallbackMode = "register";
+  async function fallbackLogin(event) {
+    if (fallbackMode !== "login" || form.dataset.bound === "1") return;
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+    }
+    if (busy) return;
+    const email = (document.getElementById("staticAuthEmail").value || "").trim().toLowerCase();
+    const password = document.getElementById("staticAuthPassword").value || "";
+    const show = text => { message.textContent = text; message.hidden = false; };
+    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return show("Adresse e-mail invalide. Vérifiez-la puis réessayez.");
+    if (!password) return show("Veuillez saisir votre mot de passe.");
+    busy = true;
+    button.disabled = true;
+    button.textContent = "Connexion…";
+    message.hidden = true;
+    try {
+      const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+      const client = createClient("https://zwdixozyrvhmjrhboqti.supabase.co", "sb_publishable_b3p64FMUtYtk0ejBuZAPtw_nn_lHTZ0");
+      const { data, error } = await client.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      if (!data || !data.user) throw new Error("Connexion non confirmée. Réessayez.");
+      show("Connexion réussie. Actualisation de votre espace…");
+      window.location.reload();
+    } catch (error) {
+      const detail = (error && error.message) ? error.message : String(error || "Erreur inconnue");
+      show(detail.toLowerCase().includes("email not confirmed")
+        ? "Votre e-mail n’est pas encore confirmé. Ouvrez le lien reçu par e-mail puis réessayez."
+        : detail.toLowerCase().includes("invalid login credentials")
+          ? "E-mail ou mot de passe incorrect."
+          : "La connexion a échoué : " + detail);
+    } finally {
+      busy = false;
+      button.disabled = false;
+      button.textContent = fallbackMode === "login" ? "Se connecter" : "Créer mon compte";
+    }
+  }
+  if (loginButton) {
+    loginButton.addEventListener("click", function (event) {
+      // Let the main module handle the click when it has loaded successfully.
+      if (typeof window.renderAuth === "function") return;
+      event.preventDefault();
+      fallbackMode = fallbackMode === "login" ? "register" : "login";
+      const nameInput = document.getElementById("staticAuthName");
+      const title = form.parentElement.querySelector("h2");
+      const description = form.parentElement.querySelector("p:not(#staticAuthMessage)");
+      if (nameInput) {
+        nameInput.hidden = fallbackMode === "login";
+        nameInput.required = fallbackMode !== "login";
+      }
+      if (title) title.textContent = fallbackMode === "login" ? "🔐 تسجيل الدخول" : "👤 إنشاء حسابي";
+      if (description) description.textContent = fallbackMode === "login" ? "سجّل الدخول لمتابعة ملفك وطلبات التوظيف." : "أنشئ حسابك لإدارة ملفك وطلبات التوظيف.";
+      button.textContent = fallbackMode === "login" ? "Se connecter" : "Créer mon compte";
+      loginButton.textContent = fallbackMode === "login" ? "Créer un compte" : "J'ai déjà un compte";
+      message.hidden = true;
+    }, true);
+  }
+  form.addEventListener("submit", fallbackLogin, true);
+  button.addEventListener("click", fallbackLogin, true);
 })();
 </script>
 <script type="module" src="app.js?v=20261012-3"></script></body></html>
