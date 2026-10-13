@@ -105,7 +105,7 @@
   if (!form || !button || !message) return;
   let busy = false;
   async function fallbackSignup(event) {
-    if (typeof fallbackMode !== "undefined" && fallbackMode === "login") return fallbackLogin(event);
+    if (fallbackMode === "login") return;
     if (form.dataset.bound === "1") return;
     if (event) {
       event.preventDefault();
@@ -188,6 +188,27 @@
       button.textContent = fallbackMode === "login" ? "Se connecter" : "Créer mon compte";
     }
   }
+  let resetButton = null;
+  async function fallbackResetPassword() {
+    const email = (document.getElementById("staticAuthEmail").value || "").trim().toLowerCase();
+    const show = text => { message.textContent = text; message.hidden = false; };
+    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return show("Saisissez d’abord votre adresse e-mail, puis demandez la réinitialisation.");
+    if (busy) return;
+    busy = true;
+    if (resetButton) { resetButton.disabled = true; resetButton.textContent = "Envoi en cours…"; }
+    try {
+      const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+      const client = createClient("https://zwdixozyrvhmjrhboqti.supabase.co", "sb_publishable_b3p64FMUtYtk0ejBuZAPtw_nn_lHTZ0");
+      const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + window.location.pathname });
+      if (error) throw error;
+      show("Si ce compte existe, un lien de réinitialisation a été envoyé. Vérifiez votre boîte de réception et le dossier spam.");
+    } catch (error) {
+      show("Impossible d’envoyer le lien : " + ((error && error.message) || "erreur inconnue"));
+    } finally {
+      busy = false;
+      if (resetButton) { resetButton.disabled = false; resetButton.textContent = "Mot de passe oublié ?"; }
+    }
+  }
   if (loginButton) {
     loginButton.addEventListener("click", function (event) {
       // Let the main module handle the click when it has loaded successfully.
@@ -205,11 +226,21 @@
       if (description) description.textContent = fallbackMode === "login" ? "سجّل الدخول لمتابعة ملفك وطلبات التوظيف." : "أنشئ حسابك لإدارة ملفك وطلبات التوظيف.";
       button.textContent = fallbackMode === "login" ? "Se connecter" : "Créer mon compte";
       loginButton.textContent = fallbackMode === "login" ? "Créer un compte" : "J'ai déjà un compte";
+      if (fallbackMode === "login" && !resetButton) {
+        resetButton = document.createElement("button");
+        resetButton.type = "button";
+        resetButton.className = "link-button";
+        resetButton.textContent = "Mot de passe oublié ?";
+        resetButton.addEventListener("click", fallbackResetPassword);
+        form.after(resetButton);
+      } else if (fallbackMode !== "login" && resetButton) {
+        resetButton.remove();
+        resetButton = null;
+      }
       message.hidden = true;
     }, true);
   }
   form.addEventListener("submit", fallbackLogin, true);
-  button.addEventListener("click", fallbackLogin, true);
 })();
 </script>
 <script type="module" src="app.js?v=20261012-3"></script></body></html>
