@@ -105,6 +105,7 @@
   if (!form || !button || !message) return;
   let busy = false;
   async function fallbackSignup(event) {
+    if (typeof fallbackMode !== "undefined" && fallbackMode === "login") return fallbackLogin(event);
     if (form.dataset.bound === "1") return;
     if (event) {
       event.preventDefault();
