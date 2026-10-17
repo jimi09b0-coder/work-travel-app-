@@ -546,6 +546,8 @@ function renderAuth(mode="register", message="") {
     forgot.textContent = "Mot de passe oublié ?";
     forgot.addEventListener("click", forgotPassword);
     $("authForm").after(forgot);
+    // Keep the confirmation resend action visible even before a failed login.
+    showResendConfirmation("");
   }
 }
 
@@ -596,7 +598,10 @@ function showResendConfirmation(email) {
   button.type = "button";
   button.className = "link-button";
   button.textContent = "📩 Renvoyer l’e-mail de confirmation";
-  button.addEventListener("click", () => resendConfirmation(email));
+  button.addEventListener("click", () => {
+    const currentEmail = document.getElementById("authEmail")?.value.trim() || email || "";
+    resendConfirmation(currentEmail);
+  });
   form.after(button);
 }
 async function register(e) {
