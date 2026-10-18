@@ -25,11 +25,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate site files
+        run: |
+          test -f index.html
+          test -f app.js
+          test -f style.css
+          test -f favicon.svg
+          echo "Required WorkWay Smart site files are present."
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload site
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: .
 
