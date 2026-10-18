@@ -713,7 +713,7 @@ function optimizeCandidateProfile() {
   const languages = $("profileLanguages");
   const experience = $("profileExperience");
   const education = $("profileEducation");
-  const normalize = value => String(value || "").trim().replace(/[.،,;]+/g, " ").replace(/\\s+/g, " ").toLowerCase();
+  const normalize = value => String(value || "").trim().normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").replace(/[.،,;]+/g, " ").replace(/\\s+/g, " ").toLowerCase();
 
   // Correct the known spelling error while preserving other user-entered titles.
   if (headline && (!headline.value.trim() || /^(agent sécurité|cgef de rang|chef de rang)$/i.test(headline.value.trim()))) {
