@@ -1710,14 +1710,16 @@ function openExternalJobSearch(country) {
   const selectedCountry = document.getElementById("countryFilter")?.value || "";
   const countryMap = {Belgique:"Belgium",France:"France",Espagne:"Spain",Allemagne:"Germany",Italie:"Italy","Pays-Bas":"Netherlands",Suisse:"Switzerland","Royaume-Uni":"United Kingdom",Irlande:"Ireland",Canada:"Canada",Australie:"Australia","Nouvelle-Zélande":"New Zealand",Portugal:"Portugal","États-Unis":"United States","Émirats arabes unis":"United Arab Emirates","Arabie saoudite":"Saudi Arabia",Qatar:"Qatar",Maroc:"Morocco",Tunisie:"Tunisia",Égypte:"Egypt","Afrique du Sud":"South Africa",Japon:"Japan","Corée du Sud":"South Korea",Chine:"China",Inde:"India",Singapour:"Singapore",Brésil:"Brazil",Mexique:"Mexico",Argentine:"Argentina",Turquie:"Turkey",Suède:"Sweden",Norvège:"Norway",Danemark:"Denmark",Finlande:"Finland",Autriche:"Austria",Pologne:"Poland",Tchéquie:"Czechia",Grèce:"Greece",Roumanie:"Romania",Hongrie:"Hungary",Algérie:"Algeria",Chili:"Chile",Colombie:"Colombia",Pérou:"Peru",إندونيسيا:"Indonesia",Indonésie:"Indonesia",Thaïlande:"Thailand",Malaisie:"Malaysia",Vietnam:"Vietnam",Philippines:"Philippines",Pakistan:"Pakistan",Bangladesh:"Bangladesh",Nigéria:"Nigeria",Kenya:"Kenya",Ghana:"Ghana",Sénégal:"Senegal","Côte d’Ivoire":"Ivory Coast",Éthiopie:"Ethiopia",Oman:"Oman",Bahreïn:"Bahrain",Koweït:"Kuwait",Islande:"Iceland",Croatie:"Croatia",Slovaquie:"Slovakia",Bulgarie:"Bulgaria",Serbie:"Serbia",Ukraine:"Ukraine"};
   const chosenCountry = countryMap[country] || countryMap[selectedCountry] || "";
-  const terms = [query, location, chosenCountry].filter(Boolean).join(" ").trim();
-  const q = encodeURIComponent([query, chosenCountry].filter(Boolean).join(" "));
-  const loc = encodeURIComponent(location || chosenCountry);
   let url = "";
   if (country === "EURES") {
-    url = "https://eures.europa.eu/search-for-jobs_en";
+    const params = new URLSearchParams();
+    if (query) params.set("keywords", query);
+    if (location || chosenCountry) params.set("location", location || chosenCountry);
+    url = "https://eures.europa.eu/search-for-jobs_en" + (params.size ? "?" + params.toString() : "");
   } else if (country === "LinkedIn") {
-    url = "https://www.linkedin.com/jobs/search/?keywords=" + encodeURIComponent(query || "jobs abroad") + (location ? "&location=" + encodeURIComponent(location) : "");
+    const params = new URLSearchParams({keywords: query || "jobs abroad"});
+    if (location || chosenCountry) params.set("location", location || chosenCountry);
+    url = "https://www.linkedin.com/jobs/search/?" + params.toString();
   } else if (country === "UN") {
     url = "https://careers.un.org/";
   } else {
