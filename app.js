@@ -721,15 +721,18 @@ function optimizeCandidateProfile() {
       ? "Chef de rang – Service en restauration"
       : "Agent de sécurité et d’accueil";
   }
-  if (bio && /^(restaurant accueil présentation service restaurant|restaurant accueil présentation service)$/.test(normalize(bio.value))) {
+  const normalizedBio = normalize(bio?.value);
+  if (bio && ["restaurant accueil presentation service restaurant", "restaurant accueil presentation service"].includes(normalizedBio)) {
     bio.value = "Professionnel de l’hôtellerie et de la restauration, sérieux et polyvalent, avec une expérience dans différents services hôteliers. Motivé, je souhaite contribuer à la qualité de l’accueil, du service et au bon fonctionnement de l’équipe.";
   } else if (bio && !bio.value.trim()) {
     bio.value = "Professionnel sérieux, ponctuel et motivé, prêt à mettre ses compétences au service d’une équipe. Je souhaite contribuer à un environnement de travail organisé et accueillant.";
   }
-  if (experience && /j'ai 10 travailler en hôtel dans tous les services/i.test(experience.value.trim())) {
+  const normalizedExperience = normalize(experience?.value);
+  if (experience && ["j'ai 10 travailler en hotel dans tous les services", "j ai 10 travailler en hotel dans tous les services"].includes(normalizedExperience)) {
     experience.value = "10 ans d’expérience dans différents services hôteliers.";
   }
-  if (skills && /^(sécurité accueil informatique|sécurité, accueil, informatique)$/i.test(normalize(skills.value))) {
+  const normalizedSkills = normalize(skills?.value);
+  if (skills && ["securite accueil informatique"].includes(normalizedSkills)) {
     skills.value = "Sécurité, accueil, service à la clientèle, polyvalence hôtelière, informatique, travail en équipe";
   } else if (skills && !skills.value.trim()) {
     skills.value = "Sécurité, accueil, surveillance, communication, informatique, travail en équipe";
