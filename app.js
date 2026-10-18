@@ -711,18 +711,35 @@ function optimizeCandidateProfile() {
   const bio = $("profileBio");
   const skills = $("profileSkills");
   const languages = $("profileLanguages");
+  const experience = $("profileExperience");
   const education = $("profileEducation");
-  if (headline && (!headline.value.trim() || /agent sécurité/i.test(headline.value.trim()))) {
-    headline.value = "Agent de sécurité et d’accueil";
+  const normalize = value => String(value || "").trim().replace(/[.،,;]+/g, " ").replace(/\\s+/g, " ").toLowerCase();
+
+  // Correct the known spelling error while preserving other user-entered titles.
+  if (headline && (!headline.value.trim() || /^(agent sécurité|cgef de rang|chef de rang)$/i.test(headline.value.trim()))) {
+    headline.value = /cgef de rang|chef de rang/i.test(headline.value.trim())
+      ? "Chef de rang – Service en restauration"
+      : "Agent de sécurité et d’accueil";
   }
-  if (bio && /^(restaurant accueil présentation service restaurant|restaurant accueil présentation service)$/i.test(bio.value.trim().replace(/[.،,;]+/g, " ").replace(/\s+/g, " "))) {
-    bio.value = "Professionnel polyvalent, motivé et sérieux, avec des compétences en sécurité, accueil et service. À l’aise dans le contact avec le public, je souhaite contribuer à la sécurité des personnes, à la qualité de l’accueil et au bon fonctionnement de l’équipe.";
+  if (bio && /^(restaurant accueil présentation service restaurant|restaurant accueil présentation service)$/.test(normalize(bio.value))) {
+    bio.value = "Professionnel de l’hôtellerie et de la restauration, sérieux et polyvalent, avec une expérience dans différents services hôteliers. Motivé, je souhaite contribuer à la qualité de l’accueil, du service et au bon fonctionnement de l’équipe.";
   } else if (bio && !bio.value.trim()) {
-    bio.value = "Professionnel sérieux, ponctuel et motivé, prêt à mettre ses compétences au service d’une équipe. Je souhaite contribuer à un environnement de travail sûr, organisé et accueillant.";
+    bio.value = "Professionnel sérieux, ponctuel et motivé, prêt à mettre ses compétences au service d’une équipe. Je souhaite contribuer à un environnement de travail organisé et accueillant.";
   }
-  if (skills && !skills.value.trim()) skills.value = "Sécurité, accueil, surveillance, communication, informatique, travail en équipe";
+  if (experience && /j'ai 10 travailler en hôtel dans tous les services/i.test(experience.value.trim())) {
+    experience.value = "10 ans d’expérience dans différents services hôteliers.";
+  }
+  if (skills && /^(sécurité accueil informatique|sécurité, accueil, informatique)$/i.test(normalize(skills.value))) {
+    skills.value = "Sécurité, accueil, service à la clientèle, polyvalence hôtelière, informatique, travail en équipe";
+  } else if (skills && !skills.value.trim()) {
+    skills.value = "Sécurité, accueil, surveillance, communication, informatique, travail en équipe";
+  }
   if (languages && !languages.value.trim()) languages.value = "Arabe, français, anglais";
-  if (education && !education.value.trim()) education.value = "Technicien en hôtellerie et tourisme";
+  if (education && /technicien hôtellerie tourisme/i.test(education.value.trim())) {
+    education.value = "Technicien en hôtellerie et tourisme";
+  } else if (education && !education.value.trim()) {
+    education.value = "Technicien en hôtellerie et tourisme";
+  }
   showNotification("Profil amélioré. Vérifiez les informations puis cliquez sur « Enregistrer mon profil ».", "success");
   $("profileName")?.focus();
 }
