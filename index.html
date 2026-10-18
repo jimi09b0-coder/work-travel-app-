@@ -189,6 +189,27 @@
     }
   }
   let resetButton = null;
+  let resendButton = null;
+  async function fallbackResendConfirmation() {
+    const email = (document.getElementById("staticAuthEmail").value || "").trim().toLowerCase();
+    const show = text => { message.textContent = text; message.hidden = false; };
+    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return show("Saisissez d’abord votre adresse e-mail pour recevoir le lien de confirmation.");
+    if (busy) return;
+    busy = true;
+    if (resendButton) { resendButton.disabled = true; resendButton.textContent = "Envoi en cours…"; }
+    try {
+      const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+      const client = createClient("https://zwdixozyrvhmjrhboqti.supabase.co", "sb_publishable_b3p64FMUtYtk0ejBuZAPtw_nn_lHTZ0");
+      const { error } = await client.auth.resend({ type: "signup", email });
+      if (error) throw error;
+      show("Demande envoyée. Vérifiez votre boîte de réception et le dossier spam.");
+    } catch (error) {
+      show("Impossible de renvoyer l’e-mail : " + ((error && error.message) || "erreur inconnue"));
+    } finally {
+      busy = false;
+      if (resendButton) { resendButton.disabled = false; resendButton.textContent = "📩 Renvoyer l’e-mail de confirmation"; }
+    }
+  }
   async function fallbackResetPassword() {
     const email = (document.getElementById("staticAuthEmail").value || "").trim().toLowerCase();
     const show = text => { message.textContent = text; message.hidden = false; };
@@ -237,10 +258,21 @@
         resetButton.remove();
         resetButton = null;
       }
+      if (fallbackMode === "login" && !resendButton) {
+        resendButton = document.createElement("button");
+        resendButton.type = "button";
+        resendButton.className = "link-button";
+        resendButton.textContent = "📩 Renvoyer l’e-mail de confirmation";
+        resendButton.addEventListener("click", fallbackResendConfirmation);
+        (resetButton || form).after(resendButton);
+      } else if (fallbackMode !== "login" && resendButton) {
+        resendButton.remove();
+        resendButton = null;
+      }
       message.hidden = true;
     }, true);
   }
   form.addEventListener("submit", fallbackLogin, true);
 })();
 </script>
-<script type="module" src="app.js?v=20261012-3"></script></body></html>
+<script type="module" src="app.js?v=20261018-1"></script></body></html>
