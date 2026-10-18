@@ -20,7 +20,7 @@ if (/\.update\s*\(\s*\{[^}]*\b(?:role|is_admin)\s*:/s.test(js)) throw new Error(
 
 if (!css.includes('@media(prefers-reduced-motion:reduce)')) throw new Error('Missing reduced-motion accessibility rule.');
 if (!html.includes('name="viewport"')) throw new Error('Missing responsive viewport meta tag.');
-if (!html.includes('WorkWay | Smart Jobs & Travel')) throw new Error('WorkWay product title is missing.');
+if (!html.includes('WorkWay Smart | Emploi international & voyage')) throw new Error('WorkWay product title is missing.');
 if (!html.includes('id="smartSearchForm"') || !html.includes('id="smartSearchInput"')) throw new Error('Smart search interface is missing.');
 if (!js.includes('function runSmartSearch(input)') || !js.includes('bindSmartSearch();')) throw new Error('Smart search behavior is missing.');
 if (!css.includes('.smart-assistant{')) throw new Error('Smart search interface styles are missing.');
