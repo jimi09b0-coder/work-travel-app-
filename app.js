@@ -698,8 +698,18 @@ async function saveCandidateProfile(e) {
     updated_at: new Date().toISOString()
   };
   if (!payload.full_name) return alert("Veuillez saisir votre nom.");
-  const { error } = await supabase.from("profiles").update(payload).eq("id", user.id);
+  const { data: savedProfile, error } = await supabase
+    .from("profiles")
+    .update(payload)
+    .eq("id", user.id)
+    .select("id")
+    .maybeSingle();
   if (error) return alert("Impossible d’enregistrer le profil : " + error.message);
+  // PostgREST UPDATE may succeed with zero affected rows under RLS.
+  // Never tell the user the profile was saved unless a row was actually returned.
+  if (!savedProfile?.id) {
+    return alert("Le profil n’a pas été enregistré : aucun profil associé à ce compte n’a été trouvé. Votre compte reste actif. Contactez le support si le problème persiste.");
+  }
   const { error: authError } = await supabase.auth.updateUser({data:{full_name:payload.full_name}});
   if (authError) return alert("Profil enregistré, mais le compte n'a pas pu être synchronisé : " + authError.message);
   showNotification("Profil professionnel enregistré.", "success");
