@@ -1753,7 +1753,22 @@ function openExternalJobSearch(country) {
   } else if (country === "UN") {
     url = "https://careers.un.org/";
   }
-  if (!url) return;
+  // For any supported destination without a dedicated adapter, open a country-specific
+  // Indeed search rather than leaving the button unresponsive.
+  if (!url && countryMap[country]) {
+    const code = countryMap[country];
+    const domainMap = {fr:"fr",de:"de",be:"be",es:"es",it:"it",nl:"nl",ch:"ch",gb:"uk",ie:"ie",ca:"ca",au:"au",nz:"nz",us:"www",ae:"ae",sa:"sa",ma:"ma",tn:"tn",za:"za",jp:"jp",kr:"kr",cn:"cn",in:"in",sg:"sg",br:"br",mx:"mx",ar:"ar",tr:"tr",se:"se",no:"no",dk:"dk",fi:"fi",at:"at",pl:"pl",gr:"gr",pt:"pt",cz:"cz",ro:"ro",hu:"hu"};
+    const host = (domainMap[code] || "www") + ".indeed.com";
+    url = "https://" + host + "/jobs";
+    const params = [];
+    if (query) params.push("q=" + q);
+    if (location) params.push("l=" + loc);
+    if (params.length) url += "?" + params.join("&");
+  }
+  if (!url) {
+    alert("Choisissez un pays pris en charge ou utilisez EURES, LinkedIn ou Indeed Worldwide.");
+    return;
+  }
   window.open(url, "_blank", "noopener,noreferrer");
 }
 window.openExternalJobSearch = openExternalJobSearch;
