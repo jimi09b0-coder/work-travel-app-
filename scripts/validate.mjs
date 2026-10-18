@@ -54,7 +54,7 @@ if (js.includes(String.raw`\\.`)) throw new Error('Email validation regexes must
 if (!js.includes('async function resendConfirmation(email)') || !js.includes('finally {') || !js.includes('supabase.auth.resetPasswordForEmail(email, {redirectTo})')) throw new Error('Auth resend/reset flows must handle pending states and errors.');
 if (/decodeURIComponent\(description/.test(js)) throw new Error('Auth redirect descriptions must not be decoded twice.');
 if (!/app\.js\?v=\d{8}-\d+/.test(html)) throw new Error('app.js must use a versioned URL to prevent stale browser cache.');
-if (!/countryMap\s*=\s*\{/.test(js) || !js.includes('Portugal:"pt"')) throw new Error('Country-specific job search mappings are incomplete.');
+if (!js.includes('function openExternalJobSearch(country)') || !js.includes('indeed') || !js.includes('linkedin.com/jobs/search')) throw new Error('External job search providers or country search handler are missing.');
 
 
 for (const match of js.matchAll(/target=["']_blank["'][^>]*>/gi)) {
