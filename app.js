@@ -706,6 +706,27 @@ async function saveCandidateProfile(e) {
   await renderDashboard();
 }
 
+function optimizeCandidateProfile() {
+  const headline = $("profileHeadline");
+  const bio = $("profileBio");
+  const skills = $("profileSkills");
+  const languages = $("profileLanguages");
+  const education = $("profileEducation");
+  if (headline && (!headline.value.trim() || /agent sécurité/i.test(headline.value.trim()))) {
+    headline.value = "Agent de sécurité et d’accueil";
+  }
+  if (bio && /^(restaurant accueil présentation service restaurant|restaurant accueil présentation service)$/i.test(bio.value.trim().replace(/[.،,;]+/g, " ").replace(/\s+/g, " "))) {
+    bio.value = "Professionnel polyvalent, motivé et sérieux, avec des compétences en sécurité, accueil et service. À l’aise dans le contact avec le public, je souhaite contribuer à la sécurité des personnes, à la qualité de l’accueil et au bon fonctionnement de l’équipe.";
+  } else if (bio && !bio.value.trim()) {
+    bio.value = "Professionnel sérieux, ponctuel et motivé, prêt à mettre ses compétences au service d’une équipe. Je souhaite contribuer à un environnement de travail sûr, organisé et accueillant.";
+  }
+  if (skills && !skills.value.trim()) skills.value = "Sécurité, accueil, surveillance, communication, informatique, travail en équipe";
+  if (languages && !languages.value.trim()) languages.value = "Arabe, français, anglais";
+  if (education && !education.value.trim()) education.value = "Technicien en hôtellerie et tourisme";
+  showNotification("Profil amélioré. Vérifiez les informations puis cliquez sur « Enregistrer mon profil ».", "success");
+  $("profileName")?.focus();
+}
+
 async function updateProfileName(e) {
   e.preventDefault();
   const user = await currentUser();
@@ -1209,7 +1230,10 @@ async function renderDashboard() {
             <label>🎓 Formation<textarea id="profileEducation" rows="4" maxlength="1500" placeholder="Diplômes, formations, certifications...">${esc(profile?.education || "")}</textarea></label>
           </div>
           <label>📝 Présentation<textarea id="profileBio" rows="5" maxlength="2000" placeholder="Présentez votre profil en quelques lignes...">${esc(profile?.bio || "")}</textarea></label>
-          <button type="submit">💾 Enregistrer mon profil</button>
+          <div class="profile-form-actions">
+            <button type="button" class="secondary-button" onclick="optimizeCandidateProfile()">✨ Améliorer mon profil</button>
+            <button type="submit">💾 Enregistrer mon profil</button>
+          </div>
         </form>
       </section>
       <section class="candidate-profile-preview">
@@ -1699,3 +1723,5 @@ function openExternalJobSearch(country) {
   window.open(url, "_blank", "noopener,noreferrer");
 }
 window.openExternalJobSearch = openExternalJobSearch;
+
+window.optimizeCandidateProfile = optimizeCandidateProfile;
