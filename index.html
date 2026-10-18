@@ -161,7 +161,7 @@
     const email = (document.getElementById("staticAuthEmail").value || "").trim().toLowerCase();
     const password = document.getElementById("staticAuthPassword").value || "";
     const show = text => { message.textContent = text; message.hidden = false; };
-    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return show("Adresse e-mail invalide. Vérifiez-la puis réessayez.");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return show("Adresse e-mail invalide. Vérifiez-la puis réessayez.");
     if (!password) return show("Veuillez saisir votre mot de passe.");
     busy = true;
     button.disabled = true;
@@ -193,7 +193,7 @@
   async function fallbackResendConfirmation() {
     const email = (document.getElementById("staticAuthEmail").value || "").trim().toLowerCase();
     const show = text => { message.textContent = text; message.hidden = false; };
-    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return show("Saisissez d’abord votre adresse e-mail pour recevoir le lien de confirmation.");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return show("Saisissez d’abord votre adresse e-mail pour recevoir le lien de confirmation.");
     if (busy) return;
     busy = true;
     if (resendButton) { resendButton.disabled = true; resendButton.textContent = "Envoi en cours…"; }
@@ -213,7 +213,7 @@
   async function fallbackResetPassword() {
     const email = (document.getElementById("staticAuthEmail").value || "").trim().toLowerCase();
     const show = text => { message.textContent = text; message.hidden = false; };
-    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return show("Saisissez d’abord votre adresse e-mail, puis demandez la réinitialisation.");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return show("Saisissez d’abord votre adresse e-mail, puis demandez la réinitialisation.");
     if (busy) return;
     busy = true;
     if (resetButton) { resetButton.disabled = true; resetButton.textContent = "Envoi en cours…"; }
@@ -275,4 +275,4 @@
   form.addEventListener("submit", fallbackLogin, true);
 })();
 </script>
-<script type="module" src="app.js?v=20261018-1"></script></body></html>
+<script type="module" src="app.js?v=20261018-2"></script></body></html>
