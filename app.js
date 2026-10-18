@@ -1736,11 +1736,10 @@ function openExternalJobSearch(country) {
     alert("Choisissez un pays ou utilisez EURES, LinkedIn ou Indeed.");
     return;
   }
-  // Keep the open action synchronous with the button tap so mobile browsers are less likely to block it.
-  const opened = window.open(url, "_blank");
-  if (opened) opened.opener = null;
-  else {
-    // Fallback for browsers that block new tabs.
+  // Same-tab navigation is more reliable on mobile browsers and avoids blocked popups.
+  try {
+    window.location.assign(url);
+  } catch (error) {
     window.location.href = url;
   }
 }
