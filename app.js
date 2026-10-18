@@ -1707,69 +1707,40 @@ if (document.readyState === "loading") {
 function openExternalJobSearch(country) {
   const query = (document.getElementById("externalSearchQuery")?.value || document.getElementById("search")?.value || "").trim();
   const location = (document.getElementById("externalSearchLocation")?.value || "").trim();
-  const q = encodeURIComponent(query);
-  const loc = encodeURIComponent(location);
-  const countryMap = {Belgique:"be",France:"fr",Espagne:"es",Allemagne:"de",Italie:"it","Pays-Bas":"nl",Suisse:"ch","Royaume-Uni":"gb",Irlande:"ie",Canada:"ca",Australie:"au","Nouvelle-Zélande":"nz",Portugal:"pt","États-Unis":"us","Émirats arabes unis":"ae","Arabie saoudite":"sa",Qatar:"qa",Maroc:"ma",Tunisie:"tn",Égypte:"eg","Afrique du Sud":"za",Japon:"jp","Corée du Sud":"kr",Chine:"cn",Inde:"in",Singapour:"sg",Brésil:"br",Mexique:"mx",Argentine:"ar",Turquie:"tr",Suède:"se",Norvège:"no",Danemark:"dk",Finlande:"fi",Autriche:"at",Pologne:"pl",Tchéquie:"cz",Grèce:"gr",Roumanie:"ro",Hongrie:"hu",Algérie:"dz",Chili:"cl",Colombie:"co",Pérou:"pe",Indonésie:"id",Thaïlande:"th",Malaisie:"my",Vietnam:"vn",Philippines:"ph",Pakistan:"pk",Bangladesh:"bd",Nigéria:"ng",Kenya:"ke",Ghana:"gh",Sénégal:"sn","Côte d’Ivoire":"ci",Éthiopie:"et",Oman:"om",Bahreïn:"bh",Koweït:"kw",Islande:"is",Croatie:"hr",Slovaquie:"sk",Bulgarie:"bg",Serbie:"rs",Ukraine:"ua"};
+  const selectedCountry = document.getElementById("countryFilter")?.value || "";
+  const countryMap = {Belgique:"Belgium",France:"France",Espagne:"Spain",Allemagne:"Germany",Italie:"Italy","Pays-Bas":"Netherlands",Suisse:"Switzerland","Royaume-Uni":"United Kingdom",Irlande:"Ireland",Canada:"Canada",Australie:"Australia","Nouvelle-Zélande":"New Zealand",Portugal:"Portugal","États-Unis":"United States","Émirats arabes unis":"United Arab Emirates","Arabie saoudite":"Saudi Arabia",Qatar:"Qatar",Maroc:"Morocco",Tunisie:"Tunisia",Égypte:"Egypt","Afrique du Sud":"South Africa",Japon:"Japan","Corée du Sud":"South Korea",Chine:"China",Inde:"India",Singapour:"Singapore",Brésil:"Brazil",Mexique:"Mexico",Argentine:"Argentina",Turquie:"Turkey",Suède:"Sweden",Norvège:"Norway",Danemark:"Denmark",Finlande:"Finland",Autriche:"Austria",Pologne:"Poland",Tchéquie:"Czechia",Grèce:"Greece",Roumanie:"Romania",Hongrie:"Hungary",Algérie:"Algeria",Chili:"Chile",Colombie:"Colombia",Pérou:"Peru",إندونيسيا:"Indonesia",Indonésie:"Indonesia",Thaïlande:"Thailand",Malaisie:"Malaysia",Vietnam:"Vietnam",Philippines:"Philippines",Pakistan:"Pakistan",Bangladesh:"Bangladesh",Nigéria:"Nigeria",Kenya:"Kenya",Ghana:"Ghana",Sénégal:"Senegal","Côte d’Ivoire":"Ivory Coast",Éthiopie:"Ethiopia",Oman:"Oman",Bahreïn:"Bahrain",Koweït:"Kuwait",Islande:"Iceland",Croatie:"Croatia",Slovaquie:"Slovakia",Bulgarie:"Bulgaria",Serbie:"Serbia",Ukraine:"Ukraine"};
+  const chosenCountry = countryMap[country] || countryMap[selectedCountry] || "";
+  const terms = [query, location, chosenCountry].filter(Boolean).join(" ").trim();
+  const q = encodeURIComponent([query, chosenCountry].filter(Boolean).join(" "));
+  const loc = encodeURIComponent(location || chosenCountry);
   let url = "";
   if (country === "EURES") {
-    url = "https://europa.eu/eures/portal/jv-se/search?page=1&resultsPerPage=25&orderBy=BEST_MATCH";
-    if (query) url += "&keywordsEverywhere=" + q;
-    const code = countryMap[document.getElementById("countryFilter")?.value] || "";
-    if (code) url += "&locationCodes=" + code;
-    url += "&lang=en";
-  } else if (country === "France") {
-    url = "https://candidat.francetravail.fr/offres/recherche?offresPartenaires=false";
-    if (query) url += "&libMetier=" + q;
-  } else if (country === "Allemagne") {
-    url = "https://www.arbeitsagentur.de/jobsuche/suche?angebotsart=1&suchbereich=jobs";
-    if (query) url += "&was=" + q;
-    if (location) url += "&wo=" + loc;
-  } else if (country === "Belgique") {
-    const belgiumSearch = [query, location].filter(Boolean).join(" ");
-    const slug = belgiumSearch.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
-    url = slug ? "https://www.vdab.be/vindeenjob/jobs/" + slug : "https://www.vdab.be/vindeenjob/search.aspx";
-  } else if (country === "Espagne") {
-    const search = [query, location].filter(Boolean).join(" ").trim();
-    url = search
-      ? "https://empleate.gob.es/empleo/?search=#/buscarOferta?search=" + encodeURIComponent(search)
-      : "https://empleate.gob.es/empleo/#/buscarOferta";
+    url = "https://eures.europa.eu/search-for-jobs_en";
   } else if (country === "LinkedIn") {
-    url = "https://www.linkedin.com/jobs/search-jobs-worldwide";
-    const params = [];
-    if (query) params.push("keywords=" + q);
-    if (location) params.push("location=" + loc);
-    if (params.length) url += "?" + params.join("&");
-  } else if (country === "Indeed" || country === "IndeedPays") {
-    const selectedCountry = document.getElementById("countryFilter")?.value || "";
-    const code = country === "IndeedPays" ? countryMap[selectedCountry] : "";
-    const domainMap = {fr:"fr",de:"de",be:"be",es:"es",it:"it",nl:"nl",ch:"ch",gb:"uk",ie:"ie",ca:"ca",au:"au",nz:"nz",us:"www",ae:"ae",sa:"sa",ma:"ma",tn:"tn",za:"za",jp:"jp",in:"in",sg:"sg",br:"br",mx:"mx",tr:"tr",se:"se",no:"no",dk:"dk",fi:"fi",at:"at",pl:"pl",gr:"gr",pt:"pt",cz:"cz",ro:"ro",hu:"hu"};
-    const host = code ? (domainMap[code] || "www") + ".indeed.com" : "www.indeed.com";
-    url = "https://" + host + "/jobs";
-    const params = [];
-    if (query) params.push("q=" + q);
-    if (location) params.push("l=" + loc);
-    if (params.length) url += "?" + params.join("&");
-    else if (!code) url = "https://www.indeed.com/worldwide";
+    url = "https://www.linkedin.com/jobs/search/?keywords=" + encodeURIComponent(query || "jobs abroad") + (location ? "&location=" + encodeURIComponent(location) : "");
   } else if (country === "UN") {
     url = "https://careers.un.org/";
-  }
-  // For any supported destination without a dedicated adapter, open a country-specific
-  // Indeed search rather than leaving the button unresponsive.
-  if (!url && countryMap[country]) {
-    const code = countryMap[country];
-    const domainMap = {fr:"fr",de:"de",be:"be",es:"es",it:"it",nl:"nl",ch:"ch",gb:"uk",ie:"ie",ca:"ca",au:"au",nz:"nz",us:"www",ae:"ae",sa:"sa",ma:"ma",tn:"tn",za:"za",jp:"jp",kr:"kr",cn:"cn",in:"in",sg:"sg",br:"br",mx:"mx",ar:"ar",tr:"tr",se:"se",no:"no",dk:"dk",fi:"fi",at:"at",pl:"pl",gr:"gr",pt:"pt",cz:"cz",ro:"ro",hu:"hu"};
-    const host = (domainMap[code] || "www") + ".indeed.com";
+  } else {
+    // Use the standard Indeed search endpoint; it is more robust than country-specific legacy URL paths.
+    const hostMap = {France:"fr.indeed.com",Belgique:"be.indeed.com",Espagne:"es.indeed.com",Allemagne:"de.indeed.com",Italie:"it.indeed.com","Pays-Bas":"nl.indeed.com",Suisse:"ch.indeed.com","Royaume-Uni":"uk.indeed.com",Irlande:"ie.indeed.com",Canada:"ca.indeed.com",Australie:"au.indeed.com",Portugal:"pt.indeed.com","États-Unis":"www.indeed.com"};
+    const host = hostMap[country] || hostMap[selectedCountry] || "www.indeed.com";
     url = "https://" + host + "/jobs";
     const params = [];
-    if (query) params.push("q=" + q);
-    if (location) params.push("l=" + loc);
+    if (query) params.push("q=" + encodeURIComponent(query));
+    if (location || chosenCountry) params.push("l=" + encodeURIComponent(location || chosenCountry));
     if (params.length) url += "?" + params.join("&");
   }
   if (!url) {
-    alert("Choisissez un pays pris en charge ou utilisez EURES, LinkedIn ou Indeed Worldwide.");
+    alert("Choisissez un pays ou utilisez EURES, LinkedIn ou Indeed.");
     return;
   }
-  window.open(url, "_blank", "noopener,noreferrer");
+  // Keep the open action synchronous with the button tap so mobile browsers are less likely to block it.
+  const opened = window.open(url, "_blank");
+  if (opened) opened.opener = null;
+  else {
+    // Fallback for browsers that block new tabs.
+    window.location.href = url;
+  }
 }
 window.openExternalJobSearch = openExternalJobSearch;
 
