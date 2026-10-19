@@ -614,7 +614,7 @@ async function register(e) {
   if (!email) return authMessage("Veuillez saisir votre adresse e-mail.");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return authMessage("L’adresse e-mail semble incorrecte. Vérifiez-la (ex. exemple@gmail.com).");
   if (password.length < 6) return authMessage("Le mot de passe doit contenir au moins 6 caractères.");
-  const button = $("authForm")?.querySelector('button[type="submit"]');
+  const button = $("authForm")?.querySelector('button[type="submit"], button[type="button"]');
   if (button) { button.disabled = true; button.textContent = "Création du compte…"; }
   try {
     const { data, error } = await supabase.auth.signUp({
@@ -630,7 +630,7 @@ async function register(e) {
   } catch (error) {
     authMessage(friendlyAuthError(error));
   } finally {
-    const currentButton = $("authForm")?.querySelector('button[type="submit"]');
+    const currentButton = $("authForm")?.querySelector('button[type="submit"], button[type="button"]');
     if (currentButton) {
       currentButton.disabled = false;
       currentButton.textContent = "Créer mon compte";
@@ -644,7 +644,7 @@ async function login(e) {
   const password = $("authPassword")?.value || "";
   if (!email) return authMessage("Veuillez saisir votre adresse e-mail.");
   if (!password) return authMessage("Veuillez saisir votre mot de passe.");
-  const button = $("authForm")?.querySelector('button[type="submit"]');
+  const button = $("authForm")?.querySelector('button[type="submit"], button[type="button"]');
   if (button) { button.disabled = true; button.textContent = "Connexion…"; }
   try {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -658,7 +658,7 @@ async function login(e) {
   } catch (error) {
     authMessage(friendlyAuthError(error));
   } finally {
-    const currentButton = $("authForm")?.querySelector('button[type="submit"]');
+    const currentButton = $("authForm")?.querySelector('button[type="submit"], button[type="button"]');
     if (currentButton) { currentButton.disabled = false; currentButton.textContent = "Se connecter"; }
   }
 }
