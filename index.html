@@ -302,4 +302,38 @@
   form.addEventListener("submit", fallbackLogin, true);
 })();
 </script>
-<script type="module" src="app.js?v=20261018-14"></script></body></html>
+<script>
+/* Immediate fallback: keep external job-search buttons usable even if app.js fails to load. */
+window.openExternalJobSearch = function (country) {
+  var queryInput = document.getElementById("externalSearchQuery");
+  var locationInput = document.getElementById("externalSearchLocation");
+  var countrySelect = document.getElementById("countryFilter");
+  var query = queryInput && queryInput.value.trim() ? queryInput.value.trim() : "jobs";
+  var location = locationInput && locationInput.value.trim() ? locationInput.value.trim() : "";
+  var selected = countrySelect && countrySelect.value ? countrySelect.options[countrySelect.selectedIndex].text : "";
+  var key = String(country || "").toLowerCase();
+  var url;
+  if (key === "linkedin") {
+    url = "https://www.linkedin.com/jobs/search/?keywords=" + encodeURIComponent(query) + "&location=" + encodeURIComponent(location || selected || "Worldwide");
+  } else if (key === "eures") {
+    url = "https://eures.europa.eu/search-for-jobs_en";
+  } else if (key === "un") {
+    url = "https://careers.un.org/";
+  } else {
+    var hosts = {
+      "belgique":"be.indeed.com", "france":"fr.indeed.com", "espagne":"es.indeed.com",
+      "allemagne":"de.indeed.com", "canada":"ca.indeed.com", "royaume-uni":"uk.indeed.com",
+      "italie":"it.indeed.com", "portugal":"pt.indeed.com", "pays-bas":"nl.indeed.com",
+      "suisse":"ch.indeed.com", "australie":"au.indeed.com", "états-unis":"www.indeed.com",
+      "émirats arabes unis":"ae.indeed.com", "arabie saoudite":"sa.indeed.com",
+      "maroc":"ma.indeed.com", "tunisie":"tn.indeed.com", "japon":"jp.indeed.com",
+      "inde":"in.indeed.com", "brésil":"br.indeed.com", "afrique du sud":"za.indeed.com"
+    };
+    var target = key === "indeedpays" ? (selected || "www.indeed.com") : country;
+    var host = hosts[String(target).toLowerCase()] || (key === "indeed" ? "www.indeed.com" : "www.indeed.com");
+    url = "https://" + host + "/jobs?q=" + encodeURIComponent(query) + "&l=" + encodeURIComponent(location || (key === "indeedpays" ? selected : country));
+  }
+  window.location.href = url;
+};
+</script>
+<script type="module" src="app.js?v=20261018-15"></script></body></html>
