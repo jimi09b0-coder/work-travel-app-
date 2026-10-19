@@ -581,7 +581,7 @@ async function resendConfirmation(email) {
   try {
     const { error } = await supabase.auth.resend({ type: "signup", email: value });
     if (error) return authMessage(friendlyAuthError(error));
-    authMessage("Demande envoyée. Vérifiez votre boîte de réception et le dossier spam.", "success");
+    authMessage("Supabase a accepté la demande de renvoi, mais cela ne garantit pas la livraison. Vérifiez aussi le dossier spam. Si aucun e-mail n’arrive, le SMTP du projet doit être configuré.", "success");
   } catch (error) {
     authMessage(friendlyAuthError(error));
   } finally {
@@ -624,16 +624,16 @@ async function register(e) {
     });
     if (error) return authMessage(friendlyAuthError(error));
     if (data?.session) return await renderDashboard();
-    renderAuth("login", "Compte créé. Vérifiez votre e-mail puis utilisez le bouton de renvoi si nécessaire.");
+    renderAuth("login", "Demande traitée. Vérifiez votre boîte e-mail et le dossier spam. Si le message n’arrive pas, utilisez « Renvoyer l’e-mail de confirmation » ; l’envoi réel nécessite un SMTP correctement configuré dans Supabase.");
     $("authEmail").value = email;
     showResendConfirmation(email);
   } catch (error) {
     authMessage(friendlyAuthError(error));
   } finally {
-    const currentButton = $("authForm")?.querySelector('button[type="submit"], button[type="button"]');
-    if (currentButton) {
-      currentButton.disabled = false;
-      currentButton.textContent = "Créer mon compte";
+    // Do not modify a new login form rendered after signup succeeds.
+    if (button?.isConnected) {
+      button.disabled = false;
+      button.textContent = "Créer mon compte";
     }
   }
 }
@@ -658,8 +658,11 @@ async function login(e) {
   } catch (error) {
     authMessage(friendlyAuthError(error));
   } finally {
-    const currentButton = $("authForm")?.querySelector('button[type="submit"], button[type="button"]');
-    if (currentButton) { currentButton.disabled = false; currentButton.textContent = "Se connecter"; }
+    // Restore only the button that initiated this request; the dashboard may replace the form.
+    if (button?.isConnected) {
+      button.disabled = false;
+      button.textContent = "Se connecter";
+    }
   }
 }
 
