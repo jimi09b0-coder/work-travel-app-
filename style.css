@@ -306,3 +306,11 @@ button:focus-visible,.hero-button:focus-visible,a:focus-visible,input:focus-visi
  .section-heading h2,.travel-heading h2,.about-section h2{font-size:1.5rem}
  .account-card,.travel-tool,.travel-guide{border-radius:18px}
 }
+
+/* Arabic countries quick search */
+.arab-country-search{grid-column:1/-1;margin-top:8px;padding:14px 15px;border:1px solid #c9ddfa;border-radius:14px;background:#fff}
+.arab-country-search summary{cursor:pointer;font-weight:900;color:var(--primary-dark)}
+.arab-country-search p{margin:8px 0;color:var(--muted);font-size:.88rem}
+.arab-country-buttons{display:flex;flex-wrap:wrap;gap:8px}
+.arab-country-buttons button{padding:9px 12px;font-size:.86rem}
+@media(max-width:600px){.arab-country-search{padding:12px}.arab-country-buttons button{flex:1 1 calc(50% - 8px)}}
