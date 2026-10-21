@@ -624,7 +624,15 @@ async function register(e) {
     });
     if (error) return authMessage(friendlyAuthError(error));
     if (data?.session) return await renderDashboard();
-    renderAuth("login", "Demande traitée. Vérifiez votre boîte e-mail et le dossier spam. Si le message n’arrive pas, utilisez « Renvoyer l’e-mail de confirmation » ; l’envoi réel nécessite un SMTP correctement configuré dans Supabase.");
+    // Supabase may return an empty identities array when this email already has an account.
+    // Guide the user to login/resend confirmation instead of implying a new account was created.
+    if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      renderAuth("login", "قد يكون هذا البريد مرتبطًا بحساب موجود مسبقًا. جرّب تسجيل الدخول، أو أعد إرسال رسالة التأكيد إذا لم تؤكد بريدك.");
+      $("authEmail").value = email;
+      showResendConfirmation(email);
+      return;
+    }
+    renderAuth("login", "تم استلام طلب التسجيل. افحص بريدك ومجلد الرسائل غير المرغوب فيها لتأكيد الحساب. إذا لم تصل الرسالة، استخدم «إعادة إرسال رسالة التأكيد».");
     $("authEmail").value = email;
     showResendConfirmation(email);
   } catch (error) {
