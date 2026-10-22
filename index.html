@@ -364,4 +364,37 @@ window.openExternalJobSearch = function (country) {
   window.location.href = url;
 };
 </script>
+<script>
+/* Delegated interaction fallback for smart search and application buttons. */
+document.addEventListener("submit", function(event) {
+  const form = event.target;
+  if (!form || form.id !== "smartSearchForm") return;
+  event.preventDefault();
+  const input = document.getElementById("smartSearchInput");
+  const feedback = document.getElementById("smartSearchFeedback");
+  if (typeof window.runSmartSearch === "function") {
+    window.runSmartSearch(input ? input.value : "");
+  } else if (feedback) {
+    feedback.textContent = "Le module de recherche n’est pas encore chargé. Actualisez la page puis réessayez.";
+  }
+}, true);
+document.addEventListener("click", function(event) {
+  const button = event.target && event.target.closest ? event.target.closest("button") : null;
+  if (!button) return;
+  if (button.hasAttribute("data-smart-query")) {
+    event.preventDefault();
+    const prompt = button.getAttribute("data-smart-query") || "";
+    const input = document.getElementById("smartSearchInput");
+    if (input) input.value = prompt;
+    if (typeof window.runSmartSearch === "function") window.runSmartSearch(prompt);
+    return;
+  }
+  const applyMatch = (button.getAttribute("onclick") || "").match(/openApplicationForm\((\d+)\)/);
+  if (applyMatch) {
+    event.preventDefault();
+    if (typeof window.openApplicationForm === "function") window.openApplicationForm(Number(applyMatch[1]));
+    else alert("La fonction de candidature n’est pas chargée. Actualisez la page puis réessayez.");
+  }
+}, true);
+</script>
 <script type="module" src="app.js?v=20261022-2"></script></body></html>
