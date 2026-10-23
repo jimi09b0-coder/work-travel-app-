@@ -372,10 +372,16 @@ document.addEventListener("submit", function(event) {
   event.preventDefault();
   const input = document.getElementById("smartSearchInput");
   const feedback = document.getElementById("smartSearchFeedback");
+  if (feedback) feedback.textContent = "Recherche en cours…";
   if (typeof window.runSmartSearch === "function") {
-    window.runSmartSearch(input ? input.value : "");
+    try {
+      window.runSmartSearch(input ? input.value : "");
+    } catch (error) {
+      console.error("WorkWay smart search error:", error);
+      if (feedback) feedback.textContent = "La recherche a rencontré une erreur. Rechargez la page et réessayez.";
+    }
   } else if (feedback) {
-    feedback.textContent = "Le module de recherche n’est pas encore chargé. Actualisez la page puis réessayez.";
+    feedback.textContent = "Le module de recherche n’est pas chargé. Rechargez la page pour obtenir la dernière version.";
   }
 }, true);
 document.addEventListener("click", function(event) {
@@ -386,7 +392,18 @@ document.addEventListener("click", function(event) {
     const prompt = button.getAttribute("data-smart-query") || "";
     const input = document.getElementById("smartSearchInput");
     if (input) input.value = prompt;
-    if (typeof window.runSmartSearch === "function") window.runSmartSearch(prompt);
+    const feedback = document.getElementById("smartSearchFeedback");
+    if (feedback) feedback.textContent = "Recherche en cours…";
+    if (typeof window.runSmartSearch === "function") {
+      try {
+        window.runSmartSearch(prompt);
+      } catch (error) {
+        console.error("WorkWay smart search error:", error);
+        if (feedback) feedback.textContent = "La recherche a rencontré une erreur. Rechargez la page et réessayez.";
+      }
+    } else if (feedback) {
+      feedback.textContent = "Le module de recherche n’est pas chargé. Rechargez la page pour obtenir la dernière version.";
+    }
     return;
   }
   const applyMatch = (button.getAttribute("onclick") || "").match(/openApplicationForm\((\d+)\)/);
@@ -397,4 +414,4 @@ document.addEventListener("click", function(event) {
   }
 }, true);
 </script>
-<script type="module" src="app.js?v=20261022-3"></script></body></html>
+<script type="module" src="app.js?v=20261024-1"></script></body></html>
