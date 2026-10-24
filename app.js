@@ -298,7 +298,10 @@ function displayJobs(list = jobs) {
   if ($("favoritesCount")) $("favoritesCount").textContent = favoritesCount;
   $("resultsCount").textContent = `${list.length} offre${list.length > 1 ? "s" : ""}`;
   if (!list.length) {
-    $("jobs").innerHTML = '<div class="empty-state"><h3>Aucune offre trouvée</h3><p>Essayez un autre filtre.</p></div>';
+    const queryInput = $("externalSearchQuery");
+    const mainQuery = $("search")?.value?.trim() || "";
+    if (queryInput && mainQuery && !queryInput.value.trim()) queryInput.value = mainQuery;
+    $("jobs").innerHTML = `<div class="empty-state"><h3>Aucune offre dans WorkWay pour ces critères</h3><p>La liste interne ne contient pas encore d’annonce correspondante. Lancez la même recherche sur un site d’emploi externe :</p><div class="empty-search-actions"><button type="button" onclick="openExternalJobSearch('Indeed')">🔎 Rechercher sur Indeed</button> <button type="button" onclick="openExternalJobSearch('LinkedIn')">💼 Rechercher sur LinkedIn</button></div></div>`;
     return;
   }
   $("jobs").innerHTML = list.map(j => `
