@@ -336,8 +336,10 @@ window.openExternalJobSearch = function (country) {
   var queryInput = document.getElementById("externalSearchQuery");
   var locationInput = document.getElementById("externalSearchLocation");
   var countrySelect = document.getElementById("countryFilter");
-  var query = queryInput && queryInput.value.trim() ? queryInput.value.trim() : "jobs";
-  var location = locationInput && locationInput.value.trim() ? locationInput.value.trim() : "";
+  var mainSearch = document.getElementById("search");
+  var smartSearch = document.getElementById("smartSearchInput");
+  var query = (queryInput && queryInput.value.trim()) || (mainSearch && mainSearch.value.trim()) || (smartSearch && smartSearch.value.trim()) || "";
+  var location = (locationInput && locationInput.value.trim()) || "";
   var selected = countrySelect && countrySelect.value ? countrySelect.options[countrySelect.selectedIndex].text : "";
   var key = String(country || "").toLowerCase();
   var url;
