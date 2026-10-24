@@ -1512,9 +1512,27 @@ function runSmartSearch(input) {
       (!favoritesOnly || isFavorite(job.id));
   }).length;
   if (feedback) {
-    feedback.textContent = count
-      ? "Recherche appliquée : " + count + " offre(s) correspondent à vos critères. Les scores affichés sont des estimations basées sur vos filtres et préférences."
-      : "Aucune offre ne correspond exactement. Essayez un métier plus général ou changez le pays / mode de travail.";
+    feedback.replaceChildren();
+    if (count) {
+      feedback.textContent = "Recherche appliquée : " + count + " offre(s) correspondent à vos critères. Les scores affichés sont des estimations basées sur vos filtres et préférences.";
+    } else {
+      feedback.append(document.createTextNode("Aucune offre locale ne correspond exactement. Vous pouvez chercher cette requête sur des sites d’emploi externes : "));
+      const queryField = $("externalSearchQuery");
+      if (queryField) queryField.value = cleaned || prompt;
+      const locationField = $("externalSearchLocation");
+      if (locationField && countryMatch && !locationField.value.trim()) locationField.value = countryMatch.value;
+      const indeedButton = document.createElement("button");
+      indeedButton.type = "button";
+      indeedButton.className = "secondary";
+      indeedButton.textContent = "🔎 Chercher sur Indeed";
+      indeedButton.addEventListener("click", () => openExternalJobSearch(countryMatch ? "IndeedPays" : "Indeed"));
+      const linkedInButton = document.createElement("button");
+      linkedInButton.type = "button";
+      linkedInButton.className = "secondary";
+      linkedInButton.textContent = "💼 Chercher sur LinkedIn";
+      linkedInButton.addEventListener("click", () => openExternalJobSearch(countryMatch ? "LinkedInCountry:" + countryMatch.value : "LinkedIn"));
+      feedback.append(document.createElement("br"), indeedButton, document.createTextNode(" "), linkedInButton);
+    }
   }
   $("offres")?.scrollIntoView({behavior:"smooth",block:"start"});
 }
