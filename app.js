@@ -46,6 +46,9 @@ function setLanguage(lang){
   localStorage.setItem("workTravelLanguage", selected);
   applyLanguage();
 }
+window.setLanguage = setLanguage;
+window.applyLanguage = applyLanguage;
+
 function applyLanguage(){
   const lang = getLanguage(), dict = I18N[lang] || I18N.fr;
   document.documentElement.lang = lang;
