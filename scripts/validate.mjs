@@ -38,6 +38,7 @@ for (const match of html.matchAll(/<(?:script|link)\b[^>]*(?:src|href)=["']([^"'
 const inlineHandlers = [...html.matchAll(/\bon(?:click|change|input|keydown|submit)=["']([^"']+)["']/gi)]
   .flatMap(m => [...m[1].matchAll(/\b([A-Za-z_$][\w$]*)\s*\(/g)].map(x => x[1]));
 const knownGlobals = new Set([...js.matchAll(/\bwindow\.([A-Za-z_$][\w$]*)\s*=/g)].map(m => m[1]));
+for (const match of html.matchAll(/\bwindow\.([A-Za-z_$][\w$]*)\s*=/g)) knownGlobals.add(match[1]);
 const functionNames = new Set([...js.matchAll(/(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m => m[1]));
 const inlineFunctionNames = new Set([...html.matchAll(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m => m[1]));
 const ignored = new Set(['if','searchJobs','resetView','openAccount','toggleFavoritesOnly','clearFavorites','updateTravelGuide']);
