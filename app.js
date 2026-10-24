@@ -1419,6 +1419,58 @@ function normalizeSmartText(value) {
   return String(value || "").toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\p{L}\p{N}\s-]/gu, " ").replace(/\s+/g, " ").trim();
 }
 
+async function searchJobicyJobs(query) {
+  const jobsBox = $("jobs");
+  const feedback = $("smartSearchFeedback");
+  const keyword = String(query || "").trim();
+  if (!jobsBox) return;
+  jobsBox.innerHTML = '<div class="empty-state"><h3>Recherche d’offres à distance…</h3><p>Connexion au flux public Jobicy.</p></div>';
+  if (feedback) feedback.textContent = "Recherche des offres à distance publiées récemment…";
+  try {
+    const params = new URLSearchParams({count:"30"});
+    if (keyword) params.set("tag", keyword.slice(0,100));
+    const response = await fetch("https://jobicy.com/api/v2/remote-jobs?" + params.toString(), {
+      method:"GET", headers:{Accept:"application/json"}, credentials:"omit", referrerPolicy:"no-referrer"
+    });
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    const data = await response.json();
+    if (data?.success === false) throw new Error(data.error || "Source indisponible");
+    const items = Array.isArray(data.jobs) ? data.jobs : [];
+    const normalizedQuery = normalizeSmartText(keyword);
+    const filtered = items.filter(job => {
+      const hay = normalizeSmartText([job.jobTitle,job.companyName,job.jobIndustry,job.jobType,job.jobGeo,job.jobExcerpt].flat().join(" "));
+      return !normalizedQuery || normalizedQuery.split(/\\s+/).filter(Boolean).some(term => hay.includes(term));
+    });
+    if (!filtered.length) {
+      jobsBox.innerHTML = '<div class="empty-state"><h3>Aucune offre à distance trouvée</h3><p>Le flux Jobicy ne contient pas de résultat récent pour cette recherche. Essayez un autre mot-clé ou utilisez Indeed et LinkedIn.</p><p>Source : <a href="https://jobicy.com/" target="_blank" rel="noopener noreferrer">Jobicy</a></p></div>';
+      if (feedback) feedback.textContent = "Aucune offre correspondante dans le flux Jobicy. Les offres locales de WorkWay restent séparées.";
+      return;
+    }
+    jobsBox.innerHTML = filtered.map(job => {
+      const title = esc(job.jobTitle || "Offre à distance");
+      const company = esc(job.companyName || "Employeur non précisé");
+      const location = esc(job.jobGeo || "Localisation non précisée");
+      const types = Array.isArray(job.jobType) ? job.jobType.join(", ") : (job.jobType || "Non précisé");
+      const industries = Array.isArray(job.jobIndustry) ? job.jobIndustry.join(", ") : (job.jobIndustry || "");
+      const excerpt = String(job.jobExcerpt || "").replace(/<[^>]*>/g," ").replace(/\\s+/g," ").trim().slice(0,350);
+      const date = job.pubDate ? new Date(job.pubDate).toLocaleDateString() : "";
+      const href = safeExternalUrl(job.url);
+      return '<article class="job-card external-job-card"><div class="job-card-title"><h3>' + title + '</h3><span class="match-score">Jobicy · À distance</span></div>' +
+        '<div class="job-meta"><span>🏢 ' + company + '</span><span>📍 ' + location + '</span><span>💼 ' + esc(types) + '</span>' +
+        (industries ? '<span>🏷️ ' + esc(industries) + '</span>' : '') + (date ? '<span>🗓️ ' + esc(date) + '</span>' : '') + '</div>' +
+        '<p>' + esc(excerpt || "Consultez l’annonce d’origine pour les détails et conditions.") + '</p>' +
+        (href ? '<a class="primary-button" href="' + esc(href) + '" target="_blank" rel="noopener noreferrer">Voir l’offre sur Jobicy ↗</a>' : '') +
+        '<p class="job-source">Source : <a href="https://jobicy.com/" target="_blank" rel="noopener noreferrer">Jobicy</a>. La candidature se fait sur le site source.</p></article>';
+    }).join("");
+    $("resultsCount").textContent = filtered.length + " offres externes";
+    if (feedback) feedback.textContent = filtered.length + " offre(s) à distance récupérée(s) depuis Jobicy. Les annonces sont externes et la candidature se fait sur leur site d’origine.";
+  } catch (error) {
+    jobsBox.innerHTML = '<div class="empty-state"><h3>La recherche externe est momentanément indisponible</h3><p>Vérifiez la connexion, puis réessayez ou ouvrez Indeed et LinkedIn.</p><button type="button" class="secondary" onclick="openExternalJobSearch(\'Indeed\')">Chercher sur Indeed</button> <button type="button" class="secondary" onclick="openExternalJobSearch(\'LinkedIn\')">Chercher sur LinkedIn</button></div>';
+    if (feedback) feedback.textContent = "Impossible de contacter le flux externe pour le moment.";
+  }
+}
+window.searchJobicyJobs = searchJobicyJobs;
+
 function runSmartSearch(input) {
   const prompt = String(input || "").trim();
   const feedback = $("smartSearchFeedback");
@@ -1534,7 +1586,12 @@ function runSmartSearch(input) {
       linkedInButton.className = "secondary";
       linkedInButton.textContent = "💼 Chercher sur LinkedIn";
       linkedInButton.addEventListener("click", () => openExternalJobSearch(countryMatch ? "LinkedInCountry:" + countryMatch.value : "LinkedIn"));
-      feedback.append(document.createElement("br"), indeedButton, document.createTextNode(" "), linkedInButton);
+      const jobicyButton = document.createElement("button");
+      jobicyButton.type = "button";
+      jobicyButton.className = "secondary";
+      jobicyButton.textContent = "🌍 Afficher les offres à distance";
+      jobicyButton.addEventListener("click", () => searchJobicyJobs(cleaned || prompt));
+      feedback.append(document.createElement("br"), indeedButton, document.createTextNode(" "), linkedInButton, document.createTextNode(" "), jobicyButton);
     }
   }
   $("offres")?.scrollIntoView({behavior:"smooth",block:"start"});
