@@ -1439,7 +1439,7 @@ async function searchJobicyJobs(query) {
     const normalizedQuery = normalizeSmartText(keyword);
     const filtered = items.filter(job => {
       const hay = normalizeSmartText([job.jobTitle,job.companyName,job.jobIndustry,job.jobType,job.jobGeo,job.jobExcerpt].flat().join(" "));
-      return !normalizedQuery || normalizedQuery.split(/\\s+/).filter(Boolean).some(term => hay.includes(term));
+      return !normalizedQuery || normalizedQuery.split(/\s+/).filter(Boolean).some(term => hay.includes(term));
     });
     if (!filtered.length) {
       jobsBox.innerHTML = '<div class="empty-state"><h3>Aucune offre à distance trouvée</h3><p>Le flux Jobicy ne contient pas de résultat récent pour cette recherche. Essayez un autre mot-clé ou utilisez Indeed et LinkedIn.</p><p>Source : <a href="https://jobicy.com/" target="_blank" rel="noopener noreferrer">Jobicy</a></p></div>';
@@ -1452,7 +1452,7 @@ async function searchJobicyJobs(query) {
       const location = esc(job.jobGeo || "Localisation non précisée");
       const types = Array.isArray(job.jobType) ? job.jobType.join(", ") : (job.jobType || "Non précisé");
       const industries = Array.isArray(job.jobIndustry) ? job.jobIndustry.join(", ") : (job.jobIndustry || "");
-      const excerpt = String(job.jobExcerpt || "").replace(/<[^>]*>/g," ").replace(/\\s+/g," ").trim().slice(0,350);
+      const excerpt = String(job.jobExcerpt || "").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim().slice(0,350);
       const date = job.pubDate ? new Date(job.pubDate).toLocaleDateString() : "";
       const href = safeExternalUrl(job.url);
       return '<article class="job-card external-job-card"><div class="job-card-title"><h3>' + title + '</h3><span class="match-score">Jobicy · À distance</span></div>' +
