@@ -393,6 +393,9 @@ window.workWaySmartSearchFallback = function (prompt) {
 document.addEventListener("submit", function(event) {
   const form = event.target;
   if (!form || form.id !== "smartSearchForm") return;
+  // The module binds the real handler after it loads. Avoid running the same
+  // search twice when the normal form handler is already active.
+  if (typeof window.runSmartSearch === "function" && form.dataset.bound === "1") return;
   event.preventDefault();
   const input = document.getElementById("smartSearchInput");
   const feedback = document.getElementById("smartSearchFeedback");
