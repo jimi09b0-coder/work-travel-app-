@@ -51,23 +51,40 @@ window.applyLanguage = applyLanguage;
 
 function applyLanguage(){
   const lang = getLanguage(), dict = I18N[lang] || I18N.fr;
-  document.documentElement.lang = lang;
-  document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-  document.body.classList.toggle("rtl-language", lang === "ar");
-  document.querySelectorAll("[data-i18n]").forEach(el => {
-    const key = el.dataset.i18n, value = dict[key];
-    if (value == null) return;
-    if (key === "hero_title") {
-      const titleSpan = el.querySelector("span");
-      if (titleSpan) titleSpan.textContent = lang === "fr" ? "vivez votre aventure." : lang === "en" ? "live your adventure." : "عِش مغامرتك.";
-      el.childNodes[0].nodeValue = value + " ";
-    } else el.textContent = value;
-  });
-  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
-    const value = dict[el.dataset.i18nPlaceholder]; if (value) el.placeholder = value;
-  });
-  const select=$("languageSelect"); if(select) select.value=lang;
-  document.title = lang==="ar" ? "WorkWay Smart | العمل والسفر" : lang==="en" ? "WorkWay Smart | Jobs & Travel" : "WorkWay Smart | Emploi & Voyage";
+  try {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+    if (document.body) document.body.classList.toggle("rtl-language", lang === "ar");
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.dataset.i18n, value = dict[key];
+      if (value == null) return;
+      if (key === "hero_title") {
+        const titleSpan = el.querySelector("span");
+        if (titleSpan) titleSpan.textContent = lang === "fr" ? "vivez votre aventure." : lang === "en" ? "live your adventure." : "عِش مغامرتك.";
+        const firstText = Array.from(el.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
+        if (firstText) firstText.nodeValue = value + " ";
+        else el.insertBefore(document.createTextNode(value + " "), el.firstChild);
+      } else {
+        el.textContent = value;
+      }
+    });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+      const value = dict[el.dataset.i18nPlaceholder];
+      if (value != null) el.placeholder = value;
+    });
+    const select = document.getElementById("languageSelect");
+    if (select) select.value = lang;
+    document.title = lang === "ar" ? "WorkWay Smart | العمل والسفر" : lang === "en" ? "WorkWay Smart | Jobs & Travel" : "WorkWay Smart | Emploi & Voyage";
+    return true;
+  } catch (error) {
+    console.error("WorkWay language switch failed:", error);
+    if (document.documentElement) {
+      document.documentElement.dir = "ltr";
+      document.documentElement.lang = "fr";
+    }
+    if (document.body) document.body.classList.remove("rtl-language");
+    return false;
+  }
 }
 
 import { supabase } from "./supabase-config.js";
