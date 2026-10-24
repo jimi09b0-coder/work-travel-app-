@@ -40,8 +40,8 @@
   <div class="smart-assistant-copy"><span class="eyebrow">WORKWAY SMART MATCH</span><h2 id="smartAssistantTitle">✨ Votre recherche, en plus intelligent</h2><p>Décrivez le travail ou la destination recherchée. WorkWay applique les filtres disponibles et calcule un score de correspondance pour les offres.</p></div>
   <form class="smart-search-form" id="smartSearchForm">
     <label for="smartSearchInput">Que recherchez-vous ?</label>
-    <div class="smart-search-control"><span aria-hidden="true">✦</span><input id="smartSearchInput" type="search" placeholder="Ex. chauffeur en France, informatique à distance…" autocomplete="off"><button type="submit">Trouver des offres <span aria-hidden="true">→</span></button></div>
-    <div class="smart-suggestions" aria-label="Recherches rapides"><button type="button" data-smart-query="informatique à distance">💻 Informatique à distance</button><button type="button" data-smart-query="chauffeur en France">🚚 Chauffeur en France</button><button type="button" data-smart-query="hôtellerie en Allemagne">🏨 Hôtellerie en Allemagne</button><button type="button" data-smart-query="emploi au Portugal">🇵🇹 Emploi au Portugal</button></div>
+    <div class="smart-search-control"><span aria-hidden="true">✦</span><input id="smartSearchInput" type="search" placeholder="Ex. chauffeur en France, informatique à distance…" autocomplete="off"><button type="button" onclick="window.workWaySmartSearchFallback(document.getElementById('smartSearchInput').value)">Trouver des offres <span aria-hidden="true">→</span></button></div>
+    <div class="smart-suggestions" aria-label="Recherches rapides"><button type="button" data-smart-query="informatique à distance" onclick="window.workWaySmartSearchFallback(this.dataset.smartQuery)">💻 Informatique à distance</button><button type="button" data-smart-query="chauffeur en France" onclick="window.workWaySmartSearchFallback(this.dataset.smartQuery)">🚚 Chauffeur en France</button><button type="button" data-smart-query="hôtellerie en Allemagne" onclick="window.workWaySmartSearchFallback(this.dataset.smartQuery)">🏨 Hôtellerie en Allemagne</button><button type="button" data-smart-query="emploi au Portugal" onclick="window.workWaySmartSearchFallback(this.dataset.smartQuery)">🇵🇹 Emploi au Portugal</button></div>
     <p class="smart-search-feedback" id="smartSearchFeedback" role="status" aria-live="polite"></p>
   </form>
 </section>
@@ -365,6 +365,28 @@ window.openExternalJobSearch = function (country) {
 };
 </script>
 <script>
+/* Direct smart-search handler: visible feedback even if delegated listeners fail. */
+window.workWaySmartSearchFallback = function (prompt) {
+  var input = document.getElementById("smartSearchInput");
+  var feedback = document.getElementById("smartSearchFeedback");
+  var value = String(prompt || (input && input.value) || "").trim();
+  if (input && value) input.value = value;
+  if (feedback) feedback.textContent = value ? "Recherche en cours…" : "Saisissez un métier ou un pays, par exemple Chef de rang en France.";
+  if (!value) { if (input) input.focus(); return false; }
+  if (typeof window.runSmartSearch === "function") {
+    try {
+      window.runSmartSearch(value);
+    } catch (error) {
+      console.error("WorkWay smart search error:", error);
+      if (feedback) feedback.textContent = "Erreur pendant la recherche. Rechargez la page et réessayez.";
+    }
+  } else if (feedback) {
+    feedback.textContent = "Le moteur de recherche n’est pas chargé. Vérifiez la connexion puis rechargez la page.";
+  }
+  return false;
+};
+</script>
+<script>
 /* Delegated interaction fallback for smart search and application buttons. */
 document.addEventListener("submit", function(event) {
   const form = event.target;
@@ -414,4 +436,4 @@ document.addEventListener("click", function(event) {
   }
 }, true);
 </script>
-<script type="module" src="app.js?v=20261024-1"></script></body></html>
+<script type="module" src="app.js?v=20261024-2"></script></body></html>
