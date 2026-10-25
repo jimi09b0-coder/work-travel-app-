@@ -66,7 +66,7 @@ function applyLanguage(){
         else el.insertBefore(document.createTextNode(value + " "), el.firstChild);
       } else if (el.children.length) {
         // Preserve icons, badges, and other nested UI elements when translating.
-        const textNode = Array.from(el.childNodes).find(node => node.nodeType === Node.TEXT_NODE && node.node.nodeValue.trim());
+        const textNode = Array.from(el.childNodes).find(node => node.nodeType === Node.TEXT_NODE && node.nodeValue.trim());
         if (textNode) {
           textNode.nodeValue = " " + value + " ";
         } else {
