@@ -448,9 +448,14 @@ document.addEventListener("click", function(event) {
     var body=document.body;
     if(!body) return;
     var candidates=Array.from(body.children).filter(function(el){return !el.classList.contains("skip-link") && el.tagName!=="SCRIPT";});
+    /* Check real content, not just a container with an empty background. */
     var visible=candidates.some(function(el){
-      var s=getComputedStyle(el), r=el.getBoundingClientRect();
-      return s.display!=="none" && s.visibility!=="hidden" && Number(s.opacity)!==0 && r.width>0 && r.height>0;
+      var nodes=[el].concat(Array.from(el.querySelectorAll("h1,h2,h3,p,a,button,label,input,select,article,form")));
+      return nodes.some(function(node){
+        var s=getComputedStyle(node), r=node.getBoundingClientRect();
+        var text=(node.innerText||node.value||node.getAttribute("aria-label")||"").trim();
+        return text.length>0 && s.display!=="none" && s.visibility!=="hidden" && Number(s.opacity)!==0 && r.width>0 && r.height>0;
+      });
     });
     if(visible) return;
     document.documentElement.style.setProperty("min-height","100%","important");
