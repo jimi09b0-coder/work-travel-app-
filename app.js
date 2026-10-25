@@ -749,10 +749,11 @@ async function saveCandidateProfile(e) {
     updated_at: new Date().toISOString()
   };
   if (!payload.full_name) return alert("Veuillez saisir votre nom.");
+  // Create the profile row when an account exists but its profile row does not.
+  // The primary key is the authenticated user's id; existing profiles are updated.
   const { data: savedProfile, error } = await supabase
     .from("profiles")
-    .update(payload)
-    .eq("id", user.id)
+    .upsert({ ...payload, id: user.id }, { onConflict: "id" })
     .select("id")
     .maybeSingle();
   if (error) return alert("Impossible d’enregistrer le profil : " + error.message);
