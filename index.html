@@ -441,4 +441,45 @@ document.addEventListener("click", function(event) {
   }
 }, true);
 </script>
-<script type="module" src="app.js?v=20261025-1"></script></body></html>
+<script>
+/* Render safety net: recover a visible landing screen if stale CSS or browser state hides the page. */
+(function(){
+  function recover(){
+    var body=document.body;
+    if(!body) return;
+    var candidates=Array.from(body.children).filter(function(el){return !el.classList.contains("skip-link") && el.tagName!=="SCRIPT";});
+    var visible=candidates.some(function(el){
+      var s=getComputedStyle(el), r=el.getBoundingClientRect();
+      return s.display!=="none" && s.visibility!=="hidden" && Number(s.opacity)!==0 && r.width>0 && r.height>0;
+    });
+    if(visible) return;
+    document.documentElement.style.setProperty("min-height","100%","important");
+    body.style.setProperty("display","block","important");
+    body.style.setProperty("visibility","visible","important");
+    body.style.setProperty("opacity","1","important");
+    body.style.setProperty("color","#14213d","important");
+    candidates.forEach(function(el){
+      el.style.setProperty("display","block","important");
+      el.style.setProperty("visibility","visible","important");
+      el.style.setProperty("opacity","1","important");
+      el.style.setProperty("color","#14213d","important");
+      if(el.classList.contains("hero")){
+        el.style.setProperty("background","linear-gradient(135deg,#071d49,#0b4aa6,#1591df)","important");
+        el.style.setProperty("color","#fff","important");
+        el.style.setProperty("min-height","360px","important");
+        el.style.setProperty("padding","18px","important");
+      }
+    });
+    if(!candidates.length){
+      var box=document.createElement("main");
+      box.style.cssText="display:block!important;visibility:visible!important;opacity:1!important;max-width:760px;margin:40px auto;padding:24px;background:#fff;color:#14213d;border-radius:20px;font:16px/1.6 system-ui,sans-serif";
+      box.innerHTML="<h1>WorkWay Smart — العمل والسفر</h1><p>تعذر تحميل واجهة التطبيق كاملة. أعد تحميل الصفحة بعد قليل.</p><p><a href='https://jimi09b0-coder.github.io/work-travel-app-/'>إعادة فتح التطبيق</a></p>";
+      body.appendChild(box);
+    }
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",recover,{once:true});
+  else recover();
+  setTimeout(recover,700);
+})();
+</script>
+<script type="module" src="app.js?v=20261025-2"></script></body></html>
