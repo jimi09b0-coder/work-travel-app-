@@ -1477,8 +1477,8 @@ async function searchJobicyJobs(query) {
       return !normalizedQuery || normalizedQuery.split(/\s+/).filter(Boolean).some(term => hay.includes(term));
     });
     if (!filtered.length) {
-      jobsBox.innerHTML = '<div class="empty-state"><h3>Aucune offre à distance trouvée</h3><p>Le flux Jobicy ne contient pas de résultat récent pour cette recherche. Essayez un autre mot-clé ou utilisez Indeed et LinkedIn.</p><p>Source : <a href="https://jobicy.com/" target="_blank" rel="noopener noreferrer">Jobicy</a></p></div>';
-      if (feedback) feedback.textContent = "Aucune offre correspondante dans le flux Jobicy. Les offres locales de WorkWay restent séparées.";
+      jobsBox.innerHTML = '<div class="empty-state"><h3>Aucune offre à distance trouvée</h3><p>Le flux Jobicy ne contient pas de résultat récent pour cette recherche. Essayez un autre mot-clé ou poursuivez sur Indeed ou LinkedIn.</p><div class="empty-search-actions"><button type="button" class="secondary" onclick="openExternalJobSearch(\'Indeed\')">🔎 Rechercher sur Indeed</button> <button type="button" class="secondary" onclick="openExternalJobSearch(\'LinkedIn\')">💼 Rechercher sur LinkedIn</button></div><p>Source : <a href="https://jobicy.com/" target="_blank" rel="noopener noreferrer">Jobicy</a></p></div>';
+      if (feedback) feedback.textContent = "Aucune offre correspondante dans le flux Jobicy. Essayez un mot-clé différent ou utilisez un site externe.";
       return;
     }
     jobsBox.innerHTML = filtered.map(job => {
@@ -1627,6 +1627,9 @@ function runSmartSearch(input) {
       jobicyButton.textContent = "🌍 Afficher les offres à distance";
       jobicyButton.addEventListener("click", () => searchJobicyJobs(cleaned || prompt));
       feedback.append(document.createElement("br"), indeedButton, document.createTextNode(" "), linkedInButton, document.createTextNode(" "), jobicyButton);
+      // Automatically try the remote-jobs feed when the internal catalogue has no match.
+      // The external listings remain clearly marked and applications stay on the source site.
+      searchJobicyJobs(cleaned || prompt);
     }
   }
   $("offres")?.scrollIntoView({behavior:"smooth",block:"start"});
