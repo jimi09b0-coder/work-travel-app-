@@ -40,10 +40,19 @@ const I18N = {
     footer_text:"العمل والسفر حول العالم كله", language_name:"العربية"
   }
 };
-function getLanguage(){ return localStorage.getItem("workTravelLanguage") || "fr"; }
+function getLanguage(){
+  try {
+    const saved = localStorage.getItem("workTravelLanguage") || "fr";
+    return I18N[saved] ? saved : "fr";
+  } catch {
+    return "fr";
+  }
+}
 function setLanguage(lang){
   const selected = I18N[lang] ? lang : "fr";
-  localStorage.setItem("workTravelLanguage", selected);
+  try { localStorage.setItem("workTravelLanguage", selected); } catch (error) {
+    console.warn("WorkWay could not save language preference:", error);
+  }
   applyLanguage();
 }
 window.setLanguage = setLanguage;
