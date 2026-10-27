@@ -16,12 +16,15 @@
 <meta name="twitter:description" content="Votre espace pour rechercher un emploi à l’international et préparer votre mobilité.">
 <title>WorkWay Smart | Emploi international & voyage</title>
 <style id="critical-visible-ui">
+/* Emergency rendering fix: keep the static app visible even if the main stylesheet or module fails. */
 html,body{min-height:100%;margin:0}
 body{display:block!important;visibility:visible!important;opacity:1!important;background:#f4f7fb;color:#14213d;font-family:Arial,system-ui,sans-serif}
+body>header,body>main,body>section,body>footer{visibility:visible!important;opacity:1!important}
 .hero{display:block!important;visibility:visible!important;opacity:1!important;min-height:360px;background:linear-gradient(135deg,#071d49,#0b4aa6,#1591df)!important;color:#fff!important;padding-bottom:45px}
-.hero *{visibility:visible}
+.hero *{visibility:visible!important}
+.hero-content{animation:none!important;opacity:1!important;transform:none!important}
 .hero h1,.hero h2,.hero p,.hero a,.hero span,.hero label{color:inherit}
-.navbar,.hero-content,.feature-ribbon,.search-section,.jobs-section,.travel-section,.account-section,main,section,footer{visibility:visible}
+main,section,footer{color:#14213d}
 </style>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -496,4 +499,4 @@ document.addEventListener("click", function(event) {
   setTimeout(recover,700);
 })();
 </script>
-<script type="module" src="app.js?v=20261027-1"></script></body></html>
+<script type="module" src="app.js?v=20261028-2"></script></body></html>
