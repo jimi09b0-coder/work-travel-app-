@@ -30,7 +30,7 @@ body *{visibility:visible!important;animation:none!important}
 main,section,footer{color:#14213d}
 .hero .hero-button{color:#0b3f91!important;background:#fff!important;opacity:1!important}
 </style>
-<link rel="stylesheet" href="style.css?v=20261028-5">
+<link rel="stylesheet" href="style.css?v=20261028-6">
 </head>
 <body><a class="skip-link" href="#offres">Aller directement aux offres</a>
 <header class="hero">
@@ -458,49 +458,49 @@ document.addEventListener("click", function(event) {
 }, true);
 </script>
 <script>
-/* Render safety net: recover a visible landing screen if stale CSS or browser state hides the page. */
+/* Strong recovery for mobile browsers: restore the actual page, not just its background. */
 (function(){
-  function recover(){
+  function repair(){
     var body=document.body;
     if(!body) return;
-    var candidates=Array.from(body.children).filter(function(el){return !el.classList.contains("skip-link") && el.tagName!=="SCRIPT";});
-    /* Check real content, not just a container with an empty background. */
-    var visible=candidates.some(function(el){
-      var nodes=[el].concat(Array.from(el.querySelectorAll("h1,h2,h3,p,a,button,label,input,select,article,form")));
-      return nodes.some(function(node){
-        var s=getComputedStyle(node), r=node.getBoundingClientRect();
-        var text=(node.innerText||node.value||node.getAttribute("aria-label")||"").trim();
-        return text.length>0 && s.display!=="none" && s.visibility!=="hidden" && Number(s.opacity)!==0 && r.width>0 && r.height>0;
-      });
-    });
+    var hero= document.querySelector(".hero");
+    var title= hero && hero.querySelector("h1");
+    var visible=title && title.getBoundingClientRect().width>0 && title.getBoundingClientRect().height>0 && getComputedStyle(title).display!=="none" && getComputedStyle(title).visibility!=="hidden" && Number(getComputedStyle(title).opacity)!==0;
     if(visible) return;
+    document.documentElement.style.setProperty("visibility","visible","important");
+    document.documentElement.style.setProperty("opacity","1","important");
     document.documentElement.style.setProperty("min-height","100%","important");
     body.style.setProperty("display","block","important");
     body.style.setProperty("visibility","visible","important");
     body.style.setProperty("opacity","1","important");
-    body.style.setProperty("color","#14213d","important");
-    candidates.forEach(function(el){
-      el.style.setProperty("display","block","important");
+    body.style.setProperty("min-height","100vh","important");
+    body.querySelectorAll("header,main,section,footer,.hero,.hero-content,h1,h2,h3,p,a,button,nav,select,input,form,.feature-tile,.worldwide-strip").forEach(function(el){
       el.style.setProperty("visibility","visible","important");
       el.style.setProperty("opacity","1","important");
-      el.style.setProperty("color","#14213d","important");
-      if(el.classList.contains("hero")){
-        el.style.setProperty("background","linear-gradient(135deg,#071d49,#0b4aa6,#1591df)","important");
-        el.style.setProperty("color","#fff","important");
-        el.style.setProperty("min-height","360px","important");
-        el.style.setProperty("padding","18px","important");
-      }
+      el.style.setProperty("animation","none","important");
+      el.style.setProperty("transform","none","important");
     });
-    if(!candidates.length){
-      var box=document.createElement("main");
-      box.style.cssText="display:block!important;visibility:visible!important;opacity:1!important;max-width:760px;margin:40px auto;padding:24px;background:#fff;color:#14213d;border-radius:20px;font:16px/1.6 system-ui,sans-serif";
-      box.innerHTML="<h1>WorkWay Smart — العمل والسفر</h1><p>تعذر تحميل واجهة التطبيق كاملة. أعد تحميل الصفحة بعد قليل.</p><p><a href='https://jimi09b0-coder.github.io/work-travel-app-/'>إعادة فتح التطبيق</a></p>";
-      body.appendChild(box);
+    if(hero){
+      hero.style.setProperty("display","block","important");
+      hero.style.setProperty("min-height","360px","important");
+      hero.style.setProperty("background","linear-gradient(135deg,#071d49,#0b4aa6,#1591df)","important");
+      hero.style.setProperty("color","#fff","important");
+    }
+    if(!title || title.getBoundingClientRect().height===0){
+      var box=document.getElementById("workway-emergency-screen");
+      if(!box){
+        box=document.createElement("div");
+        box.id="workway-emergency-screen";
+        box.style.cssText="position:relative;z-index:2147483647;display:block!important;visibility:visible!important;opacity:1!important;margin:18px;padding:22px;background:#fff;color:#14213d;border:2px solid #1769e0;border-radius:14px;font:700 17px/1.6 Arial,sans-serif";
+        box.innerHTML="<h1 style='display:block!important;color:#14213d!important'>WorkWay Smart — العمل والسفر</h1><p style='display:block!important;color:#14213d!important'>تم تحميل الصفحة لكن الواجهة لم تظهر بالكامل. أعد تحميل الصفحة مرة واحدة.</p><button type='button' style='padding:12px 18px;background:#1769e0;color:#fff;border:0;border-radius:9px;font-weight:bold' onclick='location.reload()'>إعادة تحميل التطبيق</button>";
+        body.insertBefore(box,body.firstChild);
+      }
     }
   }
-  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",recover,{once:true});
-  else recover();
-  setTimeout(recover,700);
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",repair,{once:true});
+  else repair();
+  setTimeout(repair,500);
+  setTimeout(repair,1800);
 })();
 </script>
-<script type="module" src="app.js?v=20261028-5"></script></body></html>
+<script type="module" src="app.js?v=20261028-6"></script></body></html>
