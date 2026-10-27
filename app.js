@@ -430,7 +430,7 @@ async function openApplicationForm(id) {
   $("offres").scrollIntoView({behavior:"smooth"});
 }
 
-async function applyJob(e, id) {
+async async function applyJob(e, id) {
   e.preventDefault();
   const user = await currentUser();
   if (!user) { openAccount("login"); return; }
