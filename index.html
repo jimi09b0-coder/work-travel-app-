@@ -19,16 +19,20 @@
 /* Emergency rendering fix: keep the static app visible even if the main stylesheet or module fails. */
 html,body{min-height:100%;margin:0}
 body{display:block!important;visibility:visible!important;opacity:1!important;background:#f4f7fb;color:#14213d;font-family:Arial,system-ui,sans-serif}
-body>header,body>main,body>section,body>footer{visibility:visible!important;opacity:1!important}
+/* Emergency recovery: explicitly paint the static page even if cached styles hide it. */
+body>header,body>main,body>section,body>footer{display:block!important;visibility:visible!important;opacity:1!important;position:relative!important}
+body>*:not(script):not(style){visibility:visible!important;opacity:1!important}
+body *{visibility:visible!important;animation:none!important}
 .hero{display:block!important;visibility:visible!important;opacity:1!important;min-height:360px;background:linear-gradient(135deg,#071d49,#0b4aa6,#1591df)!important;color:#fff!important;padding-bottom:45px}
-.hero *{visibility:visible!important}
-.hero-content{animation:none!important;opacity:1!important;transform:none!important}
+.hero *{visibility:visible!important;opacity:1!important}
+.hero-content{display:block!important;animation:none!important;opacity:1!important;transform:none!important}
 .hero h1,.hero h2,.hero p,.hero a,.hero span,.hero label{color:inherit}
 main,section,footer{color:#14213d}
+#renderRecoveryBanner{display:block!important;position:relative!important;z-index:2147483647!important;visibility:visible!important;opacity:1!important;background:#fff!important;color:#14213d!important;padding:14px 18px!important;border:2px solid #1769e0!important;border-radius:12px!important;margin:12px!important;font:700 16px/1.5 Arial,sans-serif!important}
 </style>
-<link rel="stylesheet" href="style.css?v=20261028-3">
+<link rel="stylesheet" href="style.css?v=20261028-4">
 </head>
-<body><a class="skip-link" href="#offres">Aller directement aux offres</a>
+<body><div id="renderRecoveryBanner">WorkWay Smart — واجهة الاستعادة نشطة. إذا ظهرت هذه الرسالة، فالصفحة تُعرض.</div><a class="skip-link" href="#offres">Aller directement aux offres</a>
 <header class="hero">
 <nav class="navbar"><a class="logo" href="#" onclick="resetView();return false;">🌍 WorkWay <span class="brand-ai">SMART</span></a>
 <div class="nav-links"><a href="#offres" data-i18n="nav_jobs">Offres</a><a href="#voyage" data-i18n="nav_travel">Voyage</a><a href="#compte" onclick="if(window.openAccount){openAccount();return false;}" data-i18n="nav_account">Mon compte</a>
@@ -499,4 +503,4 @@ document.addEventListener("click", function(event) {
   setTimeout(recover,700);
 })();
 </script>
-<script type="module" src="app.js?v=20261028-3"></script></body></html>
+<script type="module" src="app.js?v=20261028-4"></script></body></html>
