@@ -1535,7 +1535,29 @@ function runSmartSearch(input) {
     "Danemark": ["الدنمارك"],
     "Autriche": ["النمسا"],
     "Pologne": ["بولندا"],
-    "Turquie": ["تركيا"]
+    "Turquie": ["تركيا"],
+    "Algérie": ["الجزائر", "الجزاير", "الجزائري", "الجزائرية"],
+    "Maroc": ["المغرب", "مغربي", "مغربية"],
+    "Tunisie": ["تونس", "تونسي", "تونسية"],
+    "Égypte": ["مصر", "مصري", "مصرية"],
+    "Arabie saoudite": ["السعودية", "السعوديه", "سعودي", "سعودية"],
+    "Émirats arabes unis": ["الإمارات", "الامارات", "الإمارات العربية المتحدة"],
+    "Qatar": ["قطر", "قطري", "قطرية"],
+    "Koweït": ["الكويت", "كويتي", "كويتية"],
+    "Bahreïn": ["البحرين", "بحريني", "بحرينية"],
+    "Oman": ["عمان", "عُمان", "عماني", "عمانية"],
+    "Jordanie": ["الأردن", "الاردن", "أردني", "اردني"],
+    "Liban": ["لبنان", "لبناني", "لبنانية"],
+    "Irak": ["العراق", "عراقي", "عراقية"],
+    "Libye": ["ليبيا", "ليبي", "ليبية"],
+    "Mauritanie": ["موريتانيا", "موريتاني", "موريتانية"],
+    "Soudan": ["السودان", "سوداني", "سودانية"],
+    "Somalie": ["الصومال", "صومالي", "صومالية"],
+    "Syrie": ["سوريا", "سوري", "سورية"],
+    "Yémen": ["اليمن", "يمني", "يمنية"],
+    "Palestine": ["فلسطين", "فلسطيني", "فلسطينية"],
+    "Djibouti": ["جيبوتي"],
+    "Comores": ["جزر القمر", "القمر"]
   };
   const sortedCountryOptions = countryOptions.sort((a,b) => b.value.length - a.value.length);
   let countryMatch = sortedCountryOptions.find(option => cleaned.includes(normalizeSmartText(option.value)));
@@ -1552,8 +1574,25 @@ function runSmartSearch(input) {
       }
     }
   }
+  // Do not depend on the database-populated country dropdown: it can be empty
+  // for a new deployment, but external job search must still understand countries.
+  if (!countryMatch) {
+    const knownCountries = Object.entries(countryAliases)
+      .flatMap(([value, aliases]) => [value, ...aliases].map(term => ({ value, term })))
+      .sort((a, b) => normalizeSmartText(b.term).length - normalizeSmartText(a.term).length);
+    const knownMatch = knownCountries.find(item => {
+      const term = normalizeSmartText(item.term);
+      return term && cleaned.includes(term);
+    });
+    if (knownMatch) {
+      countryMatch = { value: knownMatch.value };
+      matchedCountryTerm = normalizeSmartText(knownMatch.term);
+    }
+  }
   if (countryMatch) {
-    countrySelect.value = countryMatch.value;
+    if (countrySelect && [...countrySelect.options].some(option => option.value === countryMatch.value)) {
+      countrySelect.value = countryMatch.value;
+    }
     cleaned = cleaned.replace(matchedCountryTerm, " ");
   }
 
@@ -1615,7 +1654,7 @@ function runSmartSearch(input) {
       indeedButton.type = "button";
       indeedButton.className = "secondary";
       indeedButton.textContent = "🔎 Chercher sur Indeed";
-      indeedButton.addEventListener("click", () => openExternalJobSearch(countryMatch ? "IndeedPays" : "Indeed"));
+      indeedButton.addEventListener("click", () => openExternalJobSearch(countryMatch ? countryMatch.value : "Indeed"));
       const linkedInButton = document.createElement("button");
       linkedInButton.type = "button";
       linkedInButton.className = "secondary";
