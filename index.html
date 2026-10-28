@@ -22,15 +22,20 @@ body{display:block!important;visibility:visible!important;opacity:1!important;ba
 /* Emergency recovery: explicitly paint the static page even if cached styles hide it. */
 body>header,body>main,body>section,body>footer{display:block!important;visibility:visible!important;opacity:1!important;position:relative!important}
 body>*:not(script):not(style){visibility:visible!important;opacity:1!important}
-body *{visibility:visible!important;animation:none!important}
-.hero{display:block!important;visibility:visible!important;opacity:1!important;min-height:360px;background:linear-gradient(135deg,#071d49,#0b4aa6,#1591df)!important;color:#fff!important;padding-bottom:45px}
-.hero *{visibility:visible!important;opacity:1!important}
-.hero-content{display:block!important;animation:none!important;opacity:1!important;transform:none!important}
+body *{visibility:visible!important;animation:none!important;content-visibility:visible!important}
+body>header.hero{display:block!important;position:relative!important;visibility:visible!important;opacity:1!important;min-height:540px!important;overflow:visible!important;background:linear-gradient(135deg,#071d49,#0b4aa6,#1591df)!important;color:#fff!important;padding:18px 0 65px!important}
+.hero .navbar{display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2!important;flex-wrap:wrap!important}
+.hero .hero-content{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:18px!important;position:relative!important;z-index:2!important;visibility:visible!important;animation:none!important;opacity:1!important;transform:none!important;padding:28px 24px!important}
+.hero .hero-content>*{display:block!important;visibility:visible!important;opacity:1!important}
+.hero h1{display:block!important;font-size:clamp(2.3rem,8vw,4.3rem)!important;line-height:1.12!important;color:#fff!important}
+.hero p{display:block!important;color:#fff!important}
+.hero .hero-button{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-height:56px!important;color:#0b3f91!important;background:#fff!important;opacity:1!important}
+.feature-ribbon,.feature-tile,main,section,footer{visibility:visible!important;opacity:1!important}
 .hero h1,.hero h2,.hero p,.hero a,.hero span,.hero label{color:inherit}
 main,section,footer{color:#14213d}
 .hero .hero-button{color:#0b3f91!important;background:#fff!important;opacity:1!important}
 </style>
-<link rel="stylesheet" href="style.css?v=20261028-7">
+<link rel="stylesheet" href="style.css?v=20261028-8">
 </head>
 <body><a class="skip-link" href="#offres">Aller directement aux offres</a>
 <header class="hero">
@@ -505,4 +510,4 @@ document.addEventListener("click", function(event) {
   setTimeout(repair,1800);
 })();
 </script>
-<script type="module" src="app.js?v=20261028-7"></script></body></html>
+<script type="module" src="app.js?v=20261028-8"></script></body></html>
