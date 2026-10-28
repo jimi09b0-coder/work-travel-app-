@@ -30,7 +30,7 @@ body *{visibility:visible!important;animation:none!important}
 main,section,footer{color:#14213d}
 .hero .hero-button{color:#0b3f91!important;background:#fff!important;opacity:1!important}
 </style>
-<link rel="stylesheet" href="style.css?v=20261028-6">
+<link rel="stylesheet" href="style.css?v=20261028-7">
 </head>
 <body><a class="skip-link" href="#offres">Aller directement aux offres</a>
 <header class="hero">
@@ -492,8 +492,10 @@ document.addEventListener("click", function(event) {
         box=document.createElement("div");
         box.id="workway-emergency-screen";
         box.style.cssText="position:relative;z-index:2147483647;display:block!important;visibility:visible!important;opacity:1!important;margin:18px;padding:22px;background:#fff;color:#14213d;border:2px solid #1769e0;border-radius:14px;font:700 17px/1.6 Arial,sans-serif";
-        box.innerHTML="<h1 style='display:block!important;color:#14213d!important'>WorkWay Smart — العمل والسفر</h1><p style='display:block!important;color:#14213d!important'>تم تحميل الصفحة لكن الواجهة لم تظهر بالكامل. أعد تحميل الصفحة مرة واحدة.</p><button type='button' style='padding:12px 18px;background:#1769e0;color:#fff;border:0;border-radius:9px;font-weight:bold' onclick='location.reload()'>إعادة تحميل التطبيق</button>";
+        box.innerHTML="<h1 style='display:block!important;color:#14213d!important'>WorkWay Smart — العمل والسفر</h1><p style='display:block!important;color:#14213d!important'>تم تحميل الصفحة لكن الواجهة لم تظهر بالكامل. أعد تحميل الصفحة مرة واحدة.</p><button id='workway-reload-button' type='button' style='padding:12px 18px;background:#1769e0;color:#fff;border:0;border-radius:9px;font-weight:bold'>إعادة تحميل التطبيق</button>";
         body.insertBefore(box,body.firstChild);
+        var reloadButton=box.querySelector("#workway-reload-button");
+        if(reloadButton) reloadButton.addEventListener("click",function(){window.location.reload();});
       }
     }
   }
@@ -503,4 +505,4 @@ document.addEventListener("click", function(event) {
   setTimeout(repair,1800);
 })();
 </script>
-<script type="module" src="app.js?v=20261028-6"></script></body></html>
+<script type="module" src="app.js?v=20261028-7"></script></body></html>
