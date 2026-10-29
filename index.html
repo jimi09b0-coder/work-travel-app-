@@ -470,9 +470,25 @@ document.addEventListener("click", function(event) {
     if(!body) return;
     var hero= document.querySelector(".hero");
     var title= hero && hero.querySelector("h1");
-    var visible=title && title.getBoundingClientRect().width>0 && title.getBoundingClientRect().height>0 && getComputedStyle(title).display!=="none" && getComputedStyle(title).visibility!=="hidden" && Number(getComputedStyle(title).opacity)!==0;
-    if(visible) return;
+    /* Do not trust only the hero title: mobile browsers can leave the whole page hidden. */
+    document.documentElement.style.setProperty("display","block","important");
     document.documentElement.style.setProperty("visibility","visible","important");
+    document.documentElement.style.setProperty("opacity","1","important");
+    document.documentElement.style.setProperty("min-height","100%","important");
+    body.style.setProperty("display","block","important");
+    body.style.setProperty("visibility","visible","important");
+    body.style.setProperty("opacity","1","important");
+    body.style.setProperty("min-height","100vh","important");
+    body.querySelectorAll(":scope > header,:scope > main,:scope > section,:scope > footer").forEach(function(el){
+      el.style.setProperty("display","block","important");
+      el.style.setProperty("visibility","visible","important");
+      el.style.setProperty("opacity","1","important");
+    });
+    if(title){
+      title.style.setProperty("display","block","important");
+      title.style.setProperty("visibility","visible","important");
+      title.style.setProperty("opacity","1","important");
+    }
     document.documentElement.style.setProperty("opacity","1","important");
     document.documentElement.style.setProperty("min-height","100%","important");
     body.style.setProperty("display","block","important");
