@@ -49,31 +49,31 @@ function getLanguage(){
   }
 }
 function setLanguage(lang){
-  const selected = I18N[lang] ? lang : "fr";
-  try { localStorage.setItem("workTravelLanguage", selected); } catch (error) {
-    console.warn("WorkWay could not save language preference:", error);
-  }
-  // Set direction immediately so mobile browsers do not briefly render an empty RTL view.
+  const selected = Object.prototype.hasOwnProperty.call(I18N, lang) ? lang : "fr";
+  // Apply the language synchronously: changing to Arabic must never hide or replace the page.
   document.documentElement.lang = selected;
   document.documentElement.dir = selected === "ar" ? "rtl" : "ltr";
   if (document.body) document.body.classList.toggle("rtl-language", selected === "ar");
-  const apply = () => {
-    const ok = applyLanguage();
-    if (!ok) {
-      // Keep the existing page visible if an individual translation fails.
-      document.documentElement.lang = selected;
-      document.documentElement.dir = selected === "ar" ? "rtl" : "ltr";
-      if (document.body) document.body.classList.toggle("rtl-language", selected === "ar");
-    }
-  };
-  if (typeof requestAnimationFrame === "function") requestAnimationFrame(apply);
-  else setTimeout(apply, 0);
+  try { localStorage.setItem("workTravelLanguage", selected); } catch (error) {
+    console.warn("WorkWay could not save language preference:", error);
+  }
+  const select = document.getElementById("languageSelect");
+  if (select && select.value !== selected) select.value = selected;
+  try {
+    applyLanguage(selected);
+  } catch (error) {
+    console.error("WorkWay could not translate the page; keeping it visible:", error);
+    // Translation failure must not reset the document or blank the interface.
+    document.documentElement.lang = selected;
+    document.documentElement.dir = selected === "ar" ? "rtl" : "ltr";
+    if (document.body) document.body.classList.toggle("rtl-language", selected === "ar");
+  }
 }
 window.setLanguage = setLanguage;
 window.applyLanguage = applyLanguage;
 
-function applyLanguage(){
-  const lang = getLanguage(), dict = I18N[lang] || I18N.fr;
+function applyLanguage(requestedLang){
+  const lang = I18N[requestedLang] ? requestedLang : getLanguage(), dict = I18N[lang] || I18N.fr;
   try {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
