@@ -5,7 +5,7 @@
 }
 
 /* لضمان عدم انقلاب أيقونة السهم داخل قائمة اللغات بشكل خاطئ */
-#lang-selector {
+#languageSelect {
     padding-inline-start: 10px;
     padding-inline-end: 25px;
 }
