@@ -474,14 +474,14 @@ document.addEventListener("click", function(event) {
     var pageText = (body.innerText || "").trim();
     var blankScreen = !pageText || !title || title.getBoundingClientRect().height === 0;
     if (blankScreen) {
-      var emergency = document.getElementById("workway-emergency-screen");
+      var emergency = document.getElementById("workway-blank-recovery-card");
       if (!emergency) {
         emergency = document.createElement("div");
-        emergency.id = "workway-emergency-screen";
+        emergency.id = "workway-blank-recovery-card";
         emergency.style.cssText = "position:fixed;inset:12px;z-index:2147483647;display:block!important;visibility:visible!important;opacity:1!important;overflow:auto;padding:22px;background:#fff;color:#14213d;border:3px solid #1769e0;border-radius:14px;font:17px/1.6 Arial,sans-serif;box-shadow:0 0 0 9999px #eef4ff";
-        emergency.innerHTML = "<h1 style='display:block!important;color:#14213d!important;font-size:25px!important'>WorkWay Smart — العمل والسفر</h1><p style='display:block!important;color:#14213d!important'>تم اكتشاف اختفاء الواجهة. حاول إعادة تحميل التطبيق. لم يتم حذف حسابك أو بياناتك.</p><button id='workway-reload-button' type='button' style='display:block!important;visibility:visible!important;opacity:1!important;padding:14px 18px;background:#1769e0;color:#fff;border:0;border-radius:9px;font-weight:bold;font-size:16px'>إعادة تحميل التطبيق</button><p style='display:block!important;color:#14213d!important;font-size:13px'>WorkWay emergency recovery</p>";
+        emergency.innerHTML = "<h1 style='display:block!important;color:#14213d!important;font-size:25px!important'>WorkWay Smart — العمل والسفر</h1><p style='display:block!important;color:#14213d!important'>تم اكتشاف اختفاء الواجهة. حاول إعادة تحميل التطبيق. لم يتم حذف حسابك أو بياناتك.</p><button id='workway-blank-recovery-reload' type='button' style='display:block!important;visibility:visible!important;opacity:1!important;padding:14px 18px;background:#1769e0;color:#fff;border:0;border-radius:9px;font-weight:bold;font-size:16px'>إعادة تحميل التطبيق</button><p style='display:block!important;color:#14213d!important;font-size:13px'>WorkWay emergency recovery</p>";
         body.appendChild(emergency);
-        document.getElementById("workway-reload-button").addEventListener("click", function(){ window.location.href = window.location.pathname + "?refresh=" + Date.now(); });
+        document.getElementById("workway-blank-recovery-reload").addEventListener("click", function(){ window.location.href = window.location.pathname + "?refresh=" + Date.now(); });
       }
       return;
     }
@@ -523,14 +523,14 @@ document.addEventListener("click", function(event) {
       hero.style.setProperty("color","#fff","important");
     }
     if(!title || title.getBoundingClientRect().height===0){
-      var box=document.getElementById("workway-emergency-screen");
+      var box=document.getElementById("workway-blank-recovery-card");
       if(!box){
         box=document.createElement("div");
-        box.id="workway-emergency-screen";
+        box.id="workway-blank-recovery-card";
         box.style.cssText="position:relative;z-index:2147483647;display:block!important;visibility:visible!important;opacity:1!important;margin:18px;padding:22px;background:#fff;color:#14213d;border:2px solid #1769e0;border-radius:14px;font:700 17px/1.6 Arial,sans-serif";
-        box.innerHTML="<h1 style='display:block!important;color:#14213d!important'>WorkWay Smart — العمل والسفر</h1><p style='display:block!important;color:#14213d!important'>تم تحميل الصفحة لكن الواجهة لم تظهر بالكامل. أعد تحميل الصفحة مرة واحدة.</p><button id='workway-reload-button' type='button' style='padding:12px 18px;background:#1769e0;color:#fff;border:0;border-radius:9px;font-weight:bold'>إعادة تحميل التطبيق</button>";
+        box.innerHTML="<h1 style='display:block!important;color:#14213d!important'>WorkWay Smart — العمل والسفر</h1><p style='display:block!important;color:#14213d!important'>تم تحميل الصفحة لكن الواجهة لم تظهر بالكامل. أعد تحميل الصفحة مرة واحدة.</p><button id='workway-blank-recovery-reload' type='button' style='padding:12px 18px;background:#1769e0;color:#fff;border:0;border-radius:9px;font-weight:bold'>إعادة تحميل التطبيق</button>";
         body.insertBefore(box,body.firstChild);
-        var reloadButton=box.querySelector("#workway-reload-button");
+        var reloadButton=box.querySelector("#workway-blank-recovery-reload");
         if(reloadButton) reloadButton.addEventListener("click",function(){window.location.reload();});
       }
     }
