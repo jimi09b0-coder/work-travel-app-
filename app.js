@@ -53,7 +53,7 @@ function setLanguage(lang){
   // Apply the language synchronously: changing to Arabic must never hide or replace the page.
   document.documentElement.lang = selected;
   document.documentElement.dir = selected === "ar" ? "rtl" : "ltr";
-  if (document.body) document.body.classList.toggle("rtl-language", selected === "ar");
+  if (document.body) document.body.classList.remove("rtl-language");
   try { localStorage.setItem("workTravelLanguage", selected); } catch (error) {
     console.warn("WorkWay could not save language preference:", error);
   }
@@ -66,7 +66,7 @@ function setLanguage(lang){
     // Translation failure must not reset the document or blank the interface.
     document.documentElement.lang = selected;
     document.documentElement.dir = selected === "ar" ? "rtl" : "ltr";
-    if (document.body) document.body.classList.toggle("rtl-language", selected === "ar");
+    if (document.body) document.body.classList.remove("rtl-language");
   }
 }
 window.setLanguage = setLanguage;
@@ -79,7 +79,7 @@ function applyLanguage(requestedLang){
   // cannot interrupt the rest of the page or trigger the blank-screen fallback.
   document.documentElement.lang = lang;
   document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-  if (document.body) document.body.classList.toggle("rtl-language", lang === "ar");
+  if (document.body) document.body.classList.remove("rtl-language");
   document.querySelectorAll("[data-i18n]").forEach(el => {
     try {
       const key = el.dataset.i18n;
