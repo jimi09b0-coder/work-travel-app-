@@ -1,3 +1,14 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* لضمان عدم انقلاب أيقونة السهم داخل قائمة اللغات بشكل خاطئ */
+#lang-selector {
+    padding-inline-start: 10px;
+    padding-inline-end: 25px;
+}
 /* يتم تطبيقه فقط عندما تتحول لغة الموقع إلى العربية */
 html[lang="ar"] body {
     font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
