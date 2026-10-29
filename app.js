@@ -73,49 +73,50 @@ window.setLanguage = setLanguage;
 window.applyLanguage = applyLanguage;
 
 function applyLanguage(requestedLang){
-  const lang = I18N[requestedLang] ? requestedLang : getLanguage(), dict = I18N[lang] || I18N.fr;
-  try {
-    document.documentElement.lang = lang;
-    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-    if (document.body) document.body.classList.toggle("rtl-language", lang === "ar");
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-      const key = el.dataset.i18n, value = dict[key];
+  const lang = Object.prototype.hasOwnProperty.call(I18N, requestedLang) ? requestedLang : getLanguage();
+  const dict = I18N[lang] || I18N.fr;
+  // Keep the existing document intact; translate each label independently so one bad node
+  // cannot interrupt the rest of the page or trigger the blank-screen fallback.
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  if (document.body) document.body.classList.toggle("rtl-language", lang === "ar");
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    try {
+      const key = el.dataset.i18n;
+      const value = dict[key];
       if (value == null) return;
       if (key === "hero_title") {
+        // This heading contains a nested span. Update both parts without replacing the heading.
         const titleSpan = el.querySelector("span");
-        if (titleSpan) titleSpan.textContent = lang === "fr" ? "vivez votre aventure." : lang === "en" ? "live your adventure." : "عِش مغامرتك.";
-        const firstText = Array.from(el.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
+        const phrase = lang === "fr" ? "vivez votre aventure." : lang === "en" ? "live your adventure." : "عِش مغامرتك.";
+        if (titleSpan) titleSpan.textContent = phrase;
+        const firstText = Array.from(el.childNodes).find(node => node.nodeType === 3);
         if (firstText) firstText.nodeValue = value + " ";
         else el.insertBefore(document.createTextNode(value + " "), el.firstChild);
       } else if (el.children.length) {
-        // Preserve icons, badges, and other nested UI elements when translating.
-        const textNode = Array.from(el.childNodes).find(node => node.nodeType === Node.TEXT_NODE && node.nodeValue.trim());
-        if (textNode) {
-          textNode.nodeValue = " " + value + " ";
-        } else {
-          el.insertBefore(document.createTextNode(value + " "), el.firstChild);
-        }
+        // Keep icons and nested markup, replacing only a direct text node when available.
+        const textNode = Array.from(el.childNodes).find(node => node.nodeType === 3 && node.nodeValue.trim());
+        if (textNode) textNode.nodeValue = " " + value + " ";
+        else el.insertBefore(document.createTextNode(value + " "), el.firstChild);
       } else {
         el.textContent = value;
       }
-    });
-    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
-      const value = dict[el.dataset.i18nPlaceholder];
-      if (value != null) el.placeholder = value;
-    });
-    const select = document.getElementById("languageSelect");
-    if (select) select.value = lang;
-    document.title = lang === "ar" ? "WorkWay Smart | العمل والسفر" : lang === "en" ? "WorkWay Smart | Jobs & Travel" : "WorkWay Smart | Emploi & Voyage";
-    return true;
-  } catch (error) {
-    console.error("WorkWay language switch failed:", error);
-    if (document.documentElement) {
-      document.documentElement.dir = "ltr";
-      document.documentElement.lang = "fr";
+    } catch (nodeError) {
+      console.warn("WorkWay skipped one translation label:", nodeError);
     }
-    if (document.body) document.body.classList.remove("rtl-language");
-    return false;
-  }
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+    try {
+      const value = dict[el.dataset.i18nPlaceholder];
+      if (value != null) el.setAttribute("placeholder", value);
+    } catch (nodeError) {
+      console.warn("WorkWay skipped one placeholder translation:", nodeError);
+    }
+  });
+  const select = document.getElementById("languageSelect");
+  if (select) select.value = lang;
+  document.title = lang === "ar" ? "WorkWay Smart | العمل والسفر" : lang === "en" ? "WorkWay Smart | Jobs & Travel" : "WorkWay Smart | Emploi & Voyage";
+  return true;
 }
 
 import { supabase } from "./supabase-config.js";
