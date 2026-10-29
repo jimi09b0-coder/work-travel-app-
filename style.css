@@ -1,3 +1,8 @@
+/* يتم تطبيقه فقط عندما تتحول لغة الموقع إلى العربية */
+html[lang="ar"] body {
+    font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    letter-spacing: 0; /* إلغاء تباعد الحروف اللاتينية */
+}
 /* مثال لتنسيق القائمة العلوية أو الأزرار المتجاورة */
 .nav-link, .menu-item {
     /* بدلاً من margin-right: 15px; */
