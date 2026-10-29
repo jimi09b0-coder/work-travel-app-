@@ -52,7 +52,7 @@ function setLanguage(lang){
   // Apply the language synchronously: changing to Arabic must never hide or replace the page.
   document.documentElement.lang = selected;
   document.documentElement.dir = selected === "ar" ? "rtl" : "ltr";
-  if (document.body) document.body.classList.remove("rtl-language");
+  if (document.body) document.body.classList.toggle("rtl-language", selected === "ar");
   try { localStorage.setItem("workTravelLanguage", selected); } catch (error) {
     console.warn("WorkWay could not save language preference:", error);
   }
@@ -65,7 +65,7 @@ function setLanguage(lang){
     // Translation failure must not reset the document or blank the interface.
     document.documentElement.lang = selected;
     document.documentElement.dir = selected === "ar" ? "rtl" : "ltr";
-    if (document.body) document.body.classList.remove("rtl-language");
+    if (document.body) document.body.classList.toggle("rtl-language", lang === "ar");
   }
 }
 window.setLanguage = setLanguage;
