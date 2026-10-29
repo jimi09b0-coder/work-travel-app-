@@ -1751,7 +1751,7 @@ function resetView() {
   $("offres").scrollIntoView({behavior:"smooth"});
 }
 
-async async function loadJobs() {
+async function loadJobs() {
   const {data,error} = await supabase.from("jobs").select("*").order("id");
   if (error) {
     $("jobs").innerHTML = '<div class="empty-state"><h3>Impossible de charger les offres</h3><p>Vérifiez la connexion à la base de données.</p></div>';
