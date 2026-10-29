@@ -53,7 +53,21 @@ function setLanguage(lang){
   try { localStorage.setItem("workTravelLanguage", selected); } catch (error) {
     console.warn("WorkWay could not save language preference:", error);
   }
-  applyLanguage();
+  // Set direction immediately so mobile browsers do not briefly render an empty RTL view.
+  document.documentElement.lang = selected;
+  document.documentElement.dir = selected === "ar" ? "rtl" : "ltr";
+  if (document.body) document.body.classList.toggle("rtl-language", selected === "ar");
+  const apply = () => {
+    const ok = applyLanguage();
+    if (!ok) {
+      // Keep the existing page visible if an individual translation fails.
+      document.documentElement.lang = selected;
+      document.documentElement.dir = selected === "ar" ? "rtl" : "ltr";
+      if (document.body) document.body.classList.toggle("rtl-language", selected === "ar");
+    }
+  };
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(apply);
+  else setTimeout(apply, 0);
 }
 window.setLanguage = setLanguage;
 window.applyLanguage = applyLanguage;
