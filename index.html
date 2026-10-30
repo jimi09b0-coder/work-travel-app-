@@ -566,8 +566,19 @@ document.addEventListener("click", function(event) {
       box.style.cssText="position:fixed;left:12px;right:12px;bottom:12px;z-index:2147483647;display:block!important;visibility:visible!important;opacity:1!important;padding:16px;border:2px solid #c43b35;border-radius:14px;background:#fff;color:#172033;font:15px/1.55 Arial,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,.22)";
       document.body.appendChild(box);
     }
-    box.innerHTML="<strong style='display:block;color:#a32620'>WorkWay Smart — تعذر تشغيل إحدى الوظائف</strong><p style='margin:8px 0'></p><button type='button' style='padding:10px 14px;background:#1769e0;color:#fff;border:0;border-radius:8px' onclick='window.location.href=window.location.pathname+"?refresh="+Date.now()'>إعادة تحميل التطبيق</button>";
-    box.querySelector("p").textContent=String(message||"خطأ غير معروف").slice(0,260);
+    box.textContent="";
+    var title=document.createElement("strong");
+    title.textContent="WorkWay Smart — تعذر تشغيل إحدى الوظائف";
+    title.style.color="#a32620";
+    var detail=document.createElement("p");
+    detail.style.margin="8px 0";
+    detail.textContent=String(message||"خطأ غير معروف").slice(0,260);
+    var button=document.createElement("button");
+    button.type="button";
+    button.textContent="إعادة تحميل التطبيق";
+    button.style.cssText="padding:10px 14px;background:#1769e0;color:#fff;border:0;border-radius:8px";
+    button.addEventListener("click",function(){window.location.href=window.location.pathname+"?refresh="+Date.now();});
+    box.append(title,detail,button);
   }
   window.addEventListener("error",function(event){
     if(event && (event.error || event.message)) showFailure(event.message || (event.error && event.error.message));
