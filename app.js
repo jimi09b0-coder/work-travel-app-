@@ -78,7 +78,7 @@ function applyLanguage(requestedLang){
   // cannot interrupt the rest of the page or trigger the blank-screen fallback.
   document.documentElement.lang = lang;
   document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-  if (document.body) document.body.classList.remove("rtl-language");
+  if (document.body) document.body.classList.toggle("rtl-language", lang === "ar");
   document.querySelectorAll("[data-i18n]").forEach(el => {
     try {
       const key = el.dataset.i18n;
