@@ -35,7 +35,7 @@ body>header.hero{display:block!important;position:relative!important;visibility:
 main,section,footer{color:#14213d}
 .hero .hero-button{color:#0b3f91!important;background:#fff!important;opacity:1!important}
 </style>
-<link rel="stylesheet" href="style.css?v=20261029-5">
+<link rel="stylesheet" href="style.css?v=20261030-2">
 </head>
 <body><a class="skip-link" href="#offres">Aller directement aux offres</a>
 <header class="hero">
@@ -553,6 +553,33 @@ document.addEventListener("click", function(event) {
   else repair();
   setTimeout(repair,500);
   setTimeout(repair,1800);
+})();
+</script>
+<script>
+/* Visible diagnostics: never leave a silent white screen if a script fails. */
+(function(){
+  function showFailure(message){
+    var box=document.getElementById("workway-runtime-error");
+    if(!box){
+      box=document.createElement("aside");
+      box.id="workway-runtime-error";
+      box.style.cssText="position:fixed;left:12px;right:12px;bottom:12px;z-index:2147483647;display:block!important;visibility:visible!important;opacity:1!important;padding:16px;border:2px solid #c43b35;border-radius:14px;background:#fff;color:#172033;font:15px/1.55 Arial,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,.22)";
+      document.body.appendChild(box);
+    }
+    box.innerHTML="<strong style='display:block;color:#a32620'>WorkWay Smart — تعذر تشغيل إحدى الوظائف</strong><p style='margin:8px 0'></p><button type='button' style='padding:10px 14px;background:#1769e0;color:#fff;border:0;border-radius:8px' onclick='window.location.href=window.location.pathname+"?refresh="+Date.now()'>إعادة تحميل التطبيق</button>";
+    box.querySelector("p").textContent=String(message||"خطأ غير معروف").slice(0,260);
+  }
+  window.addEventListener("error",function(event){
+    if(event && (event.error || event.message)) showFailure(event.message || (event.error && event.error.message));
+  });
+  window.addEventListener("unhandledrejection",function(event){
+    var reason=event && event.reason;
+    if(reason) showFailure(reason.message || reason);
+  });
+  window.addEventListener("DOMContentLoaded",function(){
+    var module=document.querySelector('script[type="module"][src*="app.js"]');
+    if(module) module.addEventListener("error",function(){showFailure("لم يتم تحميل app.js. تحقق من نشر GitHub Pages والاتصال بالإنترنت.");});
+  },{once:true});
 })();
 </script>
 <script type="module" src="app.js?v=20261030-1"></script></body></html>
