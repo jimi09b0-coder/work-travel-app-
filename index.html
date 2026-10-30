@@ -463,96 +463,50 @@ document.addEventListener("click", function(event) {
 }, true);
 </script>
 <script>
-/* Strong recovery for mobile browsers: restore the actual page, not just its background. */
+/* Safe blank-screen watchdog: diagnose only; never rewrite the page layout. */
 (function(){
-  function repair(){
-    var body=document.body;
-    if(!body) return;
-    var hero= document.querySelector(".hero");
-    var title= hero && hero.querySelector("h1");
-    /* If the page is blank after choosing Arabic, show a guaranteed visible diagnostic/reload card. */
-    var pageText = (body.innerText || "").trim();
-    var blankScreen = !pageText || !title || title.getBoundingClientRect().height === 0;
-    if (blankScreen) {
-      var emergency = document.getElementById("workway-blank-recovery-card");
-      if (!emergency) {
-        emergency = document.createElement("div");
-        emergency.id = "workway-blank-recovery-card";
-        emergency.style.cssText = "position:fixed;inset:12px;z-index:2147483647;display:block!important;visibility:visible!important;opacity:1!important;overflow:auto;padding:22px;background:#fff;color:#14213d;border:3px solid #1769e0;border-radius:14px;font:17px/1.6 Arial,sans-serif;box-shadow:0 0 0 9999px #eef4ff";
-        emergency.innerHTML = "<h1 style='display:block!important;color:#14213d!important;font-size:25px!important'>WorkWay Smart — العمل والسفر</h1><p style='display:block!important;color:#14213d!important'>تم اكتشاف اختفاء الواجهة. حاول إعادة تحميل التطبيق. لم يتم حذف حسابك أو بياناتك.</p><button id='workway-blank-recovery-reload-primary' type='button' style='display:block!important;visibility:visible!important;opacity:1!important;padding:14px 18px;background:#1769e0;color:#fff;border:0;border-radius:9px;font-weight:bold;font-size:16px'>إعادة تحميل التطبيق</button><p style='display:block!important;color:#14213d!important;font-size:13px'>WorkWay emergency recovery</p>";
-        body.appendChild(emergency);
-        var emergencyReload = emergency.querySelector("#workway-blank-recovery-reload-primary");
-        if (emergencyReload) emergencyReload.addEventListener("click", function(){ window.location.href = window.location.pathname + "?refresh=" + Date.now(); });
-      }
-      return;
+  function showRecovery(message){
+    if(!document.body) return;
+    var card=document.getElementById("workway-blank-recovery-card");
+    if(!card){
+      card=document.createElement("aside");
+      card.id="workway-blank-recovery-card";
+      card.style.cssText="position:fixed;inset:12px;z-index:2147483647;display:block;visibility:visible;opacity:1;overflow:auto;padding:22px;background:#fff;color:#14213d;border:3px solid #1769e0;border-radius:14px;font:16px/1.6 Arial,sans-serif;box-shadow:0 0 0 9999px #eef4ff";
+      var heading=document.createElement("h2");
+      heading.textContent="WorkWay Smart — تشخيص الصفحة";
+      var detail=document.createElement("p");
+      detail.id="workway-recovery-detail";
+      var button=document.createElement("button");
+      button.type="button";
+      button.textContent="إعادة تحميل التطبيق";
+      button.style.cssText="padding:13px 18px;background:#1769e0;color:#fff;border:0;border-radius:9px;font-weight:bold";
+      button.addEventListener("click",function(){window.location.replace(window.location.pathname+"?refresh="+Date.now());});
+      card.append(heading,detail,button);
+      document.body.appendChild(card);
     }
-    /* Do not trust only the hero title: mobile browsers can leave the whole page hidden. */
-    document.documentElement.style.setProperty("display","block","important");
-    document.documentElement.style.setProperty("visibility","visible","important");
-    document.documentElement.style.setProperty("opacity","1","important");
-    document.documentElement.style.setProperty("min-height","100%","important");
-    body.style.setProperty("display","block","important");
-    body.style.setProperty("visibility","visible","important");
-    body.style.setProperty("opacity","1","important");
-    body.style.setProperty("min-height","100vh","important");
-    body.querySelectorAll(":scope > header,:scope > main,:scope > section,:scope > footer").forEach(function(el){
-      el.style.setProperty("display","block","important");
-      el.style.setProperty("visibility","visible","important");
-      el.style.setProperty("opacity","1","important");
-    });
-    if(title){
-      title.style.setProperty("display","block","important");
-      title.style.setProperty("visibility","visible","important");
-      title.style.setProperty("opacity","1","important");
-    }
-    document.documentElement.style.setProperty("opacity","1","important");
-    document.documentElement.style.setProperty("min-height","100%","important");
-    body.style.setProperty("display","block","important");
-    body.style.setProperty("visibility","visible","important");
-    body.style.setProperty("opacity","1","important");
-    body.style.setProperty("min-height","100vh","important");
-    body.querySelectorAll("header,main,section,footer,.hero,.hero-content,h1,h2,h3,p,a,button,nav,select,input,form,.feature-tile,.worldwide-strip").forEach(function(el){
-      el.style.setProperty("visibility","visible","important");
-      el.style.setProperty("opacity","1","important");
-      el.style.setProperty("animation","none","important");
-      el.style.setProperty("transform","none","important");
-    });
-    if(hero){
-      hero.style.setProperty("display","block","important");
-      hero.style.setProperty("min-height","360px","important");
-      hero.style.setProperty("background","linear-gradient(135deg,#071d49,#0b4aa6,#1591df)","important");
-      hero.style.setProperty("color","#fff","important");
-    }
-    if(!title || title.getBoundingClientRect().height===0){
-      var box=document.getElementById("workway-blank-recovery-card");
-      if(!box){
-        box=document.createElement("div");
-        box.id="workway-blank-recovery-card";
-        box.style.cssText="position:relative;z-index:2147483647;display:block!important;visibility:visible!important;opacity:1!important;margin:18px;padding:22px;background:#fff;color:#14213d;border:2px solid #1769e0;border-radius:14px;font:700 17px/1.6 Arial,sans-serif";
-        box.innerHTML="<h1 style='display:block!important;color:#14213d!important'>WorkWay Smart — العمل والسفر</h1><p style='display:block!important;color:#14213d!important'>تم تحميل الصفحة لكن الواجهة لم تظهر بالكامل. أعد تحميل الصفحة مرة واحدة.</p><button id='workway-blank-recovery-reload' type='button' style='padding:12px 18px;background:#1769e0;color:#fff;border:0;border-radius:9px;font-weight:bold'>إعادة تحميل التطبيق</button>";
-        body.insertBefore(box,body.firstChild);
-        var reloadButton=box.querySelector("#workway-blank-recovery-reload");
-        if(reloadButton) reloadButton.addEventListener("click",function(){window.location.reload();});
-      }
+    var detailNode=document.getElementById("workway-recovery-detail");
+    if(detailNode) detailNode.textContent=message || "لم تظهر الواجهة الرئيسية. لم يتم حذف حسابك أو بياناتك.";
+  }
+  function checkPage(){
+    if(!document.body) return;
+    var heroTitle=document.querySelector(".hero h1");
+    var rect=heroTitle ? heroTitle.getBoundingClientRect() : null;
+    var visible=!!(heroTitle && rect && rect.height>0 && getComputedStyle(heroTitle).display!=="none" && getComputedStyle(heroTitle).visibility!=="hidden");
+    if(!visible) showRecovery("لم تظهر الواجهة الرئيسية بعد تحميل الصفحة. يمكنك إعادة التحميل، ولم يتم حذف حسابك أو بياناتك.");
+    else {
+      var card=document.getElementById("workway-blank-recovery-card");
+      if(card) card.remove();
     }
   }
-  // Re-run the visibility recovery after language changes, especially Arabic RTL on mobile.
-  document.addEventListener("change",function(event){
-    if(event.target && event.target.id==="languageSelect"){
-      setTimeout(repair,0);
-      setTimeout(repair,150);
-    }
-  },true);
-  document.addEventListener("click",function(event){
-    var select=document.getElementById("languageSelect");
-    if(select && event.target===select){
-      setTimeout(repair,0);
-    }
-  },true);
-  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",repair,{once:true});
-  else repair();
-  setTimeout(repair,500);
-  setTimeout(repair,1800);
+  window.addEventListener("error",function(event){
+    if(event && event.message) showRecovery("خطأ JavaScript: "+String(event.message).slice(0,220));
+  });
+  window.addEventListener("unhandledrejection",function(event){
+    var reason=event && event.reason;
+    if(reason) showRecovery("تعذر إكمال عملية: "+String(reason.message || reason).slice(0,220));
+  });
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",function(){setTimeout(checkPage,900);setTimeout(checkPage,2200);},{once:true});
+  else {setTimeout(checkPage,900);setTimeout(checkPage,2200);}
 })();
 </script>
 <script>
