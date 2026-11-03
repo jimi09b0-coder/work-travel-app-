@@ -119,6 +119,8 @@ function applyLanguage(requestedLang){
 }
 
 import { supabase } from "./supabase-config.js";
+// Signal that the ES module and its Supabase dependency loaded successfully.
+window.__WORKWAY_MODULE_LOADED__ = true;
 
 let jobs = [];
 let favoritesOnly = false;
