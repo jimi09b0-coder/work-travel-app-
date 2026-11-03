@@ -23,6 +23,13 @@ if (!html.includes('name="viewport"')) throw new Error('Missing responsive viewp
 if (!html.includes('WorkWay Smart | Emploi international & voyage')) throw new Error('WorkWay product title is missing.');
 if (!html.includes('id="smartSearchForm"') || !html.includes('id="smartSearchInput"')) throw new Error('Smart search interface is missing.');
 if (!js.includes('function runSmartSearch(input)') || !js.includes('bindSmartSearch();')) throw new Error('Smart search behavior is missing.');
+const companySaveIndex = js.indexOf('async function saveCompanyProfile(e)');
+const employerDashboardIndex = js.indexOf('async function renderEmployerDashboard()');
+if (companySaveIndex < 0 || employerDashboardIndex < 0 || companySaveIndex > employerDashboardIndex || !js.includes('window.saveCompanyProfile=saveCompanyProfile')) {
+  throw new Error('Company profile save handler must be defined at module scope before the employer dashboard and exported for its form.');
+}
+if (!js.includes('ar: {') || !js.includes('en: {') || !js.includes('fr: {')) throw new Error('Arabic, English and French language dictionaries are required.');
+
 if (!css.includes('.smart-assistant{')) throw new Error('Smart search interface styles are missing.');
 
 const ids = [...html.matchAll(/\bid=["']([^"']+)["']/gi)].map(m => m[1]);
