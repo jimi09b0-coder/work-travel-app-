@@ -35,7 +35,7 @@ body>header.hero{display:block!important;position:relative!important;visibility:
 main,section,footer{color:#14213d}
 .hero .hero-button{color:#0b3f91!important;background:#fff!important;opacity:1!important}
 </style>
-<link rel="stylesheet" href="style.css?v=20261030-2">
+<link rel="stylesheet" href="style.css?v=20261103-1">
 </head>
 <body><a class="skip-link" href="#offres">Aller directement aux offres</a>
 <header class="hero">
@@ -510,7 +510,7 @@ document.addEventListener("click", function(event) {
 })();
 </script>
 <script>
-/* Visible diagnostics: never leave a silent white screen if a script fails. */
+/* Attach diagnostics while parsing, before the module script can fail. */
 (function(){
   function showFailure(message){
     var box=document.getElementById("workway-runtime-error");
@@ -518,20 +518,14 @@ document.addEventListener("click", function(event) {
       box=document.createElement("aside");
       box.id="workway-runtime-error";
       box.style.cssText="position:fixed;left:12px;right:12px;bottom:12px;z-index:2147483647;display:block!important;visibility:visible!important;opacity:1!important;padding:16px;border:2px solid #c43b35;border-radius:14px;background:#fff;color:#172033;font:15px/1.55 Arial,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,.22)";
-      document.body.appendChild(box);
+      (document.body||document.documentElement).appendChild(box);
     }
     box.textContent="";
-    var title=document.createElement("strong");
-    title.textContent="WorkWay Smart — تعذر تشغيل إحدى الوظائف";
-    title.style.color="#a32620";
-    var detail=document.createElement("p");
-    detail.style.margin="8px 0";
-    detail.textContent=String(message||"خطأ غير معروف").slice(0,260);
-    var button=document.createElement("button");
-    button.type="button";
-    button.textContent="إعادة تحميل التطبيق";
+    var title=document.createElement("strong"); title.textContent="WorkWay Smart — تعذر تشغيل التطبيق"; title.style.color="#a32620";
+    var detail=document.createElement("p"); detail.style.margin="8px 0"; detail.textContent=String(message||"خطأ غير معروف").slice(0,260);
+    var button=document.createElement("button"); button.type="button"; button.textContent="إعادة تحميل التطبيق";
     button.style.cssText="padding:10px 14px;background:#1769e0;color:#fff;border:0;border-radius:8px";
-    button.addEventListener("click",function(){window.location.href=window.location.pathname+"?refresh="+Date.now();});
+    button.addEventListener("click",function(){window.location.replace(window.location.pathname+"?refresh="+Date.now());});
     box.append(title,detail,button);
   }
   window.addEventListener("error",function(event){
@@ -541,10 +535,11 @@ document.addEventListener("click", function(event) {
     var reason=event && event.reason;
     if(reason) showFailure(reason.message || reason);
   });
-  window.addEventListener("DOMContentLoaded",function(){
-    var module=document.querySelector('script[type="module"][src*="app.js"]');
-    if(module) module.addEventListener("error",function(){showFailure("لم يتم تحميل app.js. تحقق من نشر GitHub Pages والاتصال بالإنترنت.");});
-  },{once:true});
+  var module=document.querySelector('script[type="module"][src*="app.js"]');
+  if(module) module.addEventListener("error",function(){showFailure("فشل تحميل app.js أو إحدى المكتبات المطلوبة. تحقق من اتصال الإنترنت ثم أعد التحميل.");});
+  window.setTimeout(function(){
+    if(!window.__WORKWAY_MODULE_LOADED__) showFailure("لم يبدأ ملف التطبيق خلال 7 ثوانٍ. قد يكون رابط النشر أو تحميل المكتبة الخارجية متعطلاً.");
+  },7000);
 })();
 </script>
-<script type="module" src="app.js?v=20261102-1"></script></body></html>
+<script type="module" src="app.js?v=20261103-1"></script></body></html>
