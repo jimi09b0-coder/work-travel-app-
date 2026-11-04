@@ -52,7 +52,7 @@ function setLanguage(lang){
   // Apply the language synchronously: changing to Arabic must never hide or replace the page.
   document.documentElement.lang = selected;
   document.documentElement.dir = selected === "ar" ? "rtl" : "ltr";
-  if (document.body) document.body.classList.toggle("rtl-language", selected === "ar");
+  // Keep language switching independent from legacy RTL CSS classes; dir alone controls text direction.
   try { localStorage.setItem("workTravelLanguage", selected); } catch (error) {
     console.warn("WorkWay could not save language preference:", error);
   }
@@ -65,7 +65,7 @@ function setLanguage(lang){
     // Translation failure must not reset the document or blank the interface.
     document.documentElement.lang = selected;
     document.documentElement.dir = selected === "ar" ? "rtl" : "ltr";
-    if (document.body) document.body.classList.toggle("rtl-language", lang === "ar");
+    // Preserve the selected direction without activating legacy layout overrides.
   }
 }
 window.setLanguage = setLanguage;
@@ -78,7 +78,7 @@ function applyLanguage(requestedLang){
   // cannot interrupt the rest of the page or trigger the blank-screen fallback.
   document.documentElement.lang = lang;
   document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-  if (document.body) document.body.classList.toggle("rtl-language", lang === "ar");
+  // Do not toggle legacy RTL class: it can activate conflicting cached layout rules.
   document.querySelectorAll("[data-i18n]").forEach(el => {
     try {
       const key = el.dataset.i18n;
