@@ -442,7 +442,7 @@ async function openApplicationForm(id) {
         <div class="application-actions"><button type="submit">🚀 Envoyer ma candidature</button><button type="button" class="back-button" onclick="showJob(${id})">← Retour à l’offre</button></div>
       </form>
     </article>`;
-  $("jobApplicationForm").addEventListener("submit", e => applyJob(e,id));
+  $("jobApplicationForm").addEventListener("submit", e => { applyJob(e,id).catch(error => { console.error("WorkWay application submission failed:", error); alert("تعذر إكمال التقديم بسبب مشكلة اتصال أو خطأ غير متوقع. تحقق من اتصال الإنترنت ثم أعد المحاولة."); }); });
   $("offres").scrollIntoView({behavior:"smooth"});
 }
 
