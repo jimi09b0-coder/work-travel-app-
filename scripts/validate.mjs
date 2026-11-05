@@ -14,6 +14,7 @@ const config = fs.readFileSync(path.join(root,'supabase-config.js'),'utf8');
 
 if (/service[_-]?role|SUPABASE_SERVICE_ROLE|SECRET_KEY/i.test(config)) throw new Error('Service-role or secret Supabase credential found in browser configuration.');
 if (!/createClient\s*\(/.test(config)) throw new Error('Supabase client configuration is missing createClient().');
+if (/^\s*try\s*\{[\s\S]*?await import\(/m.test(js.slice(0, 18000))) throw new Error('The main app module must not block initial rendering on a top-level awaited CDN import.');
 if (/supabase\.auth\.admin\s*\./.test(js)) throw new Error('Client bundle must not use Supabase admin auth APIs.');
 if (/\b(?:eval|Function)\s*\(/.test(js)) throw new Error('Dynamic code execution is not allowed in app.js.');
 if (/\.update\s*\(\s*\{[^}]*\b(?:role|is_admin)\s*:/s.test(js)) throw new Error('Client code must not update role or is_admin directly.');
