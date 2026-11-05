@@ -118,8 +118,16 @@ function applyLanguage(requestedLang){
   return true;
 }
 
-import { supabase } from "./supabase-config.js?v=20261105-2";
-// Signal that the ES module and its Supabase dependency loaded successfully.
+let supabase = null;
+let supabaseLoadError = null;
+// Keep the public interface alive even when a third-party CDN is blocked.
+try {
+  ({ supabase } = await import("./supabase-config.js?v=20261105-3"));
+} catch (error) {
+  supabaseLoadError = error;
+  console.error("WorkWay: Supabase could not be loaded; public pages remain available.", error);
+}
+// Signal that app.js itself loaded; backend availability is reported separately.
 window.__WORKWAY_MODULE_LOADED__ = true;
 
 let jobs = [];
@@ -1868,6 +1876,14 @@ async function initializeApp() {
     bindStaticAuth();
     bindSmartSearch();
     handleAuthRedirectError();
+    if (!supabase) {
+      const message = $("staticAuthMessage");
+      if (message) {
+        message.textContent = "واجهة WorkWay تعمل، لكن تعذر الاتصال بخدمة الحسابات مؤقتًا. تحقق من الإنترنت ثم أعد المحاولة. البحث والصفحة الرئيسية يبقيان ظاهرين.";
+        message.hidden = false;
+      }
+      return;
+    }
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "PASSWORD_RECOVERY") return renderPasswordRecovery();
       if (session && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) return renderDashboard();
