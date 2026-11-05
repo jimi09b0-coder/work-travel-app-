@@ -120,14 +120,25 @@ function applyLanguage(requestedLang){
 
 let supabase = null;
 let supabaseLoadError = null;
-// Keep the public interface alive even when a third-party CDN is blocked.
-try {
-  ({ supabase } = await import("./supabase-config.js?v=20261105-3"));
-} catch (error) {
-  supabaseLoadError = error;
-  console.error("WorkWay: Supabase could not be loaded; public pages remain available.", error);
+// Do not block the entire application module on a third-party CDN.
+// Public search and UI handlers must initialize even if Supabase is slow or unavailable.
+async function loadSupabaseClient() {
+  if (supabase) return supabase;
+  try {
+    const result = await Promise.race([
+      import("./supabase-config.js?v=20261105-5"),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("انتهت مهلة الاتصال بخدمة الحسابات.")), 10000))
+    ]);
+    supabase = result.supabase;
+    supabaseLoadError = null;
+    return supabase;
+  } catch (error) {
+    supabaseLoadError = error;
+    console.error("WorkWay: Supabase could not be loaded; public pages remain available.", error);
+    return null;
+  }
 }
-// Signal that app.js itself loaded; backend availability is reported separately.
+// Signal immediately that the application module has evaluated successfully.
 window.__WORKWAY_MODULE_LOADED__ = true;
 
 let jobs = [];
@@ -1876,6 +1887,7 @@ async function initializeApp() {
     bindStaticAuth();
     bindSmartSearch();
     handleAuthRedirectError();
+    await loadSupabaseClient();
     if (!supabase) {
       const message = $("staticAuthMessage");
       if (message) {
