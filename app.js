@@ -692,6 +692,8 @@ async function register(e) {
   const button = $("authForm")?.querySelector('button[type="submit"], button[type="button"]');
   if (button) { button.disabled = true; button.textContent = "Création du compte…"; }
   try {
+    if (!supabase) await loadSupabaseClient();
+    if (!supabase) throw new Error("Service de compte indisponible. Vérifiez la connexion puis réessayez.");
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -730,6 +732,8 @@ async function login(e) {
   const button = $("authForm")?.querySelector('button[type="submit"], button[type="button"]');
   if (button) { button.disabled = true; button.textContent = "Connexion…"; }
   try {
+    if (!supabase) await loadSupabaseClient();
+    if (!supabase) throw new Error("Service de compte indisponible. Vérifiez la connexion puis réessayez.");
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       authMessage(friendlyAuthError(error));
@@ -1677,6 +1681,12 @@ function runSmartSearch(input) {
       (!remoteSelect?.value || job.remote_type === remoteSelect.value) &&
       (!favoritesOnly || isFavorite(job.id));
   }).length;
+  if (!count && jobs.length === 0) {
+    // When the database has no public offers (or is temporarily unavailable),
+    // automatically try the public remote-jobs feed instead of leaving Smart Search empty.
+    searchJobicyJobs(cleaned || prompt);
+    return;
+  }
   if (feedback) {
     feedback.replaceChildren();
     if (count) {
