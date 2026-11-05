@@ -118,7 +118,7 @@ function applyLanguage(requestedLang){
   return true;
 }
 
-import { supabase } from "./supabase-config.js";
+import { supabase } from "./supabase-config.js?v=20261105-2";
 // Signal that the ES module and its Supabase dependency loaded successfully.
 window.__WORKWAY_MODULE_LOADED__ = true;
 
