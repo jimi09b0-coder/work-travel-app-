@@ -441,7 +441,7 @@ async function hasApplied(jobId, userId) {
   return !!data;
 }
 
-async function openApplicationForm(id) {
+async async function openApplicationForm(id) {
   let j = jobs.find(x => Number(x.id) === Number(id));
   if (!j) {
     const {data,error} = await supabase.from("jobs").select("id,title,country,country_code,city,type,contract,remote_type,salary_min,salary_max,salary_currency,description,requirements,is_active").eq("id",id).maybeSingle();
@@ -1841,6 +1841,8 @@ async function directSignup() {
   }
   if (button) { button.disabled = true; button.textContent = "Création du compte…"; }
   try {
+    if (!supabase) await loadSupabaseClient();
+    if (!supabase) throw new Error("Service de compte indisponible. Vérifiez la connexion puis réessayez.");
     const { data, error } = await supabase.auth.signUp({
       email, password,
       options: { data: { full_name: name }, emailRedirectTo: window.location.origin + window.location.pathname }
