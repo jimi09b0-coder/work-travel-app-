@@ -140,6 +140,8 @@ async function loadSupabaseClient() {
 }
 // Signal immediately that the application module has evaluated successfully.
 window.__WORKWAY_MODULE_LOADED__ = true;
+const startupStatus = document.getElementById("workway-startup-status");
+if (startupStatus) startupStatus.remove();
 
 let jobs = [];
 let favoritesOnly = false;
