@@ -24,6 +24,7 @@ if (!html.includes('name="viewport"')) throw new Error('Missing responsive viewp
 if (!html.includes('WorkWay Smart | Emploi international & voyage')) throw new Error('WorkWay product title is missing.');
 if (!html.includes('id="smartSearchForm"') || !html.includes('id="smartSearchInput"')) throw new Error('Smart search interface is missing.');
 if (!js.includes('function runSmartSearch(input)') || !js.includes('bindSmartSearch();')) throw new Error('Smart search behavior is missing.');
+if (!/async function openApplicationForm\s*\(/.test(js)) throw new Error('The application form loader uses await and must be declared async.');
 const companySaveIndex = js.indexOf('async function saveCompanyProfile(e)');
 const employerDashboardIndex = js.indexOf('async function renderEmployerDashboard()');
 if (companySaveIndex < 0 || employerDashboardIndex < 0 || companySaveIndex > employerDashboardIndex || !js.includes('window.saveCompanyProfile=saveCompanyProfile')) {
