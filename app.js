@@ -52,6 +52,11 @@ function setLanguage(lang){
   // Apply the language synchronously: changing to Arabic must never hide or replace the page.
   document.documentElement.lang = selected;
   document.documentElement.dir = selected === "ar" ? "rtl" : "ltr";
+  if (document.body) {
+    document.body.lang = selected;
+    document.body.dir = selected === "ar" ? "rtl" : "ltr";
+    document.body.classList.toggle("rtl-language", selected === "ar");
+  }
   // Keep language switching independent from legacy RTL CSS classes; dir alone controls text direction.
   try { localStorage.setItem("workTravelLanguage", selected); } catch (error) {
     console.warn("WorkWay could not save language preference:", error);
@@ -78,7 +83,11 @@ function applyLanguage(requestedLang){
   // cannot interrupt the rest of the page or trigger the blank-screen fallback.
   document.documentElement.lang = lang;
   document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-  // Do not toggle legacy RTL class: it can activate conflicting cached layout rules.
+  if (document.body) {
+    document.body.lang = lang;
+    document.body.dir = lang === "ar" ? "rtl" : "ltr";
+    document.body.classList.toggle("rtl-language", lang === "ar");
+  }
   document.querySelectorAll("[data-i18n]").forEach(el => {
     try {
       const key = el.dataset.i18n;
@@ -126,7 +135,7 @@ async function loadSupabaseClient() {
   if (supabase) return supabase;
   try {
     const result = await Promise.race([
-      import("./supabase-config.js?v=20261108-2"),
+      import("./supabase-config.js?v=20261108-3"),
       new Promise((_, reject) => setTimeout(() => reject(new Error("انتهت مهلة الاتصال بخدمة الحسابات.")), 10000))
     ]);
     supabase = result.supabase;
