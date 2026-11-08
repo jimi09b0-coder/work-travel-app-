@@ -32,7 +32,7 @@ const I18N = {
     feature_jobs_title:"فرص عمل دولية", feature_jobs_text:"استكشف الفرص حسب الدولة", feature_search_title:"بحث دقيق", feature_search_text:"المهنة والمدينة ونوع العقد", feature_apply_title:"متابعة الطلبات", feature_apply_text:"نظّم خطوات التقديم", feature_travel_title:"استعداد أفضل للسفر", feature_travel_text:"قائمة تجهيز مخصصة للرحلة",
     useful_eyebrow:"روابط مفيدة", useful_title:"🌐 مواقع رسمية للعمل والاستقرار", useful_text:"اكتشف بوابات التوظيف الرسمية والدولية حسب وجهتك.",
     jobs_eyebrow:"الفرص", search_title:"🔎 ابحث عن وظيفة", search_text:"صفِّ الوظائف حسب المهنة أو الدولة أو المدينة أو القطاع.",
-    search_placeholder:"المهنة أو الدولة أو المدينة...", all_countries:"كل الدول", all_sectors:"كل القطاعات",
+    search_placeholder:"المهنة أو الدولة أو المدينة...", all_countries:"كل الدول", all_sectors:"كل القطاعات", all_work_modes:"كل أنماط العمل", all_currencies:"كل العملات",
     travel_eyebrow:"الاستعداد للسفر", travel_title:"🧳 قائمة تجهيز السفر", travel_text:"جهّز سفرك وانتقالك إلى أي دولة من خلال قائمة بسيطة وعملية.",
     progress:"التقدم", travel_empty_title:"اختر وجهتك", travel_empty_text:"ستظهر لك قائمة تجهيز مناسبة لرحلتك.",
     about_eyebrow:"WORK TRAVEL", about_title:"مشروعك الدولي في مكان واحد", about_text:"أنشئ ملفك، وأضف سيرتك الذاتية، وتابع طلبات التوظيف حول العالم.",
