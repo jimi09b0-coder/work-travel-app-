@@ -126,7 +126,7 @@ async function loadSupabaseClient() {
   if (supabase) return supabase;
   try {
     const result = await Promise.race([
-      import("./supabase-config.js?v=20261108-1"),
+      import("./supabase-config.js?v=20261108-2"),
       new Promise((_, reject) => setTimeout(() => reject(new Error("انتهت مهلة الاتصال بخدمة الحسابات.")), 10000))
     ]);
     supabase = result.supabase;
