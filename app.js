@@ -55,7 +55,6 @@ function setLanguage(lang){
   if (document.body) {
     document.body.lang = selected;
     document.body.dir = selected === "ar" ? "rtl" : "ltr";
-    document.body.classList.toggle("rtl-language", selected === "ar");
   }
   // Keep language switching independent from legacy RTL CSS classes; dir alone controls text direction.
   try { localStorage.setItem("workTravelLanguage", selected); } catch (error) {
@@ -86,7 +85,6 @@ function applyLanguage(requestedLang){
   if (document.body) {
     document.body.lang = lang;
     document.body.dir = lang === "ar" ? "rtl" : "ltr";
-    document.body.classList.toggle("rtl-language", lang === "ar");
   }
   document.querySelectorAll("[data-i18n]").forEach(el => {
     try {
