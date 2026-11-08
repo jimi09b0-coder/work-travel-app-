@@ -441,7 +441,7 @@ async function hasApplied(jobId, userId) {
   return !!data;
 }
 
-async async function openApplicationForm(id) {
+async function openApplicationForm(id) {
   let j = jobs.find(x => Number(x.id) === Number(id));
   if (!j) {
     const {data,error} = await supabase.from("jobs").select("id,title,country,country_code,city,type,contract,remote_type,salary_min,salary_max,salary_currency,description,requirements,is_active").eq("id",id).maybeSingle();
