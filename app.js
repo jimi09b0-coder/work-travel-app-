@@ -145,11 +145,8 @@ async function loadSupabaseClient() {
     return null;
   }
 }
-// Signal immediately that the application module has evaluated successfully.
-window.__WORKWAY_MODULE_LOADED__ = true;
-const startupStatus = document.getElementById("workway-startup-status");
-if (startupStatus) startupStatus.remove();
-
+// Do not dismiss the HTML startup notice merely because this module began evaluating.
+// It is removed only after the first synchronous UI setup has completed.
 let jobs = [];
 let favoritesOnly = false;
 const $ = id => document.getElementById(id);
@@ -1908,6 +1905,9 @@ async function initializeApp() {
     bindStaticAuth();
     bindSmartSearch();
     handleAuthRedirectError();
+    // The static page and language UI are now initialized; dismiss the startup notice.
+    const startupStatus = $("workway-startup-status");
+    if (startupStatus) startupStatus.remove();
     await loadSupabaseClient();
     if (!supabase) {
       const message = $("staticAuthMessage");
@@ -1982,4 +1982,6 @@ function openExternalJobSearch(country) {
 }
 window.openExternalJobSearch = openExternalJobSearch;
 
+// Publish the module-ready signal only after the complete module has evaluated.
+window.__WORKWAY_MODULE_LOADED__ = true;
 window.optimizeCandidateProfile = optimizeCandidateProfile;
