@@ -535,11 +535,11 @@ document.addEventListener("click", function(event) {
     var reason=event && event.reason;
     if(reason) showFailure(reason.message || reason);
   });
-  var module=document.querySelector('script[src*="app.js"]');
+  var module=document.querySelector('script[type="module"][src*="app.js"]');
   if(module) module.addEventListener("error",function(){showFailure("فشل تحميل app.js أو إحدى المكتبات المطلوبة. تحقق من اتصال الإنترنت ثم أعد التحميل.");});
   window.setTimeout(function(){
     if(!window.__WORKWAY_MODULE_LOADED__) showFailure("لم يبدأ ملف التطبيق خلال 7 ثوانٍ. قد يكون رابط النشر أو تحميل المكتبة الخارجية متعطلاً.");
   },7000);
 })();
 </script>
-<script defer src="app.js?v=20261109-2"></script></body></html>
+<script type="module" src="app.js?v=20261109-3"></script></body></html>
