@@ -52,9 +52,11 @@ function setLanguage(lang){
   // Apply the language synchronously: changing to Arabic must never hide or replace the page.
   document.documentElement.lang = selected;
   document.documentElement.dir = selected === "ar" ? "rtl" : "ltr";
+  document.documentElement.classList.toggle("rtl-language", selected === "ar");
   if (document.body) {
     document.body.lang = selected;
     document.body.dir = selected === "ar" ? "rtl" : "ltr";
+    document.body.classList.toggle("rtl-language", selected === "ar");
   }
   // Keep language switching independent from legacy RTL CSS classes; dir alone controls text direction.
   try { localStorage.setItem("workTravelLanguage", selected); } catch (error) {
@@ -82,9 +84,11 @@ function applyLanguage(requestedLang){
   // cannot interrupt the rest of the page or trigger the blank-screen fallback.
   document.documentElement.lang = lang;
   document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  document.documentElement.classList.toggle("rtl-language", lang === "ar");
   if (document.body) {
     document.body.lang = lang;
     document.body.dir = lang === "ar" ? "rtl" : "ltr";
+    document.body.classList.toggle("rtl-language", lang === "ar");
   }
   document.querySelectorAll("[data-i18n]").forEach(el => {
     try {
