@@ -1909,9 +1909,13 @@ async function initializeApp() {
     bindStaticAuth();
     bindSmartSearch();
     handleAuthRedirectError();
-    // The static page and language UI are now initialized; dismiss the startup notice.
+    // Keep a visible startup indicator during diagnosis instead of removing it.
     const startupStatus = $("workway-startup-status");
-    if (startupStatus) startupStatus.remove();
+    if (startupStatus) {
+      startupStatus.textContent = "تم تشغيل JavaScript وتهيئة واجهة WorkWay. إذا بقيت الصفحة فارغة فالمشكلة في عرض الصفحة أو نسخة النشر.";
+      startupStatus.style.background = "#e8f5e9";
+      startupStatus.style.color = "#14532d";
+    }
     await loadSupabaseClient();
     if (!supabase) {
       const message = $("staticAuthMessage");
