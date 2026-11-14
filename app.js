@@ -476,7 +476,22 @@ async function openApplicationForm(id) {
         <div class="application-actions"><button type="submit">🚀 Envoyer ma candidature</button><button type="button" class="back-button" onclick="showJob(${id})">← Retour à l’offre</button></div>
       </form>
     </article>`;
-  $("jobApplicationForm").addEventListener("submit", e => { applyJob(e,id).catch(error => { console.error("WorkWay application submission failed:", error); alert("تعذر إكمال التقديم بسبب مشكلة اتصال أو خطأ غير متوقع. تحقق من اتصال الإنترنت ثم أعد المحاولة."); }); });
+  $("jobApplicationForm").addEventListener("submit", async e => {
+    const form = e.currentTarget;
+    if (form.dataset.submitting === "true") { e.preventDefault(); return; }
+    form.dataset.submitting = "true";
+    const submitButton = form.querySelector('button[type="submit"]');
+    if (submitButton) { submitButton.disabled = true; submitButton.textContent = "Envoi en cours…"; }
+    try {
+      await applyJob(e,id);
+    } catch (error) {
+      console.error("WorkWay application submission failed:", error);
+      alert("تعذر إكمال التقديم بسبب مشكلة اتصال أو خطأ غير متوقع. تحقق من اتصال الإنترنت ثم أعد المحاولة.");
+    } finally {
+      form.dataset.submitting = "false";
+      if (submitButton?.isConnected) { submitButton.disabled = false; submitButton.textContent = "🚀 Envoyer ma candidature"; }
+    }
+  });
   $("offres").scrollIntoView({behavior:"smooth"});
 }
 
