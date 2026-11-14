@@ -2018,3 +2018,6 @@ window.openExternalJobSearch = openExternalJobSearch;
 // Publish the module-ready signal only after the complete module has evaluated.
 window.__WORKWAY_MODULE_LOADED__ = true;
 window.optimizeCandidateProfile = optimizeCandidateProfile;
+
+// Let the HTML startup watchdog know that this ES module parsed successfully.
+window.__WORKWAY_MODULE_LOADED__ = true;
