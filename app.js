@@ -1905,7 +1905,7 @@ function bindStaticAuth() {
 }
 
 let appInitialized = false;
-async async function initializeApp() {
+async function initializeApp() {
   if (appInitialized) return;
   appInitialized = true;
   try {
