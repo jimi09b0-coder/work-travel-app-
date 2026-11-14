@@ -89,11 +89,11 @@ main,section,footer{color:#14213d}
 <select id="countryFilter" onchange="searchJobs()"><option value="" data-i18n="all_countries">Tous les pays</option></select><select id="typeFilter" onchange="searchJobs()"><option value="" data-i18n="all_sectors">Tous les secteurs</option></select><select id="remoteFilter" onchange="searchJobs()"><option value="" data-i18n="all_work_modes">Tous les modes</option><option value="onsite">Présentiel</option><option value="hybrid">Hybride</option><option value="remote">À distance</option></select><select id="currencyFilter" onchange="searchJobs()"><option value="" data-i18n="all_currencies">Toutes les devises</option></select></div><div id="searchHistory" class="search-history"></div>
 <div class="external-search-box" aria-labelledby="externalSearchTitle">
   <div class="external-search-heading">
-    <div><span class="eyebrow">RECHERCHE EXTERNE</span><h3 id="externalSearchTitle">🌐 Rechercher directement sur les sites officiels</h3><p>Utilisez un métier et, si besoin, une ville. Le bouton ouvre la recherche correspondante.</p></div>
+    <div><span class="eyebrow" data-i18n="external_eyebrow">RECHERCHE EXTERNE</span><h3 id="externalSearchTitle" data-i18n="external_title">🌐 Rechercher directement sur les sites officiels</h3><p data-i18n="external_help">Utilisez un métier et, si besoin, une ville. Le bouton ouvre la recherche correspondante.</p></div>
   </div>
   <div class="external-search-form">
-    <label>💼 Métier / mot-clé<input id="externalSearchQuery" type="search" placeholder="Ex. chauffeur, cuisine, informatique"></label>
-    <label>📍 Ville / région<input id="externalSearchLocation" type="search" placeholder="Ex. Paris, Berlin, Bruxelles"></label>
+    <label data-i18n="external_job">💼 Métier / mot-clé<input id="externalSearchQuery" type="search" data-i18n-placeholder="external_job_placeholder" placeholder="Ex. chauffeur, cuisine, informatique"></label>
+    <label data-i18n="external_city">📍 Ville / région<input id="externalSearchLocation" type="search" data-i18n-placeholder="external_city_placeholder" placeholder="Ex. Paris, Berlin, Bruxelles"></label>
     <div class="external-search-actions">
       <button type="button" onclick="openExternalJobSearch('Belgique')">🇧🇪 Belgique</button>
       <button type="button" onclick="openExternalJobSearch('France')">🇫🇷 France</button>
