@@ -10,7 +10,7 @@ const I18N = {
     travel_eyebrow:"PRÉPARER SON DÉPART", travel_title:"🧳 Votre checklist de voyage", travel_text:"Préparez votre départ à l’international avec une checklist simple et pratique.",
     progress:"Progression", travel_empty_title:"Choisissez votre destination", travel_empty_text:"Vous obtiendrez une checklist adaptée à votre départ.",
     about_eyebrow:"WORK TRAVEL", about_title:"Votre projet international, au même endroit", about_text:"Créez votre profil, ajoutez votre CV et suivez vos candidatures à travers le monde.",
-    footer_text:"Travail et voyage dans le monde entier", language_name:"Français"
+    footer_text:"Travail et voyage dans le monde entier", external_eyebrow:"RECHERCHE EXTERNE", external_title:"🌐 Rechercher directement sur les sites officiels", external_help:"Utilisez un métier et, si besoin, une ville. Le bouton ouvre la recherche correspondante.", external_job:"💼 Métier / mot-clé", external_city:"📍 Ville / région", external_job_placeholder:"Ex. chauffeur, cuisine, informatique", external_city_placeholder:"Ex. Paris, Berlin, Bruxelles", language_name:"Français"
   },
   en: {
     nav_jobs:"Jobs", nav_travel:"Travel", nav_account:"My account",
@@ -23,7 +23,7 @@ const I18N = {
     travel_eyebrow:"PREPARE YOUR MOVE", travel_title:"🧳 Your travel checklist", travel_text:"Prepare your international move with a simple, practical checklist.",
     progress:"Progress", travel_empty_title:"Choose your destination", travel_empty_text:"You will get a checklist tailored to your move.",
     about_eyebrow:"WORK TRAVEL", about_title:"Your global project, in one place", about_text:"Create your profile, add your CV and track applications around the world.",
-    footer_text:"Work and travel worldwide", language_name:"English"
+    footer_text:"Work and travel worldwide", external_eyebrow:"EXTERNAL SEARCH", external_title:"🌐 Search directly on official job sites", external_help:"Enter a job title and, optionally, a city. The button opens the matching search.", external_job:"💼 Job / keyword", external_city:"📍 City / region", external_job_placeholder:"E.g. driver, hospitality, IT", external_city_placeholder:"E.g. Paris, Berlin, Brussels", language_name:"English"
   },
   ar: {
     nav_jobs:"الوظائف", nav_travel:"السفر", nav_account:"حسابي",
@@ -36,7 +36,7 @@ const I18N = {
     travel_eyebrow:"الاستعداد للسفر", travel_title:"🧳 قائمة تجهيز السفر", travel_text:"جهّز سفرك وانتقالك إلى أي دولة من خلال قائمة بسيطة وعملية.",
     progress:"التقدم", travel_empty_title:"اختر وجهتك", travel_empty_text:"ستظهر لك قائمة تجهيز مناسبة لرحلتك.",
     about_eyebrow:"WORK TRAVEL", about_title:"مشروعك الدولي في مكان واحد", about_text:"أنشئ ملفك، وأضف سيرتك الذاتية، وتابع طلبات التوظيف حول العالم.",
-    footer_text:"العمل والسفر حول العالم كله", language_name:"العربية"
+    footer_text:"العمل والسفر حول العالم كله", external_eyebrow:"البحث الخارجي", external_title:"🌐 ابحث مباشرة في مواقع التوظيف الرسمية", external_help:"أدخل المهنة، ويمكنك إضافة المدينة. الزر يفتح نتائج البحث المناسبة.", external_job:"💼 المهنة / كلمة البحث", external_city:"📍 المدينة / المنطقة", external_job_placeholder:"مثال: سائق، فندقة، إعلام آلي", external_city_placeholder:"مثال: باريس، برلين، بروكسل", language_name:"العربية"
   }
 };
 function getLanguage(){
