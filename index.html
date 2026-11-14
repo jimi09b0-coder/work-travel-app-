@@ -436,6 +436,9 @@ document.addEventListener("click", function(event) {
   const button = event.target && event.target.closest ? event.target.closest("button") : null;
   if (!button) return;
   if (button.hasAttribute("data-smart-query") || button.hasAttribute("data-smart-search-submit")) {
+    // The module owns these controls after binding. Do not launch a duplicate search.
+    const smartForm = button.closest("#smartSearchForm");
+    if ((smartForm && smartForm.dataset.bound === "1") || button.dataset.bound === "1") return;
     event.preventDefault();
     const prompt = button.getAttribute("data-smart-query") || document.getElementById("smartSearchInput")?.value || "";
     const input = document.getElementById("smartSearchInput");
