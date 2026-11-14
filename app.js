@@ -339,7 +339,7 @@ function savePreferences() {
   const types = [...document.querySelectorAll('.pref-type:checked')].map(x => x.value);
   localStorage.setItem('workTravelPreferences', JSON.stringify({countries, types}));
   showNotification('Préférences enregistrées.', 'success');
-  displayJobs(jobs);
+  searchJobs();
 }
 
 function renderPreferences() {
@@ -1493,10 +1493,15 @@ async function searchJobs(saveHistory = false) {
   const t = normalizeSmartText(raw), c = $("countryFilter").value, ty = $("typeFilter").value;
   const remote = $("remoteFilter")?.value || "", currency = $("currencyFilter")?.value || "";
   const words = t.split(/\s+/).filter(Boolean);
+  const prefs = getPreferences();
+  const preferredCountries = Array.isArray(prefs.countries) ? prefs.countries : [];
+  const preferredTypes = Array.isArray(prefs.types) ? prefs.types : [];
   const list = jobs.filter(j => {
     const haystack = normalizeSmartText([j.title,j.country,j.city,j.type,j.contract,j.description,j.requirements].join(" "));
     const matchesText = !words.length || words.every(word => haystack.includes(word));
-    return matchesText && (!c || j.country === c) && (!ty || j.type === ty) && (!remote || j.remote_type === remote) && (!currency || j.salary_currency === currency) && (!favoritesOnly || isFavorite(j.id));
+    const matchesPreferredCountry = !preferredCountries.length || preferredCountries.includes(j.country);
+    const matchesPreferredType = !preferredTypes.length || preferredTypes.includes(j.type);
+    return matchesText && matchesPreferredCountry && matchesPreferredType && (!c || j.country === c) && (!ty || j.type === ty) && (!remote || j.remote_type === remote) && (!currency || j.salary_currency === currency) && (!favoritesOnly || isFavorite(j.id));
   });
   displayJobs(list);
   if (saveHistory && raw) saveSearchHistory(raw);
