@@ -1913,7 +1913,13 @@ async function initializeApp() {
   if (appInitialized) return;
   appInitialized = true;
   try {
-    applyLanguage();
+    // On a saved Arabic preference, use the known-safe RTL path.
+    // Do not run the legacy translator during startup: it was the trigger for the blank screen.
+    if (getLanguage() === "ar") {
+      setLanguage("ar");
+    } else {
+      applyLanguage(getLanguage());
+    }
     bindStaticAuth();
     bindSmartSearch();
     handleAuthRedirectError();
