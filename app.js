@@ -64,12 +64,8 @@ function setLanguage(lang){
   }
   const select = document.getElementById("languageSelect");
   if (select && select.value !== selected) select.value = selected;
-  // Safe fallback: keep the Arabic interface visible while the translation routine is isolated.
-  // The Arabic page content is already present in the document; skip the unstable translator.
-  if (selected === "ar") {
-    document.title = "WorkWay Smart | العربية";
-    return;
-  }
+  // Apply translations for Arabic as well as French and English.
+  // Each translated node is guarded inside applyLanguage so one bad label cannot blank the page.
   try {
     applyLanguage(selected);
   } catch (error) {
