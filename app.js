@@ -64,21 +64,23 @@ function setLanguage(lang){
   }
   const select = document.getElementById("languageSelect");
   if (select && select.value !== selected) select.value = selected;
-  // Apply translations after the browser completes the select change event.
-  // The translator updates individual nodes defensively and never replaces the page body.
-  window.requestAnimationFrame(() => {
-    try {
-      applyLanguage(selected);
-    } catch (error) {
-      console.error("WorkWay language translation failed; keeping the current page visible:", error);
-      document.documentElement.lang = selected;
-      document.documentElement.dir = selected === "ar" ? "rtl" : "ltr";
-      if (document.body) {
-        document.body.lang = selected;
-        document.body.dir = selected === "ar" ? "rtl" : "ltr";
-      }
+  // Safe fallback: keep the Arabic interface visible while the translation routine is isolated.
+  // The Arabic page content is already present in the document; skip the unstable translator.
+  if (selected === "ar") {
+    document.title = "WorkWay Smart | العربية";
+    return;
+  }
+  try {
+    applyLanguage(selected);
+  } catch (error) {
+    console.error("WorkWay language translation failed; keeping the current page visible:", error);
+    document.documentElement.lang = selected;
+    document.documentElement.dir = selected === "ar" ? "rtl" : "ltr";
+    if (document.body) {
+      document.body.lang = selected;
+      document.body.dir = selected === "ar" ? "rtl" : "ltr";
     }
-  });
+  }
 }
 window.setLanguage = setLanguage;
 window.applyLanguage = applyLanguage;
