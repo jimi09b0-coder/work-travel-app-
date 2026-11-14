@@ -338,3 +338,38 @@ button:focus-visible,.hero-button:focus-visible,a:focus-visible,input:focus-visi
 .arab-country-buttons{display:flex;flex-wrap:wrap;gap:8px}
 .arab-country-buttons button{padding:9px 12px;font-size:.86rem}
 @media(max-width:600px){.arab-country-search{padding:12px}.arab-country-buttons button{flex:1 1 calc(50% - 8px)}}
+
+
+/* Critical mobile/RTL viewport guard: prevent the document from shifting off-screen. */
+html,body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+}
+body>header.hero,
+body>main,
+body>section,
+body>footer{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+.hero,.navbar,.hero-content,.feature-ribbon,.worldwide-strip,
+.smart-assistant,.useful-sites-section,.search-section,
+.account-section,.travel-section,.about-section,footer{
+  min-width:0;
+  max-width:100%;
+}
+.hero-content{width:100%}
+.navbar,.nav-links{min-width:0;max-width:100%;flex-wrap:wrap}
+.nav-links>a,.language-switcher{flex-shrink:1}
+img,video,iframe,table{max-width:100%}
+@media(max-width:760px){
+  .hero-content{padding-inline:18px}
+  .navbar{width:100%;padding-inline:14px}
+  .nav-links{width:100%;gap:6px}
+  .nav-links>a{min-width:0}
+}
+.rtl-language .hero-content,
+.rtl-language .navbar,
+.rtl-language .nav-links{max-width:100%;min-width:0}
