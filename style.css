@@ -431,3 +431,64 @@ html[dir="rtl"] .hero-content {
   }
   html[dir="rtl"] .hero h1 { overflow-wrap: anywhere; }
 }
+
+
+/* FINAL MOBILE VIEWPORT ALIGNMENT — prevent RTL flex/viewport overflow */
+html, body {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden !important;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  display: block !important;
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  transform: none !important;
+}
+body > header.hero,
+body > .feature-ribbon,
+body > .worldwide-strip,
+body > main,
+body > footer {
+  display: block;
+  position: relative !important;
+  inset: auto !important;
+  float: none !important;
+  clear: both;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  transform: none !important;
+}
+.hero-content {
+  display: flex;
+  width: 100% !important;
+  max-width: 1180px !important;
+  min-width: 0 !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: clamp(14px, 4vw, 24px) !important;
+  padding-right: clamp(14px, 4vw, 24px) !important;
+}
+@media (max-width: 760px) {
+  .hero { width: 100% !important; min-width: 0 !important; }
+  .navbar, .nav-links { width: 100% !important; min-width: 0 !important; }
+  .feature-ribbon, .worldwide-strip, main, footer { width: 100% !important; }
+  .useful-sites-section, .account-section, .travel-section,
+  .about-section, .search-section, .smart-assistant {
+    max-width: calc(100% - 20px) !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  .hero-content > *, main * { min-width: 0; max-width: 100%; }
+  .hero h1, .hero p { overflow-wrap: anywhere; }
+}
