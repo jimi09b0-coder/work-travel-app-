@@ -64,6 +64,13 @@ function setLanguage(lang){
   }
   const select = document.getElementById("languageSelect");
   if (select && select.value !== selected) select.value = selected;
+  // Temporary isolation guard: preserve the full page while testing Arabic RTL.
+  // Arabic translation is deliberately skipped here to identify whether the translator
+  // itself is causing the blank screen; the page remains usable in its previous text.
+  if (selected === "ar") {
+    document.title = "WorkWay Smart | اختبار العربية";
+    return;
+  }
   try {
     applyLanguage(selected);
   } catch (error) {
