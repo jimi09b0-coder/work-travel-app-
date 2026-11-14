@@ -1937,13 +1937,10 @@ async function initializeApp() {
     bindStaticAuth();
     bindSmartSearch();
     handleAuthRedirectError();
-    // Keep a visible startup indicator during diagnosis instead of removing it.
+    // Remove the temporary startup banner once the page UI and handlers are ready.
+    // Leaving a fixed diagnostic banner visible would cover the mobile navigation.
     const startupStatus = $("workway-startup-status");
-    if (startupStatus) {
-      startupStatus.textContent = "تم تشغيل JavaScript وتهيئة واجهة WorkWay. إذا بقيت الصفحة فارغة فالمشكلة في عرض الصفحة أو نسخة النشر.";
-      startupStatus.style.background = "#e8f5e9";
-      startupStatus.style.color = "#14532d";
-    }
+    if (startupStatus) startupStatus.remove();
     await loadSupabaseClient();
     if (!supabase) {
       const message = $("staticAuthMessage");
