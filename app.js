@@ -400,7 +400,8 @@ function displayJobs(list = jobs) {
 
 async function showJob(id) {
   const user = await currentUser();
-  let j = jobs.find(x => x.id === id);
+  // Normalize IDs because database drivers may return numeric IDs as strings.
+  let j = jobs.find(x => Number(x.id) === Number(id));
   if (!j) {
     const {data,error} = await supabase.from("jobs").select("*").eq("id",id).maybeSingle();
     if (error || !data) return;
@@ -411,7 +412,7 @@ async function showJob(id) {
     }
   }
   const alreadyApplied = user ? await hasApplied(id, user.id) : false;
-  const similar = jobs.filter(x => x.id !== id && (x.country === j.country || x.type === j.type)).slice(0,3);
+  const similar = jobs.filter(x => Number(x.id) !== Number(id) && (x.country === j.country || x.type === j.type)).slice(0,3);
   const jobClosed = j.is_active === false;
   $("jobs").innerHTML = `
     <article class="job-detail-card">
@@ -620,13 +621,10 @@ function renderAuth(mode="register", message="") {
       if (mode === "login") await login(event || { preventDefault() {} });
       else await register(event || { preventDefault() {} });
     };
+    // Use the native submit event for touch, keyboard Enter, and assistive technology.
+    // A submit button already fires this event when tapped; a second click handler would
+    // risk sending the same authentication request twice.
     authForm.addEventListener("submit", submitAuth);
-    // Explicit click path improves reliability on mobile browsers and provides immediate feedback.
-    const submitButton = authForm.querySelector('button[type="submit"]');
-    if (submitButton) {
-      submitButton.type = "button";
-      submitButton.addEventListener("click", submitAuth);
-    }
   }
   if (mode === "login") {
     const forgot = document.createElement("button");
