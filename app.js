@@ -394,7 +394,7 @@ function displayJobs(list = jobs) {
       <div class="job-meta"><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><span>💼 ${esc(j.type)}</span><span>🕐 ${esc(j.contract)}</span><span>🌐 ${esc(j.remote_type === "remote" ? "À distance" : j.remote_type === "hybrid" ? "Hybride" : "Présentiel")}</span>${j.salary_currency && (j.salary_min != null || j.salary_max != null) ? `<span>💰 ${j.salary_min != null ? Number(j.salary_min).toLocaleString() : ""}${j.salary_max != null ? "–"+Number(j.salary_max).toLocaleString() : ""} ${esc(j.salary_currency)}</span>` : ""}</div>
       <p>${esc(j.description)}</p>
       ${j.profiles?.company_name ? `<div class="job-company-mini">${safeExternalUrl(j.profiles.company_logo_url) ? `<img src="${esc(safeExternalUrl(j.profiles.company_logo_url))}" alt="">` : "<span>🏢</span>"}<div><strong>${esc(j.profiles.company_name)}</strong><small>${esc(j.profiles.company_city || j.profiles.company_country || "Entreprise")}</small></div></div>` : ""}
-      <button onclick="showJob(${j.id})">Voir les détails →</button>
+      <button onclick="showJob(${JSON.stringify(String(j.id))})">Voir les détails →</button>
     </article>`).join("");
 }
 
@@ -423,7 +423,7 @@ async function showJob(id) {
         <section class="detail-section"><h3>✅ Conditions & exigences</h3><p>${esc(j.requirements)}</p></section>
         <section class="detail-section"><h3>🧳 Préparer votre départ</h3><div class="travel-mini"><span>📄 Documents</span><span>🏠 Logement</span><span>🚌 Transport</span><span>🛡️ Assurance</span></div></section>
       </div><aside class="job-apply-box"><span class="eyebrow">VOTRE CANDIDATURE</span><h3>Prêt à postuler ?</h3><p>Préparez votre CV et votre lettre de motivation avant d’envoyer votre candidature.</p>${jobClosed ? '<div class="applied-badge">⚪ Cette offre est fermée</div>' : (alreadyApplied ? '<div class="applied-badge">✓ Déjà postulé</div>' : `<button class="apply-main" onclick="openApplicationForm(${j.id})">🚀 Postuler maintenant</button>`)}<button onclick="resetView()" class="back-button detail-back">← Retour aux offres</button></aside></div>
-      ${similar.length ? `<section class="similar-section"><div class="panel-heading"><div><span class="eyebrow">À DÉCOUVRIR</span><h3>💼 Offres similaires</h3></div></div><div class="similar-jobs">${similar.map(x => `<button class="similar-job" onclick="showJob(${x.id})"><strong>${esc(x.title)}</strong><span>📍 ${esc(x.city)}, ${esc(x.country)}</span><small>${esc(x.type)} · ${esc(x.contract)}</small></button>`).join("")}</div></section>` : ""}
+      ${similar.length ? `<section class="similar-section"><div class="panel-heading"><div><span class="eyebrow">À DÉCOUVRIR</span><h3>💼 Offres similaires</h3></div></div><div class="similar-jobs">${similar.map(x => `<button class="similar-job" onclick="showJob(${JSON.stringify(String(x.id))})"><strong>${esc(x.title)}</strong><span>📍 ${esc(x.city)}, ${esc(x.country)}</span><small>${esc(x.type)} · ${esc(x.contract)}</small></button>`).join("")}</div></section>` : ""}
     </article>`;
   $("offres").scrollIntoView({behavior:"smooth"});
 }
@@ -444,7 +444,7 @@ async function showCompanyProfile(userId) {
       ${company.company_description ? `<section class="company-page-section"><h3>À propos</h3><p>${esc(company.company_description)}</p></section>` : ""}
       <div class="company-links">${safeExternalUrl(company.company_website) ? `<a href="${esc(safeExternalUrl(company.company_website))}" target="_blank" rel="noopener noreferrer">🌐 Site web</a>` : ""}${company.company_phone ? `<span>📞 ${esc(company.company_phone)}</span>` : ""}${company.company_email ? `<span>✉️ ${esc(company.company_email)}</span>` : ""}</div>
       <section class="company-page-section"><div class="panel-heading"><div><span class="eyebrow">OPPORTUNITÉS</span><h3>💼 Offres de cette entreprise</h3></div><span>${companyJobs.length} offre(s)</span></div>
-        <div class="similar-jobs">${companyJobs.map(j=>`<button class="similar-job" onclick="showJob(${j.id})"><strong>${esc(j.title)}</strong><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><small>${esc(j.type)} · ${esc(j.contract)}</small></button>`).join("") || '<p class="small-note">Aucune offre publiée actuellement.</p>'}</div>
+        <div class="similar-jobs">${companyJobs.map(j=>`<button class="similar-job" onclick="showJob(${JSON.stringify(String(j.id))})"><strong>${esc(j.title)}</strong><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><small>${esc(j.type)} · ${esc(j.contract)}</small></button>`).join("") || '<p class="small-note">Aucune offre publiée actuellement.</p>'}</div>
       </section>
       <button onclick="resetView()" class="back-button">← Retour aux offres</button>
     </article>`;
