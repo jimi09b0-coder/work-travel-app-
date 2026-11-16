@@ -122,6 +122,9 @@ function setLanguage(lang){
       document.body.dir = selected === "ar" ? "rtl" : "ltr";
     }
   }
+  if (document.querySelector("#account .dashboard")) {
+    Promise.resolve().then(() => renderDashboard().catch(error => console.error("Dashboard refresh after language change failed:", error)));
+  }
 }
 window.setLanguage = setLanguage;
 window.applyLanguage = applyLanguage;
