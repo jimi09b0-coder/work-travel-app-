@@ -398,7 +398,7 @@ function displayJobs(list = jobs) {
     </article>`).join("");
 }
 
-async function showJob(id) {
+async async function showJob(id) {
   const jobsContainer = $("jobs");
   if (!jobsContainer) {
     console.error("WorkWay: jobs container is missing.");
