@@ -579,3 +579,30 @@ body > footer {
   .filters{grid-template-columns:1fr!important}
 }
 @media(min-width:761px){.mobile-app-nav{display:none!important}}
+
+
+/* Application form: full-width, accessible controls and language-aware direction */
+.application-card{width:100%;max-width:100%;min-width:0;direction:inherit;text-align:start;overflow:hidden}
+.application-card h2{line-height:1.35;overflow-wrap:anywhere;text-align:start}
+.application-card>p{line-height:1.75;text-align:start}
+.application-form{display:grid;grid-template-columns:minmax(0,1fr);gap:15px;width:100%;min-width:0;text-align:start}
+.application-form label{display:flex;flex-direction:column;align-items:stretch;gap:7px;width:100%;min-width:0;font-size:.95rem;font-weight:800;text-align:start}
+.application-form label>span{display:block;width:100%;text-align:start}
+.application-form input,.application-form select,.application-form textarea{display:block;width:100%;max-width:100%;min-width:0;min-height:50px;margin:0;padding:13px 14px;border:1px solid #dbe4f0;border-radius:13px;background:#fff;color:#14213d;font:inherit;text-align:start;direction:inherit;box-sizing:border-box}
+.application-form textarea{min-height:170px;resize:vertical;line-height:1.65}
+.application-form select{appearance:auto}
+.application-profile-status{padding:11px 13px;border-radius:12px;background:#eef5ff;color:#234a7c;font-size:.9rem;text-align:start}
+.application-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:9px;width:100%;min-width:0}
+.application-actions button{width:100%;min-width:0;min-height:50px;white-space:normal}
+.application-actions .back-button{background:#eaf1fb;color:#174b88;box-shadow:none}
+html[lang="ar"] .application-card,html[lang="ar"] .application-form{direction:rtl;text-align:right}
+html[lang="fr"] .application-card,html[lang="fr"] .application-form,html[lang="en"] .application-card,html[lang="en"] .application-form{direction:ltr;text-align:left}
+@media(max-width:760px){
+ .application-card{padding:16px!important;border-radius:19px!important}
+ .application-form{gap:14px!important}
+ .application-form label{font-size:.9rem!important}
+ .application-form input,.application-form select,.application-form textarea{width:100%!important;min-height:50px!important;font-size:16px!important}
+ .application-form textarea{min-height:165px!important}
+ .application-actions{grid-template-columns:1fr!important}
+ .application-actions button{width:100%!important;min-height:52px!important}
+}
