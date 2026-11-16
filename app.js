@@ -271,6 +271,18 @@ function applicationStatusLabel(status) {
   return '🟡 En cours';
 }
 
+function applicationAvailabilityLabel(value) {
+  const lang = getLanguage();
+  const labels = {
+    immediate: { fr: "Immédiate", en: "Immediately", ar: "فوراً" },
+    two_weeks: { fr: "Dans 2 semaines", en: "In 2 weeks", ar: "خلال أسبوعين" },
+    one_month: { fr: "Dans 1 mois", en: "In 1 month", ar: "خلال شهر" },
+    to_define: { fr: "À définir", en: "To be confirmed", ar: "يُحدد لاحقاً" }
+  };
+  if (!value) return lang === "ar" ? "غير محدد" : lang === "en" ? "Not specified" : "Non précisée";
+  return labels[value]?.[lang] || value;
+}
+
 function notificationKey(app) { return String(app.id) + ':' + String(app.status || 'En cours'); }
 
 async function markNotificationRead(key) {
@@ -1055,7 +1067,7 @@ async function renderEmployerDashboard() {
         <button type="button" class="${current==="Refusée"?"active":""}" onclick="updateApplicationStatus(${a.id},'Refusée')">🔴 Refusée</button>
       </div></div>
       <div class="employer-application-grid">
-        <div><small>${dd.availability}</small><strong>${esc(a.availability || "Non précisée")}</strong></div>
+        <div><small>${dd.availability}</small><strong>${esc(applicationAvailabilityLabel(a.availability))}</strong></div>
         <div><small>${dd.phoneLabel}</small><strong>${esc(a.phone || "Non précisé")}</strong></div>
         <div><small>${dd.cvLabel}</small>${a.cv_path ? `<button type="button" class="cv-link" onclick="openApplicationCV('${esc(a.cv_path)}')">Ouvrir</button>` : "<strong>Non joint</strong>"}</div>
       </div>
