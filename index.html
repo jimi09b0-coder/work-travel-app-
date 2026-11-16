@@ -547,10 +547,10 @@ document.addEventListener("click", function(event) {
 </script>
 <script type="module" src="app.js?v=20261116-2"></script>
 <nav class="mobile-app-nav" aria-label="التنقل الرئيسي">
-  <a href="#home" onclick="resetView();return true;"><span aria-hidden="true">⌂</span><small>الرئيسية</small></a>
-  <a href="#offres"><span aria-hidden="true">⌕</span><small>البحث</small></a>
-  <a href="#voyage"><span aria-hidden="true">✈</span><small>السفر</small></a>
-  <a href="#offres" onclick="toggleFavoritesOnly();return true;"><span aria-hidden="true">☆</span><small>المفضلة</small></a>
-  <a href="#compte" onclick="if(window.openAccount){openAccount();}return true;"><span aria-hidden="true">♙</span><small>حسابي</small></a>
+  <a href="#home"><span aria-hidden="true">⌂</span><small data-i18n="mobile_home">الرئيسية</small></a>
+  <a href="#offres"><span aria-hidden="true">⌕</span><small data-i18n="mobile_search">البحث</small></a>
+  <a href="#voyage"><span aria-hidden="true">✈</span><small data-i18n="nav_travel">السفر</small></a>
+  <a href="#offres" onclick="toggleFavoritesOnly();return true;"><span aria-hidden="true">☆</span><small data-i18n="mobile_favorites">المفضلة</small></a>
+  <a href="#compte" onclick="if(window.openAccount){openAccount();}return true;"><span aria-hidden="true">♙</span><small data-i18n="nav_account">حسابي</small></a>
 </nav>
 </body></html>
