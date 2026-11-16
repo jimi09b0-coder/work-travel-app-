@@ -1,6 +1,6 @@
 const I18N = {
   fr: {
-    nav_jobs:"Offres", nav_travel:"Voyage", nav_account:"Mon compte",
+    nav_jobs:"Offres", nav_travel:"Voyage", nav_account:"Mon compte", mobile_home:"Accueil", mobile_search:"Recherche", mobile_favorites:"Favoris",
     hero_badge:"🌍 Monde entier • Emploi • Voyage", hero_title:"Travaillez partout dans le monde,\n", hero_text:"Explorez les opportunités internationales, préparez votre départ et suivez vos candidatures depuis un seul espace.", hero_cta:"🔎 Explorer les offres",
     world_eyebrow:"PORTÉE MONDIALE", world_title:"🌍 Une plateforme, le monde entier", world_text:"Explorez les possibilités de travail et préparez votre mobilité sur plusieurs continents.", region_africa:"🌍 Afrique", region_europe:"🇪🇺 Europe", region_americas:"🌎 Amériques", region_asia:"🌏 Asie", region_middleeast:"🕌 Moyen-Orient", region_oceania:"🌊 Océanie",
     feature_jobs_title:"Emploi international", feature_jobs_text:"Explorez les opportunités par pays", feature_search_title:"Recherche ciblée", feature_search_text:"Métier, ville et type de contrat", feature_apply_title:"Candidatures suivies", feature_apply_text:"Gardez vos démarches organisées", feature_travel_title:"Départ mieux préparé", feature_travel_text:"Checklist de voyage personnalisée",
@@ -13,7 +13,7 @@ const I18N = {
     footer_text:"Travail et voyage dans le monde entier", external_eyebrow:"RECHERCHE EXTERNE", external_title:"🌐 Rechercher directement sur les sites officiels", external_help:"Utilisez un métier et, si besoin, une ville. Le bouton ouvre la recherche correspondante.", external_job:"💼 Métier / mot-clé", external_city:"📍 Ville / région", external_job_placeholder:"Ex. chauffeur, cuisine, informatique", external_city_placeholder:"Ex. Paris, Berlin, Bruxelles", language_name:"Français"
   },
   en: {
-    nav_jobs:"Jobs", nav_travel:"Travel", nav_account:"My account",
+    nav_jobs:"Jobs", nav_travel:"Travel", nav_account:"My account", mobile_home:"Home", mobile_search:"Search", mobile_favorites:"Saved",
     hero_badge:"🌍 Worldwide • Jobs • Travel", hero_title:"Work anywhere in the world,", hero_text:"Explore international opportunities, prepare your move, and track applications in one place.", hero_cta:"🔎 Explore jobs",
     world_eyebrow:"GLOBAL REACH", world_title:"🌍 One platform, the whole world", world_text:"Explore work opportunities and prepare to move across continents.", region_africa:"🌍 Africa", region_europe:"🇪🇺 Europe", region_americas:"🌎 The Americas", region_asia:"🌏 Asia", region_middleeast:"🕌 Middle East", region_oceania:"🌊 Oceania",
     feature_jobs_title:"Global opportunities", feature_jobs_text:"Explore jobs by country", feature_search_title:"Focused search", feature_search_text:"Role, city and contract type", feature_apply_title:"Track applications", feature_apply_text:"Keep your next steps organized", feature_travel_title:"Plan your move", feature_travel_text:"A practical travel checklist",
@@ -26,7 +26,7 @@ const I18N = {
     footer_text:"Work and travel worldwide", external_eyebrow:"EXTERNAL SEARCH", external_title:"🌐 Search directly on official job sites", external_help:"Enter a job title and, optionally, a city. The button opens the matching search.", external_job:"💼 Job / keyword", external_city:"📍 City / region", external_job_placeholder:"E.g. driver, hospitality, IT", external_city_placeholder:"E.g. Paris, Berlin, Brussels", language_name:"English"
   },
   ar: {
-    nav_jobs:"الوظائف", nav_travel:"السفر", nav_account:"حسابي",
+    nav_jobs:"الوظائف", nav_travel:"السفر", nav_account:"حسابي", mobile_home:"الرئيسية", mobile_search:"البحث", mobile_favorites:"المفضلة",
     hero_badge:"🌍 العالم كله • العمل • السفر", hero_title:"اعمل وسافر حول العالم،", hero_text:"اكتشف فرص العمل الدولية، واستعد لرحلتك، وتابع طلبات التوظيف من مكان واحد.", hero_cta:"🔎 استكشف الوظائف",
     world_eyebrow:"انتشار عالمي", world_title:"🌍 منصة واحدة، والعالم كله أمامك", world_text:"استكشف فرص العمل وجهّز انتقالك بين مختلف قارات العالم.", region_africa:"🌍 أفريقيا", region_europe:"🇪🇺 أوروبا", region_americas:"🌎 الأمريكتان", region_asia:"🌏 آسيا", region_middleeast:"🕌 الشرق الأوسط", region_oceania:"🌊 أوقيانوسيا",
     feature_jobs_title:"فرص عمل دولية", feature_jobs_text:"استكشف الفرص حسب الدولة", feature_search_title:"بحث دقيق", feature_search_text:"المهنة والمدينة ونوع العقد", feature_apply_title:"متابعة الطلبات", feature_apply_text:"نظّم خطوات التقديم", feature_travel_title:"استعداد أفضل للسفر", feature_travel_text:"قائمة تجهيز مخصصة للرحلة",
