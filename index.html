@@ -38,7 +38,7 @@ main,section,footer{color:#14213d}
 <link rel="stylesheet" href="style.css?v=20261114-mobile-width-8d1476a">
 </head>
 <body><aside id="workway-startup-status" dir="rtl" style="display:block!important;position:fixed!important;top:0;left:0;right:0;z-index:2147483000;padding:12px 16px;box-shadow:0 3px 18px rgba(0,0,0,.12);background:#fff4d6;color:#493600;font: bold 15px/1.6 Arial,sans-serif;text-align:center">يتم تحميل WorkWay Smart… إذا بقيت هذه الرسالة، فملف التطبيق لم يبدأ.</aside><a class="skip-link" href="#offres">Aller directement aux offres</a>
-<header class="hero">
+<header class="hero" id="home">
 <nav class="navbar"><a class="logo" href="#" onclick="resetView();return false;">🌍 WorkWay <span class="brand-ai">SMART</span></a>
 <div class="nav-links"><a href="#offres" data-i18n="nav_jobs">Offres</a><a href="#voyage" data-i18n="nav_travel">Voyage</a><a href="#compte" onclick="if(window.openAccount){openAccount();return false;}" data-i18n="nav_account">Mon compte</a>
 <label class="language-switcher" aria-label="Language"><span>🌐</span><select id="languageSelect" onchange='var lang=this.value;try{if(typeof window.setLanguage==="function"){window.setLanguage(lang)}else{document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";console.error("WorkWay language module did not load")}}catch(error){console.error("WorkWay language switch failed:",error);document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";document.body.style.display="block";document.body.style.visibility="visible";document.body.style.opacity="1"}'><option value="fr">FR</option><option value="en">EN</option><option value="ar">AR</option></select></label></div></nav>
@@ -545,4 +545,12 @@ document.addEventListener("click", function(event) {
   },7000);
 })();
 </script>
-<script type="module" src="app.js?v=20261116-2"></script></body></html>
+<script type="module" src="app.js?v=20261116-2"></script>
+<nav class="mobile-app-nav" aria-label="التنقل الرئيسي">
+  <a href="#home" onclick="resetView();return true;"><span aria-hidden="true">⌂</span><small>الرئيسية</small></a>
+  <a href="#offres"><span aria-hidden="true">⌕</span><small>البحث</small></a>
+  <a href="#voyage"><span aria-hidden="true">✈</span><small>السفر</small></a>
+  <a href="#offres" onclick="toggleFavoritesOnly();return true;"><span aria-hidden="true">☆</span><small>المفضلة</small></a>
+  <a href="#compte" onclick="if(window.openAccount){openAccount();}return true;"><span aria-hidden="true">♙</span><small>حسابي</small></a>
+</nav>
+</body></html>
