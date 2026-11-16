@@ -1475,6 +1475,15 @@ async function renderDashboard() {
         <button class="stat-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth'})"><span>🟢</span><strong>${accepted}</strong><small>Acceptées</small></button>
         <button class="stat-card" onclick="document.getElementById('offres')?.scrollIntoView({behavior:'smooth'})"><span>⭐</span><strong>${favoriteCount}</strong><small>Favoris</small></button>
       </div>
+      <section class="dashboard-quick-access" aria-label="Accès rapide">
+        <div class="panel-heading"><div><span class="eyebrow">WORKWAY SMART</span><h3>⚡ Accès rapide</h3><p class="small-note">Retrouvez vos outils essentiels en un geste.</p></div></div>
+        <div class="dashboard-quick-grid">
+          <button type="button" class="dashboard-quick-card" onclick="document.querySelector('.candidate-profile-editor')?.scrollIntoView({behavior:'smooth',block:'start'})"><span>👤</span><strong>Mon profil</strong><small>Modifier mes informations</small></button>
+          <button type="button" class="dashboard-quick-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth',block:'start'})"><span>📩</span><strong>Mes candidatures</strong><small>Suivre mes demandes</small></button>
+          <button type="button" class="dashboard-quick-card" onclick="document.getElementById('voyage')?.scrollIntoView({behavior:'smooth',block:'start'})"><span>🧳</span><strong>Préparer mon départ</strong><small>Documents et voyage</small></button>
+          <button type="button" class="dashboard-quick-card" onclick="document.getElementById('offres')?.scrollIntoView({behavior:'smooth',block:'start'})"><span>🔎</span><strong>Explorer les offres</strong><small>Trouver un nouvel emploi</small></button>
+        </div>
+      </section>
       <section class="candidate-profile-editor">
         <div class="panel-heading"><div><span class="eyebrow">PROFIL PROFESSIONNEL</span><h3>👤 Mon profil</h3><p class="small-note">Complétez votre profil pour mieux présenter votre candidature.</p></div><span class="completion-mini">${profileCompletion}%</span></div>
         <form class="candidate-profile-form" onsubmit="saveCandidateProfile(event)">
