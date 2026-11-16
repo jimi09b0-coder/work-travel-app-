@@ -399,13 +399,21 @@ function displayJobs(list = jobs) {
 }
 
 async function showJob(id) {
-  const container = $("jobs");
-  if (!container) {
+  const jobsContainer = $("jobs");
+  if (!jobsContainer) {
     console.error("WorkWay: jobs container is missing.");
     return;
   }
-  // Render a visible loading state immediately; never wait for authentication first.
-  container.innerHTML = '<div class="empty-state" role="status">Chargement des détails de l’offre…</div>';
+  // Keep the job cards mounted; render details in a separate panel above them.
+  let panel = $("jobDetailsPanel");
+  if (!panel) {
+    panel = document.createElement("div");
+    panel.id = "jobDetailsPanel";
+    panel.className = "job-details-panel";
+    jobsContainer.parentNode.insertBefore(panel, jobsContainer);
+  }
+  panel.hidden = false;
+  panel.innerHTML = '<div class="empty-state" role="status">Chargement des détails de l’offre…</div>';
   try {
     const normalizedId = Number(id);
     if (!Number.isFinite(normalizedId)) throw new Error("Identifiant de l’offre invalide.");
@@ -414,26 +422,25 @@ async function showJob(id) {
       const { data, error } = await supabase.from("jobs").select("*").eq("id", normalizedId).maybeSingle();
       if (error) throw error;
       if (!data) {
-        container.innerHTML = '<div class="empty-state"><h3>Offre introuvable</h3><p>Cette annonce n’est plus disponible.</p><button type="button" onclick="resetView()">Retour aux offres</button></div>';
+        panel.innerHTML = '<div class="empty-state"><h3>Offre introuvable</h3><p>Cette annonce n’est plus disponible.</p><button type="button" onclick="resetView()">Retour aux offres</button></div>';
         return;
       }
       j = data;
     }
     const similar = jobs.filter(x => Number(x.id) !== normalizedId && (x.country === j.country || x.type === j.type)).slice(0,3);
     const jobClosed = j.is_active === false;
-    container.innerHTML = `
+    panel.innerHTML = `
       <article class="job-detail-card">
         <div class="job-detail-top"><div><span class="eyebrow">OFFRE D'EMPLOI</span><h2>${esc(j.title)} ${jobClosed ? '<span class="job-activity-badge">⚪ Offre fermée</span>' : '<span class="job-activity-badge">🟢 Offre active</span>'}</h2><div class="job-meta"><span>📍 ${esc(j.city)}, ${esc(j.country)}</span><span>💼 ${esc(j.type)}</span><span>🕐 ${esc(j.contract)}</span></div></div><button type="button" class="favorite-button ${isFavorite(j.id) ? "is-favorite" : ""}" onclick="toggleFavorite(${j.id})">${isFavorite(j.id) ? "★" : "☆"}</button></div>
         <div class="job-detail-grid"><div>
-          ${j.profiles?.company_name ? `<section class="job-company-profile"><div class="company-profile-head">${safeExternalUrl(j.profiles.company_logo_url) ? `<img src="${esc(safeExternalUrl(j.profiles.company_logo_url))}" alt="">` : `<div class="company-logo-placeholder">🏢</div>`}<div><span class="eyebrow">ENTREPRISE</span><h3>${esc(j.profiles.company_name)}</h3><p>📍 ${esc(j.profiles.company_city || "")}${j.profiles.company_city && j.profiles.company_country ? ", " : ""}${esc(j.profiles.company_country || "")}</p></div></div>${j.profiles.company_description ? `<p>${esc(j.profiles.company_description)}</p>` : ""}<button type="button" class="company-profile-link" onclick="showCompanyProfile('${j.employer_id}')">Voir le profil de l’entreprise →</button><div class="company-links">${j.profiles.company_website ? `<a href="${esc(safeExternalUrl(j.profiles.company_website))}" target="_blank" rel="noopener noreferrer">🌐 Site web</a>` : ""}${j.profiles.company_phone ? `<span>📞 ${esc(j.profiles.company_phone)}</span>` : ""}${j.profiles.company_email ? `<span>✉️ ${esc(j.profiles.company_email)}</span>` : ""}</div></section>` : ""}
+          ${j.profiles?.company_name ? `<section class="job-company-profile"><div class="company-profile-head">${safeExternalUrl(j.profiles.company_logo_url) ? `<img src="${esc(safeExternalUrl(j.profiles.company_logo_url))}" alt="">` : `<div class="company-logo-placeholder">🏢</div>`}<div><span class="eyebrow">ENTREPRISE</span><h3>${esc(j.profiles.company_name)}</h3><p>📍 ${esc(j.profiles.company_city || "")}${j.profiles.company_city && j.profiles.company_country ? ", " : ""}${esc(j.profiles.company_country || "")}</p></div></div>${j.profiles.company_description ? `<p>${esc(j.profiles.company_description)}</p>` : ""}<button type="button" class="company-profile-link" onclick="showCompanyProfile('${j.employer_id}')">Voir le profil de l’entreprise →</button><div class="company-links">${safeExternalUrl(j.profiles.company_website) ? `<a href="${esc(safeExternalUrl(j.profiles.company_website))}" target="_blank" rel="noopener noreferrer">🌐 Site web</a>` : ""}${j.profiles.company_phone ? `<span>📞 ${esc(j.profiles.company_phone)}</span>` : ""}${j.profiles.company_email ? `<span>✉️ ${esc(j.profiles.company_email)}</span>` : ""}</div></section>` : ""}
           <section class="detail-section"><h3>📝 Description</h3><p>${esc(j.description)}</p></section>
           <section class="detail-section"><h3>✅ Conditions & exigences</h3><p>${esc(j.requirements)}</p></section>
           <section class="detail-section"><h3>🧳 Préparer votre départ</h3><div class="travel-mini"><span>📄 Documents</span><span>🏠 Logement</span><span>🚌 Transport</span><span>🛡️ Assurance</span></div></section>
-        </div><aside class="job-apply-box"><span class="eyebrow">VOTRE CANDIDATURE</span><h3>Prêt à postuler ?</h3><p>Préparez votre CV et votre lettre de motivation avant d’envoyer votre candidature.</p><div id="jobApplyStatus">${jobClosed ? '<div class="applied-badge">⚪ Cette offre est fermée</div>' : `<button type="button" class="apply-main" onclick="openApplicationForm(${j.id})">🚀 Postuler maintenant</button>`}</div><button type="button" onclick="resetView()" class="back-button detail-back">← Retour aux offres</button></aside></div>
+        </div><aside class="job-apply-box"><span class="eyebrow">VOTRE CANDIDATURE</span><h3>Prêt à postuler ?</h3><p>Préparez votre CV et votre lettre de motivation avant d’envoyer votre candidature.</p><div id="jobApplyStatus">${jobClosed ? '<div class="applied-badge">⚪ Cette offre est fermée</div>' : `<button type="button" class="apply-main" onclick="openApplicationForm(${j.id})">🚀 Postuler maintenant</button>`}</div><button type="button" onclick="resetView()" class="back-button detail-back">← Fermer les détails</button></aside></div>
         ${similar.length ? `<section class="similar-section"><div class="panel-heading"><div><span class="eyebrow">À DÉCOUVRIR</span><h3>💼 Offres similaires</h3></div></div><div class="similar-jobs">${similar.map(x => `<button type="button" class="similar-job" onclick="showJob(${x.id})"><strong>${esc(x.title)}</strong><span>📍 ${esc(x.city)}, ${esc(x.country)}</span><small>${esc(x.type)} · ${esc(x.contract)}</small></button>`).join("")}</div></section>` : ""}
       </article>`;
-    $("offres")?.scrollIntoView({behavior:"smooth"});
-    // Authentication and application lookup happen after the job details are visible.
+    panel.scrollIntoView({behavior:"smooth", block:"start"});
     if (!jobClosed) {
       const user = await currentUser();
       if (user) {
@@ -444,7 +451,7 @@ async function showJob(id) {
     }
   } catch (error) {
     console.error("WorkWay showJob failed:", error);
-    container.innerHTML = '<div class="empty-state"><h3>تعذر تحميل تفاصيل الوظيفة</h3><p>حدث خطأ أثناء تحميل الإعلان. تحقق من الاتصال ثم أعد المحاولة.</p><button type="button" onclick="showJob(' + Number(id) + ')">إعادة المحاولة</button> <button type="button" onclick="resetView()">العودة إلى الوظائف</button></div>';
+    panel.innerHTML = '<div class="empty-state"><h3>تعذر تحميل تفاصيل الوظيفة</h3><p>حدث خطأ أثناء تحميل الإعلان. تحقق من الاتصال ثم أعد المحاولة.</p><button type="button" onclick="showJob(' + Number(id) + ')">إعادة المحاولة</button> <button type="button" onclick="resetView()">العودة إلى الوظائف</button></div>';
   }
 }
 async function showCompanyProfile(userId) {
