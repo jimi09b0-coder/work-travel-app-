@@ -1046,9 +1046,9 @@ async function renderEmployerDashboard() {
         <button type="button" class="${current==="Refusée"?"active":""}" onclick="updateApplicationStatus(${a.id},'Refusée')">🔴 Refusée</button>
       </div></div>
       <div class="employer-application-grid">
-        <div><small>🕐 Disponibilité</small><strong>${esc(a.availability || "Non précisée")}</strong></div>
-        <div><small>📱 Téléphone</small><strong>${esc(a.phone || "Non précisé")}</strong></div>
-        <div><small>📄 CV</small>${a.cv_path ? `<button type="button" class="cv-link" onclick="openApplicationCV('${esc(a.cv_path)}')">Ouvrir</button>` : "<strong>Non joint</strong>"}</div>
+        <div><small>${dd.availability}</small><strong>${esc(a.availability || "Non précisée")}</strong></div>
+        <div><small>${dd.phoneLabel}</small><strong>${esc(a.phone || "Non précisé")}</strong></div>
+        <div><small>${dd.cvLabel}</small>${a.cv_path ? `<button type="button" class="cv-link" onclick="openApplicationCV('${esc(a.cv_path)}')">Ouvrir</button>` : "<strong>Non joint</strong>"}</div>
       </div>
       <details class="employer-details"><summary>Voir le profil et la lettre</summary>
         <p>${esc(a.profile_snapshot?.bio || "")}</p>
@@ -1396,7 +1396,7 @@ async function renderAdminPanel(){
   ]);
   if(error)return alert("Impossible de charger les demandes : "+error.message);
   const list=rows||[], pending=list.filter(x=>x.status==="pending").length, approved=list.filter(x=>x.status==="approved").length;
-  const cards=list.map(r=>'<article class="admin-request-card '+(r.status==="pending"?'admin-request-pending':'')+'"><div class="admin-request-head"><div><span class="eyebrow">DEMANDE #'+r.id+'</span><h3>'+esc(r.company_name)+'</h3><p>'+esc(r.contact_phone||"Téléphone non renseigné")+' · '+esc(r.website||"Site non renseigné")+'</p><small>'+new Date(r.created_at).toLocaleDateString("fr-FR")+'</small></div><span class="status-badge">'+esc(r.status)+'</span></div><p class="admin-request-message">'+esc(r.message||"Aucun message.")+'</p>'+ (r.status==="pending" ? '<div class="admin-request-actions"><button type="button" onclick="reviewEmployerRequest('+r.id+',\'approved\')">✅ Approuver</button><button type="button" class="danger-button" onclick="reviewEmployerRequest('+r.id+',\'rejected\')">❌ Refuser</button></div>' : '<p class="small-note">Cette demande a déjà été traitée.</p>') +'</article>').join("");
+  const cards=list.map(r=>'<article class="admin-request-card '+(r.status==="pending"?'admin-request-pending':'')+'"><div class="admin-request-head"><div><span class="eyebrow">DEMANDE #'+r.id+'</span><h3>'+esc(r.company_name)+'</h3><p>'+esc(r.contact_phone||"Téléphone non renseigné")+' · '+esc(r.website||"Site non renseigné")+'</p><small>'+new Date(r.created_at).toLocaleDateString(dashboardLang === "ar" ? "ar-DZ" : dashboardLang === "en" ? "en-GB" : "fr-FR")+'</small></div><span class="status-badge">'+esc(r.status)+'</span></div><p class="admin-request-message">'+esc(r.message||"Aucun message.")+'</p>'+ (r.status==="pending" ? '<div class="admin-request-actions"><button type="button" onclick="reviewEmployerRequest('+r.id+',\'approved\')">✅ Approuver</button><button type="button" class="danger-button" onclick="reviewEmployerRequest('+r.id+',\'rejected\')">❌ Refuser</button></div>' : '<p class="small-note">Cette demande a déjà été traitée.</p>') +'</article>').join("");
   $("account").innerHTML='<div class="account-card dashboard admin-dashboard"><div class="dashboard-header"><div class="account-identity"><span class="eyebrow">ADMINISTRATION</span><h2>🛡️ Centre de contrôle</h2><p class="account-email">Bienvenue '+esc(profile.full_name||user.email)+' · gestion de Work Travel</p></div><div class="account-actions"><button onclick="renderAdminPanel()">↻ Actualiser</button><button class="back-button" onclick="logout()">Se déconnecter</button></div></div><div class="dashboard-stats"><div class="stat-card"><span>👥</span><strong>'+(users||0)+'</strong><small>Utilisateurs</small></div><div class="stat-card"><span>🏢</span><strong>'+(employers||0)+'</strong><small>Entreprises</small></div><div class="stat-card"><span>👤</span><strong>'+(candidates||0)+'</strong><small>Candidats</small></div><div class="stat-card"><span>💼</span><strong>'+(activeJobs||0)+'</strong><small>Offres actives</small><em>'+(jobs||0)+' au total</em></div><div class="stat-card"><span>📩</span><strong>'+(applications||0)+'</strong><small>${dc.applications}</small><em>'+(pendingApplications||0)+' à traiter</em></div><div class="stat-card"><span>🟡</span><strong>'+pending+'</strong><small>Demandes en attente</small></div></div><section class="admin-requests"><div class="panel-heading"><div><span class="eyebrow">REVUE ENTREPRISES</span><h3>Demandes reçues</h3><p class="small-note">'+pending+' en attente · '+approved+' approuvées · '+list.filter(x=>x.status==="rejected").length+' refusées</p></div></div>'+ (cards || '<p class="small-note">Aucune demande.</p>') +'</section></div>';
 }
 async function reviewEmployerRequest(id,status){
@@ -1413,6 +1413,11 @@ fr:{title:"TABLEAU DE BORD",hello:"Bonjour",refresh:"↻ Actualiser",logout:"Se 
 en:{title:"DASHBOARD",hello:"Hello",refresh:"↻ Refresh",logout:"Sign out",space:"Your candidate space",intro:"Track your applications, prepare your move and keep your profile ready for new opportunities.",completion:"Profile completed",ready:"Your profile is ready to apply.",completeHint:"Add your name and CV to complete your profile.",notifications:"NOTIFICATIONS",news:"🔔 Updates",none:"No notifications.",applications:"Applications",pending:"In progress",accepted:"Accepted",favorites:"Saved",quick:"⚡ Quick access",quickIntro:"Reach your essential tools in one tap.",myProfile:"My profile",editProfile:"Edit my information",myApplications:"My applications",follow:"Track your requests",travel:"Prepare my move",travelHelp:"Documents and travel",explore:"Explore jobs",find:"Find a new job",history:"📋 Recent applications",total:"total",empty:"No applications yet. Explore available jobs."},
 ar:{title:"لوحة التحكم",hello:"مرحباً",refresh:"↻ تحديث",logout:"تسجيل الخروج",space:"مساحة المرشح",intro:"تابع طلبات التوظيف وجهّز سفرك وحافظ على ملفك جاهزاً للفرص الجديدة.",completion:"اكتمال الملف الشخصي",ready:"ملفك جاهز للتقديم.",completeHint:"أضف اسمك وسيرتك الذاتية لإكمال ملفك.",notifications:"الإشعارات",news:"🔔 المستجدات",none:"لا توجد إشعارات.",applications:"طلبات التوظيف",pending:"قيد المعالجة",accepted:"مقبولة",favorites:"المفضلة",quick:"⚡ الوصول السريع",quickIntro:"انتقل إلى أدواتك الأساسية بضغطة واحدة.",myProfile:"ملفي الشخصي",editProfile:"تعديل معلوماتي",myApplications:"طلباتي",follow:"متابعة الطلبات",travel:"تجهيز السفر",travelHelp:"الوثائق والسفر",explore:"استكشف الوظائف",find:"ابحث عن وظيفة جديدة",history:"📋 أحدث طلبات التوظيف",total:"الإجمالي",empty:"لا توجد طلبات بعد. استكشف الوظائف المتاحة."}
 };
+const DASHBOARD_DETAIL_COPY = {
+fr:{statsApplications:"Candidatures",statsPending:"En cours",statsAccepted:"Acceptées",profileSection:"Mon profil",profileHelp:"Complétez votre profil pour mieux présenter votre candidature.",fullName:"Nom complet",phone:"Téléphone",headline:"Titre professionnel",skills:"Compétences",languages:"Langues",experience:"Expérience",education:"Formation",bio:"Présentation",preview:"APERÇU",previewTitle:"👁️ Profil professionnel",previewHelp:"Voici comment votre profil peut être présenté à un recruteur.",cvSection:"Mon CV",cvProfessional:"CV professionnel",activity:"ACTIVITÉ",summary:"📈 Résumé",activityPending:"candidature(s) en cours",activityAccepted:"candidature(s) acceptée(s)",activityRefused:"candidature(s) refusée(s)",sentOn:"📅 Envoyée le",availability:"🕐 Disponibilité",phoneLabel:"📱 Téléphone",cvLabel:"📄 CV",profileSent:"👤 Profil envoyé",coverLetter:"✍️ Lettre de motivation"},
+en:{statsApplications:"Applications",statsPending:"In progress",statsAccepted:"Accepted",profileSection:"My profile",profileHelp:"Complete your profile to present your application more effectively.",fullName:"Full name",phone:"Phone",headline:"Professional title",skills:"Skills",languages:"Languages",experience:"Experience",education:"Education",bio:"About me",preview:"PREVIEW",previewTitle:"👁️ Professional profile",previewHelp:"See how your profile may appear to a recruiter.",cvSection:"My CV",cvProfessional:"Professional CV",activity:"ACTIVITY",summary:"📈 Summary",activityPending:"application(s) in progress",activityAccepted:"application(s) accepted",activityRefused:"application(s) declined",sentOn:"📅 Submitted",availability:"🕐 Availability",phoneLabel:"📱 Phone",cvLabel:"📄 CV",profileSent:"👤 Submitted profile",coverLetter:"✍️ Cover letter"},
+ar:{statsApplications:"طلبات التوظيف",statsPending:"قيد المعالجة",statsAccepted:"مقبولة",profileSection:"ملفي الشخصي",profileHelp:"أكمل ملفك لتقديم طلبك بصورة أفضل.",fullName:"الاسم الكامل",phone:"الهاتف",headline:"المسمى المهني",skills:"المهارات",languages:"اللغات",experience:"الخبرة",education:"التكوين",bio:"نبذة شخصية",preview:"معاينة",previewTitle:"👁️ الملف المهني",previewHelp:"هكذا يمكن أن يظهر ملفك لمسؤول التوظيف.",cvSection:"سيرتي الذاتية",cvProfessional:"السيرة الذاتية المهنية",activity:"النشاط",summary:"📈 الملخص",activityPending:"طلبات قيد المعالجة",activityAccepted:"طلبات مقبولة",activityRefused:"طلبات مرفوضة",sentOn:"📅 تاريخ الإرسال",availability:"🕐 التوفر",phoneLabel:"📱 الهاتف",cvLabel:"📄 السيرة الذاتية",profileSent:"👤 الملف المرسل",coverLetter:"✍️ رسالة التحفيز"}
+};
 async function renderDashboard() {
   const user = await currentUser();
   if (!user) return renderAuth("login");
@@ -1426,6 +1431,7 @@ async function renderDashboard() {
   const name = profile?.full_name || user.user_metadata?.full_name || 'Candidat';
   const dashboardLang = getLanguage();
   const dc = DASHBOARD_COPY[dashboardLang] || DASHBOARD_COPY.fr;
+  const dd = DASHBOARD_DETAIL_COPY[dashboardLang] || DASHBOARD_DETAIL_COPY.fr;
   const totalApps = apps?.length || 0;
   const pending = apps?.filter(a => (a.status || "En cours") === "En cours").length || 0;
   const accepted = apps?.filter(a => a.status === "Acceptée").length || 0;
@@ -1480,9 +1486,9 @@ async function renderDashboard() {
   }
 </div>
       <div class="dashboard-stats">
-        <button class="stat-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth'})"><span>📩</span><strong>${totalApps}</strong><small>Candidatures</small></button>
-        <button class="stat-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth'})"><span>🟡</span><strong>${pending}</strong><small>En cours</small></button>
-        <button class="stat-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth'})"><span>🟢</span><strong>${accepted}</strong><small>Acceptées</small></button>
+        <button class="stat-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth'})"><span>📩</span><strong>${totalApps}</strong><small>${dd.statsApplications}</small></button>
+        <button class="stat-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth'})"><span>🟡</span><strong>${pending}</strong><small>${dd.statsPending}</small></button>
+        <button class="stat-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth'})"><span>🟢</span><strong>${accepted}</strong><small>${dd.statsAccepted}</small></button>
         <button class="stat-card" onclick="document.getElementById('offres')?.scrollIntoView({behavior:'smooth'})"><span>⭐</span><strong>${favoriteCount}</strong><small>${dc.favorites}</small></button>
       </div>
       <section class="dashboard-quick-access" aria-label="Accès rapide">
@@ -1495,18 +1501,18 @@ async function renderDashboard() {
         </div>
       </section>
       <section class="candidate-profile-editor">
-        <div class="panel-heading"><div><span class="eyebrow">PROFIL PROFESSIONNEL</span><h3>👤 Mon profil</h3><p class="small-note">Complétez votre profil pour mieux présenter votre candidature.</p></div><span class="completion-mini">${profileCompletion}%</span></div>
+        <div class="panel-heading"><div><span class="eyebrow">PROFIL PROFESSIONNEL</span><h3>👤 ${dd.profileSection}</h3><p class="small-note">${dd.profileHelp}</p></div><span class="completion-mini">${profileCompletion}%</span></div>
         <form class="candidate-profile-form" onsubmit="saveCandidateProfile(event)">
           <div class="profile-form-grid">
-            <label>📛 Nom complet<input id="profileName" type="text" value="${esc(name)}" maxlength="80" required></label>
-            <label>📱 Téléphone<input id="profilePhone" type="tel" maxlength="30" value="${esc(profile?.phone || "")}" placeholder="+213 ..."></label>
-            <label>🎯 Titre professionnel<input id="profileHeadline" type="text" maxlength="120" value="${esc(profile?.headline || "")}" placeholder="Ex. Agent de sécurité"></label>
-            <label>🧰 Compétences<input id="profileSkills" type="text" value="${esc((profile?.skills || []).join(", "))}" placeholder="Sécurité, accueil, informatique"></label>
-            <label>🌐 Langues<input id="profileLanguages" type="text" value="${esc((profile?.languages || []).join(", "))}" placeholder="Français, arabe, anglais"></label>
-            <label>💼 Expérience<textarea id="profileExperience" rows="4" maxlength="1500" placeholder="Décrivez vos expériences professionnelles...">${esc(profile?.experience || "")}</textarea></label>
-            <label>🎓 Formation<textarea id="profileEducation" rows="4" maxlength="1500" placeholder="Diplômes, formations, certifications...">${esc(profile?.education || "")}</textarea></label>
+            <label>📛 ${dd.fullName}<input id="profileName" type="text" value="${esc(name)}" maxlength="80" required></label>
+            <label>📱 ${dd.phone}<input id="profilePhone" type="tel" maxlength="30" value="${esc(profile?.phone || "")}" placeholder="+213 ..."></label>
+            <label>🎯 ${dd.headline}<input id="profileHeadline" type="text" maxlength="120" value="${esc(profile?.headline || "")}" placeholder="Ex. Agent de sécurité"></label>
+            <label>🧰 ${dd.skills}<input id="profileSkills" type="text" value="${esc((profile?.skills || []).join(", "))}" placeholder="Sécurité, accueil, informatique"></label>
+            <label>🌐 ${dd.languages}<input id="profileLanguages" type="text" value="${esc((profile?.languages || []).join(", "))}" placeholder="Français, arabe, anglais"></label>
+            <label>💼 ${dd.experience}<textarea id="profileExperience" rows="4" maxlength="1500" placeholder="Décrivez vos expériences professionnelles...">${esc(profile?.experience || "")}</textarea></label>
+            <label>🎓 ${dd.education}<textarea id="profileEducation" rows="4" maxlength="1500" placeholder="Diplômes, formations, certifications...">${esc(profile?.education || "")}</textarea></label>
           </div>
-          <label>📝 Présentation<textarea id="profileBio" rows="5" maxlength="2000" placeholder="Présentez votre profil en quelques lignes...">${esc(profile?.bio || "")}</textarea></label>
+          <label>📝 ${dd.bio}<textarea id="profileBio" rows="5" maxlength="2000" placeholder="Présentez votre profil en quelques lignes...">${esc(profile?.bio || "")}</textarea></label>
           <div class="profile-form-actions">
             <button type="button" class="secondary-button" onclick="optimizeCandidateProfile()">✨ Améliorer mon profil</button>
             <button type="submit">💾 Enregistrer mon profil</button>
@@ -1514,7 +1520,7 @@ async function renderDashboard() {
         </form>
       </section>
       <section class="candidate-profile-preview">
-        <div class="panel-heading"><div><span class="eyebrow">APERÇU</span><h3>👁️ Profil professionnel</h3><p class="small-note">Voici comment votre profil peut être présenté à un recruteur.</p></div></div>
+        <div class="panel-heading"><div><span class="eyebrow">${dd.preview}</span><h3>${dd.previewTitle}</h3><p class="small-note">${dd.previewHelp}</p></div></div>
         <div class="profile-preview-card">
           <div class="profile-preview-head"><div class="profile-avatar">${esc((name || "C").charAt(0).toUpperCase())}</div><div><h3>${esc(profile?.headline || name)}</h3><p>${esc(profile?.headline ? name : "Candidat Work Travel")}</p></div></div>
           ${profile?.bio ? `<div class="preview-section"><strong>📝 Présentation</strong><p>${esc(profile.bio)}</p></div>` : ""}
@@ -1527,21 +1533,21 @@ async function renderDashboard() {
       </section>
       <section class="employer-request-panel" id="employerRequestBox"></section>
       <div class="dashboard-grid">
-        <section class="dashboard-panel"><div class="panel-heading"><div><span class="eyebrow">DOCUMENTS</span><h3>📄 Mon CV</h3></div></div>
-          <div class="cv-box"><div><strong>CV professionnel</strong><p id="cvStatus" class="small-note">${profile?.cv_path ? `CV enregistré. <button type="button" class="cv-link" onclick="openCV()">Ouvrir</button> <button type="button" class="cv-delete" onclick="deleteCV()">Supprimer</button>` : "Ajoutez votre CV pour compléter votre profil."}</p></div><input type="file" id="cvFile" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"></div>
+        <section class="dashboard-panel"><div class="panel-heading"><div><span class="eyebrow">DOCUMENTS</span><h3>📄 ${dd.cvSection}</h3></div></div>
+          <div class="cv-box"><div><strong>${dd.cvProfessional}</strong><p id="cvStatus" class="small-note">${profile?.cv_path ? `CV enregistré. <button type="button" class="cv-link" onclick="openCV()">Ouvrir</button> <button type="button" class="cv-delete" onclick="deleteCV()">Supprimer</button>` : "Ajoutez votre CV pour compléter votre profil."}</p></div><input type="file" id="cvFile" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"></div>
         </section>
-        <section class="dashboard-panel"><div class="panel-heading"><div><span class="eyebrow">ACTIVITÉ</span><h3>📈 Résumé</h3></div></div>
-          <div class="activity-list"><div><span>🟡</span><strong>${pending}</strong><p>candidature(s) en cours</p></div><div><span>🟢</span><strong>${accepted}</strong><p>candidature(s) acceptée(s)</p></div><div><span>🔴</span><strong>${refused}</strong><p>candidature(s) refusée(s)</p></div></div>
+        <section class="dashboard-panel"><div class="panel-heading"><div><span class="eyebrow">${dd.activity}</span><h3>${dd.summary}</h3></div></div>
+          <div class="activity-list"><div><span>🟡</span><strong>${pending}</strong><p>${dd.activityPending}</p></div><div><span>🟢</span><strong>${accepted}</strong><p>${dd.activityAccepted}</p></div><div><span>🔴</span><strong>${refused}</strong><p>${dd.activityRefused}</p></div></div>
         </section>
       </div>
       <div class="applications-list dashboard-history"><div class="panel-heading"><div><span class="eyebrow">SUIVI</span><h3>${dc.history}</h3></div><span class="small-note">${totalApps} ${dc.total}</span></div>
         ${latestApps.length ? latestApps.map(a => `
           <article class="application-history-card">
             <div class="application-history-head"><div><strong>${esc(a.jobs?.title || "Offre")}</strong><span>📍 ${esc(a.jobs?.city || "")}, ${esc(a.jobs?.country || "")}</span></div><div class="application-history-status"><span class="status-badge status-${(a.status || "En cours").toLowerCase().replace(/\s+/g,"-")}">${esc(applicationStatusLabel(a.status))}</span><small>${a.status === "Acceptée" ? "Le recruteur a accepté votre candidature." : a.status === "Refusée" ? "Le recruteur a refusé votre candidature." : "Votre candidature est toujours en cours de traitement."}</small></div></div>
-            <div class="application-history-grid"><div><small>📅 Envoyée le</small><strong>${new Date(a.created_at).toLocaleDateString("fr-FR")}</strong></div><div><small>🕐 Disponibilité</small><strong>${esc(a.availability || "Non précisée")}</strong></div><div><small>📱 Téléphone</small><strong>${esc(a.phone || a.profile_snapshot?.phone || "Non précisé")}</strong></div><div><small>📄 CV</small>${a.cv_path ? `<button type="button" class="cv-link" onclick="openApplicationCV('${esc(a.cv_path)}')">Ouvrir ${esc(a.cv_name || "le CV")}</button>` : "<strong>Non joint</strong>"}</div></div>
+            <div class="application-history-grid"><div><small>${dd.sentOn}</small><strong>${new Date(a.created_at).toLocaleDateString("fr-FR")}</strong></div><div><small>🕐 Disponibilité</small><strong>${esc(a.availability || "Non précisée")}</strong></div><div><small>📱 Téléphone</small><strong>${esc(a.phone || a.profile_snapshot?.phone || "Non précisé")}</strong></div><div><small>📄 CV</small>${a.cv_path ? `<button type="button" class="cv-link" onclick="openApplicationCV('${esc(a.cv_path)}')">Ouvrir ${esc(a.cv_name || "le CV")}</button>` : "<strong>Non joint</strong>"}</div></div>
             ${a.status === "En cours" ? `<div class="application-history-actions"><button type="button" class="secondary-button" onclick="withdrawApplication(${Number(a.id)})">↩ Retirer la candidature</button></div>` : ""}
-            <div class="application-history-section"><small>👤 Profil envoyé</small><div class="profile-snapshot-line"><strong>${esc(a.profile_snapshot?.full_name || "Candidat")}</strong>${a.profile_snapshot?.headline ? `<span>${esc(a.profile_snapshot.headline)}</span>` : ""}</div>${(a.profile_snapshot?.skills || []).length ? `<div class="preview-tags">${a.profile_snapshot.skills.map(x => `<span>${esc(x)}</span>`).join("")}</div>` : ""}</div>
-            <div class="application-history-section"><small>✍️ Lettre de motivation</small><p class="application-cover-letter">${esc(a.cover_letter || "Aucune lettre enregistrée.")}</p></div>
+            <div class="application-history-section"><small>${dd.profileSent}</small><div class="profile-snapshot-line"><strong>${esc(a.profile_snapshot?.full_name || "Candidat")}</strong>${a.profile_snapshot?.headline ? `<span>${esc(a.profile_snapshot.headline)}</span>` : ""}</div>${(a.profile_snapshot?.skills || []).length ? `<div class="preview-tags">${a.profile_snapshot.skills.map(x => `<span>${esc(x)}</span>`).join("")}</div>` : ""}</div>
+            <div class="application-history-section"><small>${dd.coverLetter}</small><p class="application-cover-letter">${esc(a.cover_letter || "Aucune lettre enregistrée.")}</p></div>
           </article>`).join("") : '<p class="small-note">' + dc.empty + '</p>'}      </div>
     </div>`;
   $("cvFile").addEventListener("change", saveCV);
