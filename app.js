@@ -1852,6 +1852,7 @@ function updateTravelProgress() {
 }
 
 function resetView() {
+  $("jobDetailsPanel")?.remove();
   $("search").value = ""; $("countryFilter").value = ""; $("typeFilter").value = ""; if ($("remoteFilter")) $("remoteFilter").value = ""; if ($("currencyFilter")) $("currencyFilter").value = ""; favoritesOnly = false; if ($("favoritesFilter")) $("favoritesFilter").classList.remove("active"); displayJobs(jobs);
   $("offres").scrollIntoView({behavior:"smooth"});
 }
