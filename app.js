@@ -1080,8 +1080,8 @@ async function renderEmployerDashboard() {
       <div class="dashboard-stats">
         <div class="stat-card"><span>💼</span><strong>${jobList.length}</strong><small>Mes offres</small></div>
         <div class="stat-card employer-inbox-stat"><span>📩</span><strong>${list.length}</strong><small>Candidatures reçues</small>${list.filter(a => (a.status || "En cours") === "En cours").length ? `<em>${list.filter(a => (a.status || "En cours") === "En cours").length} à traiter</em>` : ""}</div>
-        <div class="stat-card"><span>🟡</span><strong>${list.filter(a=>(a.status||"En cours")==="En cours").length}</strong><small>En cours</small></div>
-        <div class="stat-card"><span>🟢</span><strong>${list.filter(a=>a.status==="Acceptée").length}</strong><small>Acceptées</small></div>
+        <div class="stat-card"><span>🟡</span><strong>${list.filter(a=>(a.status||"En cours")==="En cours").length}</strong><small>${dc.pending}</small></div>
+        <div class="stat-card"><span>🟢</span><strong>${list.filter(a=>a.status==="Acceptée").length}</strong><small>${dc.accepted}</small></div>
         <div class="stat-card"><span>🔴</span><strong>${list.filter(a=>a.status==="Refusée").length}</strong><small>Refusées</small></div>
       </div>
       <section class="company-profile-manager">
@@ -1375,7 +1375,7 @@ async function renderEmployerRequestPanel(){
   const r=rows&&rows[0];
   if(!r){box.innerHTML='<span class="eyebrow">RECRUTEMENT</span><h3>🏢 Vous recrutez ?</h3><p>Demandez un accès entreprise pour publier vos offres et gérer les candidatures.</p><button type="button" onclick="showEmployerRequestForm()">Demander un compte entreprise</button>';return;}
   const labels={pending:"En attente",approved:"Approuvée",rejected:"Refusée"};
-  box.innerHTML='<span class="eyebrow">COMPTE ENTREPRISE</span><h3>🏢 Demande '+esc(labels[r.status]||r.status)+'</h3><p><strong>'+esc(r.company_name)+'</strong> · '+new Date(r.created_at).toLocaleDateString("fr-FR")+'</p><p class="small-note">'+(r.status==="pending"?"Votre demande est en cours de validation.":r.status==="approved"?"Votre accès entreprise est actif.":"La demande a été refusée.")+'</p>';
+  box.innerHTML='<span class="eyebrow">COMPTE ENTREPRISE</span><h3>🏢 Demande '+esc(labels[r.status]||r.status)+'</h3><p><strong>'+esc(r.company_name)+'</strong> · '+new Date(r.created_at).toLocaleDateString(dashboardLang === "ar" ? "ar-DZ" : dashboardLang === "en" ? "en-GB" : "fr-FR")+'</p><p class="small-note">'+(r.status==="pending"?"Votre demande est en cours de validation.":r.status==="approved"?"Votre accès entreprise est actif.":"La demande a été refusée.")+'</p>';
 }
 async function renderAdminPanel(){
   const user=await currentUser(); if(!user)return renderAuth("login");
@@ -1394,7 +1394,7 @@ async function renderAdminPanel(){
   if(error)return alert("Impossible de charger les demandes : "+error.message);
   const list=rows||[], pending=list.filter(x=>x.status==="pending").length, approved=list.filter(x=>x.status==="approved").length;
   const cards=list.map(r=>'<article class="admin-request-card '+(r.status==="pending"?'admin-request-pending':'')+'"><div class="admin-request-head"><div><span class="eyebrow">DEMANDE #'+r.id+'</span><h3>'+esc(r.company_name)+'</h3><p>'+esc(r.contact_phone||"Téléphone non renseigné")+' · '+esc(r.website||"Site non renseigné")+'</p><small>'+new Date(r.created_at).toLocaleDateString("fr-FR")+'</small></div><span class="status-badge">'+esc(r.status)+'</span></div><p class="admin-request-message">'+esc(r.message||"Aucun message.")+'</p>'+ (r.status==="pending" ? '<div class="admin-request-actions"><button type="button" onclick="reviewEmployerRequest('+r.id+',\'approved\')">✅ Approuver</button><button type="button" class="danger-button" onclick="reviewEmployerRequest('+r.id+',\'rejected\')">❌ Refuser</button></div>' : '<p class="small-note">Cette demande a déjà été traitée.</p>') +'</article>').join("");
-  $("account").innerHTML='<div class="account-card dashboard admin-dashboard"><div class="dashboard-header"><div class="account-identity"><span class="eyebrow">ADMINISTRATION</span><h2>🛡️ Centre de contrôle</h2><p class="account-email">Bienvenue '+esc(profile.full_name||user.email)+' · gestion de Work Travel</p></div><div class="account-actions"><button onclick="renderAdminPanel()">↻ Actualiser</button><button class="back-button" onclick="logout()">Se déconnecter</button></div></div><div class="dashboard-stats"><div class="stat-card"><span>👥</span><strong>'+(users||0)+'</strong><small>Utilisateurs</small></div><div class="stat-card"><span>🏢</span><strong>'+(employers||0)+'</strong><small>Entreprises</small></div><div class="stat-card"><span>👤</span><strong>'+(candidates||0)+'</strong><small>Candidats</small></div><div class="stat-card"><span>💼</span><strong>'+(activeJobs||0)+'</strong><small>Offres actives</small><em>'+(jobs||0)+' au total</em></div><div class="stat-card"><span>📩</span><strong>'+(applications||0)+'</strong><small>Candidatures</small><em>'+(pendingApplications||0)+' à traiter</em></div><div class="stat-card"><span>🟡</span><strong>'+pending+'</strong><small>Demandes en attente</small></div></div><section class="admin-requests"><div class="panel-heading"><div><span class="eyebrow">REVUE ENTREPRISES</span><h3>Demandes reçues</h3><p class="small-note">'+pending+' en attente · '+approved+' approuvées · '+list.filter(x=>x.status==="rejected").length+' refusées</p></div></div>'+ (cards || '<p class="small-note">Aucune demande.</p>') +'</section></div>';
+  $("account").innerHTML='<div class="account-card dashboard admin-dashboard"><div class="dashboard-header"><div class="account-identity"><span class="eyebrow">ADMINISTRATION</span><h2>🛡️ Centre de contrôle</h2><p class="account-email">Bienvenue '+esc(profile.full_name||user.email)+' · gestion de Work Travel</p></div><div class="account-actions"><button onclick="renderAdminPanel()">↻ Actualiser</button><button class="back-button" onclick="logout()">Se déconnecter</button></div></div><div class="dashboard-stats"><div class="stat-card"><span>👥</span><strong>'+(users||0)+'</strong><small>Utilisateurs</small></div><div class="stat-card"><span>🏢</span><strong>'+(employers||0)+'</strong><small>Entreprises</small></div><div class="stat-card"><span>👤</span><strong>'+(candidates||0)+'</strong><small>Candidats</small></div><div class="stat-card"><span>💼</span><strong>'+(activeJobs||0)+'</strong><small>Offres actives</small><em>'+(jobs||0)+' au total</em></div><div class="stat-card"><span>📩</span><strong>'+(applications||0)+'</strong><small>${dc.applications}</small><em>'+(pendingApplications||0)+' à traiter</em></div><div class="stat-card"><span>🟡</span><strong>'+pending+'</strong><small>Demandes en attente</small></div></div><section class="admin-requests"><div class="panel-heading"><div><span class="eyebrow">REVUE ENTREPRISES</span><h3>Demandes reçues</h3><p class="small-note">'+pending+' en attente · '+approved+' approuvées · '+list.filter(x=>x.status==="rejected").length+' refusées</p></div></div>'+ (cards || '<p class="small-note">Aucune demande.</p>') +'</section></div>';
 }
 async function reviewEmployerRequest(id,status){
   const user=await currentUser(); if(!user||!["approved","rejected"].includes(status))return;
@@ -1405,6 +1405,11 @@ async function reviewEmployerRequest(id,status){
   await renderAdminPanel();
 }
 
+const DASHBOARD_COPY = {
+fr:{title:"TABLEAU DE BORD",hello:"Bonjour",refresh:"↻ Actualiser",logout:"Se déconnecter",space:"Votre espace candidat",intro:"Suivez vos candidatures, préparez votre départ et gardez votre profil prêt pour les prochaines opportunités.",completion:"Profil complété",ready:"Profil prêt pour postuler.",completeHint:"Ajoutez votre nom et votre CV pour compléter votre profil.",notifications:"NOTIFICATIONS",news:"🔔 Nouveautés",none:"Aucune notification.",applications:"Candidatures",pending:"En cours",accepted:"Acceptées",favorites:"Favoris",quick:"⚡ Accès rapide",quickIntro:"Retrouvez vos outils essentiels en un geste.",myProfile:"Mon profil",editProfile:"Modifier mes informations",myApplications:"Mes candidatures",follow:"Suivre mes demandes",travel:"Préparer mon départ",travelHelp:"Documents et voyage",explore:"Explorer les offres",find:"Trouver un nouvel emploi",history:"📋 Mes dernières candidatures",total:"au total",empty:"Aucune candidature pour le moment. Découvrez les offres disponibles."},
+en:{title:"DASHBOARD",hello:"Hello",refresh:"↻ Refresh",logout:"Sign out",space:"Your candidate space",intro:"Track your applications, prepare your move and keep your profile ready for new opportunities.",completion:"Profile completed",ready:"Your profile is ready to apply.",completeHint:"Add your name and CV to complete your profile.",notifications:"NOTIFICATIONS",news:"🔔 Updates",none:"No notifications.",applications:"Applications",pending:"In progress",accepted:"Accepted",favorites:"Saved",quick:"⚡ Quick access",quickIntro:"Reach your essential tools in one tap.",myProfile:"My profile",editProfile:"Edit my information",myApplications:"My applications",follow:"Track your requests",travel:"Prepare my move",travelHelp:"Documents and travel",explore:"Explore jobs",find:"Find a new job",history:"📋 Recent applications",total:"total",empty:"No applications yet. Explore available jobs."},
+ar:{title:"لوحة التحكم",hello:"مرحباً",refresh:"↻ تحديث",logout:"تسجيل الخروج",space:"مساحة المرشح",intro:"تابع طلبات التوظيف وجهّز سفرك وحافظ على ملفك جاهزاً للفرص الجديدة.",completion:"اكتمال الملف الشخصي",ready:"ملفك جاهز للتقديم.",completeHint:"أضف اسمك وسيرتك الذاتية لإكمال ملفك.",notifications:"الإشعارات",news:"🔔 المستجدات",none:"لا توجد إشعارات.",applications:"طلبات التوظيف",pending:"قيد المعالجة",accepted:"مقبولة",favorites:"المفضلة",quick:"⚡ الوصول السريع",quickIntro:"انتقل إلى أدواتك الأساسية بضغطة واحدة.",myProfile:"ملفي الشخصي",editProfile:"تعديل معلوماتي",myApplications:"طلباتي",follow:"متابعة الطلبات",travel:"تجهيز السفر",travelHelp:"الوثائق والسفر",explore:"استكشف الوظائف",find:"ابحث عن وظيفة جديدة",history:"📋 أحدث طلبات التوظيف",total:"الإجمالي",empty:"لا توجد طلبات بعد. استكشف الوظائف المتاحة."}
+};
 async function renderDashboard() {
   const user = await currentUser();
   if (!user) return renderAuth("login");
@@ -1416,6 +1421,8 @@ async function renderDashboard() {
   if (profile?.is_admin) return renderAdminPanel();
   if (profile?.role === 'employer') return renderEmployerDashboard();
   const name = profile?.full_name || user.user_metadata?.full_name || 'Candidat';
+  const dashboardLang = getLanguage();
+  const dc = DASHBOARD_COPY[dashboardLang] || DASHBOARD_COPY.fr;
   const totalApps = apps?.length || 0;
   const pending = apps?.filter(a => (a.status || "En cours") === "En cours").length || 0;
   const accepted = apps?.filter(a => a.status === "Acceptée").length || 0;
@@ -1427,15 +1434,15 @@ async function renderDashboard() {
   $("account").innerHTML = `
     <div class="account-card dashboard">
       <div class="dashboard-header">
-        <div class="account-identity"><span class="eyebrow">TABLEAU DE BORD</span><h2>👋 Bonjour ${esc(name)}</h2><p class="account-email">✉️ ${esc(user.email)}</p></div>
-        <div class="account-actions"><button class="refresh-button" onclick="renderDashboard()">↻ Actualiser</button><button class="back-button" onclick="logout()">Se déconnecter</button></div>
+        <div class="account-identity"><span class="eyebrow">${dc.title}</span><h2>👋 ${dc.hello} ${esc(name)}</h2><p class="account-email">✉️ ${esc(user.email)}</p></div>
+        <div class="account-actions"><button class="refresh-button" onclick="renderDashboard()">${dc.refresh}</button><button class="back-button" onclick="logout()">${dc.logout}</button></div>
       </div>
-      <div class="dashboard-welcome"><div><strong>Votre espace candidat</strong><p>Suivez vos candidatures, préparez votre départ et gardez votre profil prêt pour les prochaines opportunités.</p></div><div class="completion"><div><span>Profil complété</span><strong>${profileCompletion}%</strong></div><div class="progress-track"><span style="width:${profileCompletion}%"></span></div><small>${profileCompletion === 100 ? "Profil prêt pour postuler." : "Ajoutez votre nom et votre CV pour compléter votre profil."}</small></div></div>
+      <div class="dashboard-welcome"><div><strong>${dc.space}</strong><p>${dc.intro}</p></div><div class="completion"><div><span>${dc.completion}</span><strong>${profileCompletion}%</strong></div><div class="progress-track"><span style="width:${profileCompletion}%"></span></div><small>${profileCompletion === 100 ? dc.ready : dc.completeHint}</small></div></div>
       <div class="dashboard-notifications">
   <div class="panel-heading">
     <div>
-      <span class="eyebrow">NOTIFICATIONS</span>
-      <h3>🔔 Nouveautés</h3>
+      <span class="eyebrow">${dc.notifications}</span>
+      <h3>${dc.news}</h3>
     </div>
     <span class="notification-count">${notifications.filter(n => !n.is_read).length}</span>
     ${notifications.some(n => !n.is_read) ? '<button type="button" class="link-button notification-read-all" onclick="markAllNotificationsRead()">✓ Tout marquer comme lu</button>' : ""}
@@ -1466,22 +1473,22 @@ async function renderDashboard() {
               : '<button type="button" onclick="markNotificationRead(\'' + key + '\')">✓ Lu</button>') +
             '</div>';
         }).join("")
-      : '<p class="small-note">Aucune notification.</p>'
+      : '<p class="small-note">' + dc.none + '</p>'
   }
 </div>
       <div class="dashboard-stats">
         <button class="stat-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth'})"><span>📩</span><strong>${totalApps}</strong><small>Candidatures</small></button>
         <button class="stat-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth'})"><span>🟡</span><strong>${pending}</strong><small>En cours</small></button>
         <button class="stat-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth'})"><span>🟢</span><strong>${accepted}</strong><small>Acceptées</small></button>
-        <button class="stat-card" onclick="document.getElementById('offres')?.scrollIntoView({behavior:'smooth'})"><span>⭐</span><strong>${favoriteCount}</strong><small>Favoris</small></button>
+        <button class="stat-card" onclick="document.getElementById('offres')?.scrollIntoView({behavior:'smooth'})"><span>⭐</span><strong>${favoriteCount}</strong><small>${dc.favorites}</small></button>
       </div>
       <section class="dashboard-quick-access" aria-label="Accès rapide">
-        <div class="panel-heading"><div><span class="eyebrow">WORKWAY SMART</span><h3>⚡ Accès rapide</h3><p class="small-note">Retrouvez vos outils essentiels en un geste.</p></div></div>
+        <div class="panel-heading"><div><span class="eyebrow">WORKWAY SMART</span><h3>${dc.quick}</h3><p class="small-note">${dc.quickIntro}</p></div></div>
         <div class="dashboard-quick-grid">
-          <button type="button" class="dashboard-quick-card" onclick="document.querySelector('.candidate-profile-editor')?.scrollIntoView({behavior:'smooth',block:'start'})"><span>👤</span><strong>Mon profil</strong><small>Modifier mes informations</small></button>
-          <button type="button" class="dashboard-quick-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth',block:'start'})"><span>📩</span><strong>Mes candidatures</strong><small>Suivre mes demandes</small></button>
-          <button type="button" class="dashboard-quick-card" onclick="document.getElementById('voyage')?.scrollIntoView({behavior:'smooth',block:'start'})"><span>🧳</span><strong>Préparer mon départ</strong><small>Documents et voyage</small></button>
-          <button type="button" class="dashboard-quick-card" onclick="document.getElementById('offres')?.scrollIntoView({behavior:'smooth',block:'start'})"><span>🔎</span><strong>Explorer les offres</strong><small>Trouver un nouvel emploi</small></button>
+          <button type="button" class="dashboard-quick-card" onclick="document.querySelector('.candidate-profile-editor')?.scrollIntoView({behavior:'smooth',block:'start'})"><span>👤</span><strong>${dc.myProfile}</strong><small>${dc.editProfile}</small></button>
+          <button type="button" class="dashboard-quick-card" onclick="document.querySelector('.dashboard-history')?.scrollIntoView({behavior:'smooth',block:'start'})"><span>📩</span><strong>${dc.myApplications}</strong><small>${dc.follow}</small></button>
+          <button type="button" class="dashboard-quick-card" onclick="document.getElementById('voyage')?.scrollIntoView({behavior:'smooth',block:'start'})"><span>🧳</span><strong>${dc.travel}</strong><small>${dc.travelHelp}</small></button>
+          <button type="button" class="dashboard-quick-card" onclick="document.getElementById('offres')?.scrollIntoView({behavior:'smooth',block:'start'})"><span>🔎</span><strong>${dc.explore}</strong><small>${dc.find}</small></button>
         </div>
       </section>
       <section class="candidate-profile-editor">
@@ -1524,7 +1531,7 @@ async function renderDashboard() {
           <div class="activity-list"><div><span>🟡</span><strong>${pending}</strong><p>candidature(s) en cours</p></div><div><span>🟢</span><strong>${accepted}</strong><p>candidature(s) acceptée(s)</p></div><div><span>🔴</span><strong>${refused}</strong><p>candidature(s) refusée(s)</p></div></div>
         </section>
       </div>
-      <div class="applications-list dashboard-history"><div class="panel-heading"><div><span class="eyebrow">SUIVI</span><h3>📋 Mes dernières candidatures</h3></div><span class="small-note">${totalApps} au total</span></div>
+      <div class="applications-list dashboard-history"><div class="panel-heading"><div><span class="eyebrow">SUIVI</span><h3>${dc.history}</h3></div><span class="small-note">${totalApps} ${dc.total}</span></div>
         ${latestApps.length ? latestApps.map(a => `
           <article class="application-history-card">
             <div class="application-history-head"><div><strong>${esc(a.jobs?.title || "Offre")}</strong><span>📍 ${esc(a.jobs?.city || "")}, ${esc(a.jobs?.country || "")}</span></div><div class="application-history-status"><span class="status-badge status-${(a.status || "En cours").toLowerCase().replace(/\s+/g,"-")}">${esc(applicationStatusLabel(a.status))}</span><small>${a.status === "Acceptée" ? "Le recruteur a accepté votre candidature." : a.status === "Refusée" ? "Le recruteur a refusé votre candidature." : "Votre candidature est toujours en cours de traitement."}</small></div></div>
@@ -1532,7 +1539,7 @@ async function renderDashboard() {
             ${a.status === "En cours" ? `<div class="application-history-actions"><button type="button" class="secondary-button" onclick="withdrawApplication(${Number(a.id)})">↩ Retirer la candidature</button></div>` : ""}
             <div class="application-history-section"><small>👤 Profil envoyé</small><div class="profile-snapshot-line"><strong>${esc(a.profile_snapshot?.full_name || "Candidat")}</strong>${a.profile_snapshot?.headline ? `<span>${esc(a.profile_snapshot.headline)}</span>` : ""}</div>${(a.profile_snapshot?.skills || []).length ? `<div class="preview-tags">${a.profile_snapshot.skills.map(x => `<span>${esc(x)}</span>`).join("")}</div>` : ""}</div>
             <div class="application-history-section"><small>✍️ Lettre de motivation</small><p class="application-cover-letter">${esc(a.cover_letter || "Aucune lettre enregistrée.")}</p></div>
-          </article>`).join("") : '<p class="small-note">Aucune candidature pour le moment. Découvrez les offres disponibles.</p>'}      </div>
+          </article>`).join("") : '<p class="small-note">' + dc.empty + '</p>'}      </div>
     </div>`;
   $("cvFile").addEventListener("change", saveCV);
 }
