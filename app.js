@@ -548,9 +548,18 @@ async function openApplicationForm(id) {
     }
     if (j.is_active === false) { alert("Cette offre est actuellement fermée."); return; }
 
-    const panel = $("jobDetailsPanel");
-    const target = panel || $("jobs");
-    if (!target) throw new Error("Zone d’affichage des offres introuvable.");
+    // Always keep the job list mounted. If the details panel is missing,
+    // create it beside the list instead of replacing the list with the application form.
+    const jobsContainer = $("jobs");
+    if (!jobsContainer) throw new Error("Zone d’affichage des offres introuvable.");
+    let target = $("jobDetailsPanel");
+    if (!target) {
+      target = document.createElement("div");
+      target.id = "jobDetailsPanel";
+      target.className = "job-details-panel";
+      jobsContainer.parentNode.insertBefore(target, jobsContainer);
+    }
+    target.hidden = false;
     const lang = getLanguage();
     const dict = I18N[lang] || I18N.fr;
     target.innerHTML = `
