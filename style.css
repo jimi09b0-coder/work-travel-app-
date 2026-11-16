@@ -618,3 +618,8 @@ html[lang="fr"] .application-card,html[lang="fr"] .application-form,html[lang="e
 .dashboard-quick-card small{color:#64748b;font-size:.8rem;line-height:1.4}
 @media(max-width:760px){.dashboard-quick-access{padding:15px;margin:16px 0}.dashboard-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.dashboard-quick-card{min-height:112px;padding:12px}.dashboard-quick-card strong{font-size:.9rem}.dashboard-quick-card small{font-size:.74rem}}
 @media(max-width:360px){.dashboard-quick-grid{grid-template-columns:1fr}}
+
+/* RTL candidate dashboard layout */
+.rtl-language .dashboard-header,.rtl-language .dashboard-welcome,.rtl-language .dashboard-notifications,.rtl-language .dashboard-history,.rtl-language .candidate-profile-editor,.rtl-language .dashboard-panel{direction:rtl;text-align:right}
+.rtl-language .dashboard-quick-card{align-items:flex-start;text-align:right}
+.rtl-language .application-history-head,.rtl-language .application-history-grid{direction:rtl}
