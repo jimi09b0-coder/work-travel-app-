@@ -1713,9 +1713,10 @@ async function searchJobicyJobs(query) {
   jobsBox.innerHTML = '<div class="empty-state"><h3>Recherche d’offres à distance…</h3><p>Connexion au flux public Jobicy.</p></div>';
   if (feedback) feedback.textContent = "Recherche des offres à distance publiées récemment…";
   try {
+    // Current public Jobicy Jobs API; keyword filters accept 3–50 characters.
     const params = new URLSearchParams({count:"30"});
-    if (keyword) params.set("tag", keyword.slice(0,100));
-    const response = await fetch("https://jobicy.com/api/v2/remote-jobs?" + params.toString(), {
+    if (keyword.length >= 3) params.set("tag", keyword.slice(0,50));
+    const response = await fetch("https://jobicy.com/api/jobs?" + params.toString(), {
       method:"GET", headers:{Accept:"application/json"}, credentials:"omit", referrerPolicy:"no-referrer"
     });
     if (!response.ok) throw new Error("HTTP " + response.status);
