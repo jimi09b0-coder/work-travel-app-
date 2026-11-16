@@ -623,3 +623,9 @@ html[lang="fr"] .application-card,html[lang="fr"] .application-form,html[lang="e
 .rtl-language .dashboard-header,.rtl-language .dashboard-welcome,.rtl-language .dashboard-notifications,.rtl-language .dashboard-history,.rtl-language .candidate-profile-editor,.rtl-language .dashboard-panel{direction:rtl;text-align:right}
 .rtl-language .dashboard-quick-card{align-items:flex-start;text-align:right}
 .rtl-language .application-history-head,.rtl-language .application-history-grid{direction:rtl}
+
+/* Dashboard language and RTL refinements */
+.rtl-language .dashboard{direction:rtl;text-align:right}
+.rtl-language .dashboard-header,.rtl-language .dashboard-welcome,.rtl-language .dashboard-stats,.rtl-language .candidate-profile-form,.rtl-language .candidate-profile-preview,.rtl-language .dashboard-grid,.rtl-language .dashboard-history{direction:rtl;text-align:right}
+.rtl-language .dashboard-quick-card{direction:rtl;align-items:flex-start;text-align:right}
+.rtl-language .application-history-status,.rtl-language .application-history-grid,.rtl-language .activity-list{direction:rtl;text-align:right}
