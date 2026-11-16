@@ -483,42 +483,71 @@ async function hasApplied(jobId, userId) {
 }
 
 async function openApplicationForm(id) {
-  let j = jobs.find(x => Number(x.id) === Number(id));
-  if (!j) {
-    const {data,error} = await supabase.from("jobs").select("id,title,country,country_code,city,type,contract,remote_type,salary_min,salary_max,salary_currency,description,requirements,is_active").eq("id",id).maybeSingle();
-    if (error || !data) return alert("Cette offre n'est plus disponible.");
-    j = data;
+  const normalizedId = Number(id);
+  if (!Number.isFinite(normalizedId)) {
+    alert("Identifiant de l’offre invalide. Réessayez depuis la liste des offres.");
+    return;
   }
-  if (j.is_active === false) return alert("Cette offre est actuellement fermée.");
-  $("jobs").innerHTML = `
-    <article class="job-card application-card">
-      <span class="eyebrow">CANDIDATURE</span><h2>📩 Postuler à « ${esc(j.title)} »</h2>
-      <p>Votre profil professionnel, votre CV, votre lettre de motivation et votre disponibilité seront enregistrés avec cette candidature.</p>
-      <form class="application-form" id="jobApplicationForm">
-        <div class="application-profile-status">👤 Profil professionnel · 📄 CV enregistré requis</div>
-        <label>📱 Téléphone<input id="applicationPhone" type="tel" maxlength="30" placeholder="+213 ..."></label>
-        <label>🕐 Disponibilité<select id="applicationAvailability" required><option value="">Choisir</option><option>Immédiate</option><option>Dans 2 semaines</option><option>Dans 1 mois</option><option>À définir</option></select></label>
-        <label>✍️ Lettre de motivation<textarea id="coverLetter" rows="7" maxlength="2000" required placeholder="Expliquez brièvement votre motivation, votre expérience et pourquoi ce poste vous intéresse..."></textarea></label>
-        <div class="application-actions"><button type="submit">🚀 Envoyer ma candidature</button><button type="button" class="back-button" onclick="showJob(${id})">← Retour à l’offre</button></div>
-      </form>
-    </article>`;
-  $("jobApplicationForm").addEventListener("submit", async e => {
-    const form = e.currentTarget;
-    if (form.dataset.submitting === "true") { e.preventDefault(); return; }
-    form.dataset.submitting = "true";
-    const submitButton = form.querySelector('button[type="submit"]');
-    if (submitButton) { submitButton.disabled = true; submitButton.textContent = "Envoi en cours…"; }
-    try {
-      await applyJob(e,id);
-    } catch (error) {
-      console.error("WorkWay application submission failed:", error);
-      alert("تعذر إكمال التقديم بسبب مشكلة اتصال أو خطأ غير متوقع. تحقق من اتصال الإنترنت ثم أعد المحاولة.");
-    } finally {
-      form.dataset.submitting = "false";
-      if (submitButton?.isConnected) { submitButton.disabled = false; submitButton.textContent = "🚀 Envoyer ma candidature"; }
+  try {
+    let j = jobs.find(x => Number(x.id) === normalizedId);
+    if (!j) {
+      const { data, error } = await supabase.from("jobs")
+        .select("id,title,country,country_code,city,type,contract,remote_type,salary_min,salary_max,salary_currency,description,requirements,is_active")
+        .eq("id", normalizedId).maybeSingle();
+      if (error) throw error;
+      if (!data) {
+        alert("Cette offre n'est plus disponible.");
+        return;
+      }
+      j = data;
     }
-  });
-  $("offres").scrollIntoView({behavior:"smooth"});
+    if (j.is_active === false) {
+      alert("Cette offre est actuellement fermée.");
+      return;
+    }
+
+    // Render the form in the details panel, not in #jobs: replacing #jobs
+    // removed the offers list and could leave the apply action apparently inert.
+    const panel = $("jobDetailsPanel");
+    const target = panel || $("jobs");
+    if (!target) throw new Error("Zone d’affichage des offres introuvable.");
+
+    target.innerHTML = `
+      <article class="job-card application-card">
+        <span class="eyebrow">CANDIDATURE</span><h2>📩 Postuler à « ${esc(j.title)} »</h2>
+        <p>Votre profil professionnel, votre CV, votre lettre de motivation et votre disponibilité seront enregistrés avec cette candidature.</p>
+        <form class="application-form" id="jobApplicationForm">
+          <div class="application-profile-status">👤 Profil professionnel · 📄 CV enregistré requis</div>
+          <label>📱 Téléphone<input id="applicationPhone" type="tel" maxlength="30" placeholder="+213 ..."></label>
+          <label>🕐 Disponibilité<select id="applicationAvailability" required><option value="">Choisir</option><option>Immédiate</option><option>Dans 2 semaines</option><option>Dans 1 mois</option><option>À définir</option></select></label>
+          <label>✍️ Lettre de motivation<textarea id="coverLetter" rows="7" maxlength="2000" required placeholder="Expliquez brièvement votre motivation, votre expérience et pourquoi ce poste vous intéresse..."></textarea></label>
+          <div class="application-actions"><button type="submit">🚀 Envoyer ma candidature</button><button type="button" class="back-button" id="returnToJob">← Retour à l’offre</button></div>
+        </form>
+      </article>`;
+    const form = $("jobApplicationForm");
+    if (!form) throw new Error("Le formulaire de candidature n’a pas pu être affiché.");
+    $("returnToJob")?.addEventListener("click", () => showJob(normalizedId));
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      if (form.dataset.submitting === "true") return;
+      form.dataset.submitting = "true";
+      const submitButton = form.querySelector('button[type="submit"]');
+      if (submitButton) { submitButton.disabled = true; submitButton.textContent = "Envoi en cours…"; }
+      try {
+        await applyJob(e, normalizedId);
+      } catch (error) {
+        console.error("WorkWay application submission failed:", error);
+        alert("تعذر إكمال التقديم. تحقق من الاتصال ثم أعد المحاولة. " + (error?.message || ""));
+      } finally {
+        form.dataset.submitting = "false";
+        if (submitButton?.isConnected) { submitButton.disabled = false; submitButton.textContent = "🚀 Envoyer ma candidature"; }
+      }
+    });
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (error) {
+    console.error("WorkWay openApplicationForm failed:", error);
+    alert("تعذر فتح نموذج التقديم: " + (error?.message || "خطأ غير معروف"));
+  }
 }
 
 async function applyJob(e, id) {
