@@ -10,7 +10,22 @@ const I18N = {
     travel_eyebrow:"PRÉPARER SON DÉPART", travel_title:"🧳 Votre checklist de voyage", travel_text:"Préparez votre départ à l’international avec une checklist simple et pratique.",
     progress:"Progression", travel_empty_title:"Choisissez votre destination", travel_empty_text:"Vous obtiendrez une checklist adaptée à votre départ.",
     about_eyebrow:"WORK TRAVEL", about_title:"Votre projet international, au même endroit", about_text:"Créez votre profil, ajoutez votre CV et suivez vos candidatures à travers le monde.",
-    footer_text:"Travail et voyage dans le monde entier", external_eyebrow:"RECHERCHE EXTERNE", external_title:"🌐 Rechercher directement sur les sites officiels", external_help:"Utilisez un métier et, si besoin, une ville. Le bouton ouvre la recherche correspondante.", external_job:"💼 Métier / mot-clé", external_city:"📍 Ville / région", external_job_placeholder:"Ex. chauffeur, cuisine, informatique", external_city_placeholder:"Ex. Paris, Berlin, Bruxelles", language_name:"Français"
+    footer_text:"Travail et voyage dans le monde entier", external_eyebrow:"RECHERCHE EXTERNE", external_title:"🌐 Rechercher directement sur les sites officiels", external_help:"Utilisez un métier et, si besoin, une ville. Le bouton ouvre la recherche correspondante.", external_job:"💼 Métier / mot-clé", external_city:"📍 Ville / région", external_job_placeholder:"Ex. chauffeur, cuisine, informatique", external_city_placeholder:"Ex. Paris, Berlin, Bruxelles", language_name:"Français",
+    application_title:"Postuler à cette offre",
+    application_intro:"Votre profil, votre CV et votre lettre de motivation seront joints à cette candidature.",
+    application_profile:"Profil professionnel · CV enregistré requis",
+    application_phone:"Téléphone",
+    application_availability:"Disponibilité",
+    application_choose:"Choisir une disponibilité",
+    application_now:"Immédiate",
+    application_two_weeks:"Dans 2 semaines",
+    application_one_month:"Dans 1 mois",
+    application_to_define:"À définir",
+    application_letter:"Lettre de motivation",
+    application_letter_hint:"Expliquez votre motivation, votre expérience et pourquoi ce poste vous intéresse…",
+    application_send:"Envoyer ma candidature 🚀",
+    application_sending:"Envoi en cours…",
+    application_back:"← Retour à l’offre"
   },
   en: {
     nav_jobs:"Jobs", nav_travel:"Travel", nav_account:"My account", mobile_home:"Home", mobile_search:"Search", mobile_favorites:"Saved",
@@ -23,7 +38,22 @@ const I18N = {
     travel_eyebrow:"PREPARE YOUR MOVE", travel_title:"🧳 Your travel checklist", travel_text:"Prepare your international move with a simple, practical checklist.",
     progress:"Progress", travel_empty_title:"Choose your destination", travel_empty_text:"You will get a checklist tailored to your move.",
     about_eyebrow:"WORK TRAVEL", about_title:"Your global project, in one place", about_text:"Create your profile, add your CV and track applications around the world.",
-    footer_text:"Work and travel worldwide", external_eyebrow:"EXTERNAL SEARCH", external_title:"🌐 Search directly on official job sites", external_help:"Enter a job title and, optionally, a city. The button opens the matching search.", external_job:"💼 Job / keyword", external_city:"📍 City / region", external_job_placeholder:"E.g. driver, hospitality, IT", external_city_placeholder:"E.g. Paris, Berlin, Brussels", language_name:"English"
+    footer_text:"Work and travel worldwide", external_eyebrow:"EXTERNAL SEARCH", external_title:"🌐 Search directly on official job sites", external_help:"Enter a job title and, optionally, a city. The button opens the matching search.", external_job:"💼 Job / keyword", external_city:"📍 City / region", external_job_placeholder:"E.g. driver, hospitality, IT", external_city_placeholder:"E.g. Paris, Berlin, Brussels", language_name:"English",
+    application_title:"Apply for this job",
+    application_intro:"Your profile, CV and cover letter will be included with this application.",
+    application_profile:"Professional profile · Saved CV required",
+    application_phone:"Phone number",
+    application_availability:"Availability",
+    application_choose:"Choose availability",
+    application_now:"Immediately",
+    application_two_weeks:"In 2 weeks",
+    application_one_month:"In 1 month",
+    application_to_define:"To be confirmed",
+    application_letter:"Cover letter",
+    application_letter_hint:"Explain your motivation, experience and why you are interested in this role…",
+    application_send:"Send my application 🚀",
+    application_sending:"Sending…",
+    application_back:"← Back to job"
   },
   ar: {
     nav_jobs:"الوظائف", nav_travel:"السفر", nav_account:"حسابي", mobile_home:"الرئيسية", mobile_search:"البحث", mobile_favorites:"المفضلة",
@@ -36,7 +66,22 @@ const I18N = {
     travel_eyebrow:"الاستعداد للسفر", travel_title:"🧳 قائمة تجهيز السفر", travel_text:"جهّز سفرك وانتقالك إلى أي دولة من خلال قائمة بسيطة وعملية.",
     progress:"التقدم", travel_empty_title:"اختر وجهتك", travel_empty_text:"ستظهر لك قائمة تجهيز مناسبة لرحلتك.",
     about_eyebrow:"WORK TRAVEL", about_title:"مشروعك الدولي في مكان واحد", about_text:"أنشئ ملفك، وأضف سيرتك الذاتية، وتابع طلبات التوظيف حول العالم.",
-    footer_text:"العمل والسفر حول العالم كله", external_eyebrow:"البحث الخارجي", external_title:"🌐 ابحث مباشرة في مواقع التوظيف الرسمية", external_help:"أدخل المهنة، ويمكنك إضافة المدينة. الزر يفتح نتائج البحث المناسبة.", external_job:"💼 المهنة / كلمة البحث", external_city:"📍 المدينة / المنطقة", external_job_placeholder:"مثال: سائق، فندقة، إعلام آلي", external_city_placeholder:"مثال: باريس، برلين، بروكسل", language_name:"العربية"
+    footer_text:"العمل والسفر حول العالم كله", external_eyebrow:"البحث الخارجي", external_title:"🌐 ابحث مباشرة في مواقع التوظيف الرسمية", external_help:"أدخل المهنة، ويمكنك إضافة المدينة. الزر يفتح نتائج البحث المناسبة.", external_job:"💼 المهنة / كلمة البحث", external_city:"📍 المدينة / المنطقة", external_job_placeholder:"مثال: سائق، فندقة، إعلام آلي", external_city_placeholder:"مثال: باريس، برلين، بروكسل", language_name:"العربية",
+    application_title:"التقديم على هذه الوظيفة",
+    application_intro:"سيتم إرفاق ملفك المهني وسيرتك الذاتية ورسالة التحفيز بطلب التوظيف.",
+    application_profile:"الملف المهني · يجب حفظ السيرة الذاتية",
+    application_phone:"رقم الهاتف",
+    application_availability:"موعد التوفر",
+    application_choose:"اختر موعد التوفر",
+    application_now:"فوراً",
+    application_two_weeks:"خلال أسبوعين",
+    application_one_month:"خلال شهر",
+    application_to_define:"يُحدد لاحقاً",
+    application_letter:"رسالة التحفيز",
+    application_letter_hint:"اشرح دوافعك وخبرتك وسبب اهتمامك بهذه الوظيفة…",
+    application_send:"إرسال طلب التوظيف 🚀",
+    application_sending:"جارٍ الإرسال…",
+    application_back:"العودة إلى الوظيفة ←"
   }
 };
 function getLanguage(){
@@ -495,44 +540,52 @@ async function openApplicationForm(id) {
         .select("id,title,country,country_code,city,type,contract,remote_type,salary_min,salary_max,salary_currency,description,requirements,is_active")
         .eq("id", normalizedId).maybeSingle();
       if (error) throw error;
-      if (!data) {
-        alert("Cette offre n'est plus disponible.");
-        return;
-      }
+      if (!data) { alert("Cette offre n'est plus disponible."); return; }
       j = data;
     }
-    if (j.is_active === false) {
-      alert("Cette offre est actuellement fermée.");
-      return;
-    }
+    if (j.is_active === false) { alert("Cette offre est actuellement fermée."); return; }
 
-    // Render the form in the details panel, not in #jobs: replacing #jobs
-    // removed the offers list and could leave the apply action apparently inert.
     const panel = $("jobDetailsPanel");
     const target = panel || $("jobs");
     if (!target) throw new Error("Zone d’affichage des offres introuvable.");
-
+    const lang = getLanguage();
+    const dict = I18N[lang] || I18N.fr;
     target.innerHTML = `
-      <article class="job-card application-card">
-        <span class="eyebrow">CANDIDATURE</span><h2>📩 Postuler à « ${esc(j.title)} »</h2>
-        <p>Votre profil professionnel, votre CV, votre lettre de motivation et votre disponibilité seront enregistrés avec cette candidature.</p>
+      <article class="job-card application-card" lang="${lang}" dir="${lang === "ar" ? "rtl" : "ltr"}">
+        <span class="eyebrow">CANDIDATURE</span>
+        <h2>📩 <span data-i18n="application_title">${esc(dict.application_title)}</span> « ${esc(j.title)} »</h2>
+        <p data-i18n="application_intro">${esc(dict.application_intro)}</p>
         <form class="application-form" id="jobApplicationForm">
-          <div class="application-profile-status">👤 Profil professionnel · 📄 CV enregistré requis</div>
-          <label>📱 Téléphone<input id="applicationPhone" type="tel" maxlength="30" placeholder="+213 ..."></label>
-          <label>🕐 Disponibilité<select id="applicationAvailability" required><option value="">Choisir</option><option>Immédiate</option><option>Dans 2 semaines</option><option>Dans 1 mois</option><option>À définir</option></select></label>
-          <label>✍️ Lettre de motivation<textarea id="coverLetter" rows="7" maxlength="2000" required placeholder="Expliquez brièvement votre motivation, votre expérience et pourquoi ce poste vous intéresse..."></textarea></label>
-          <div class="application-actions"><button type="submit">🚀 Envoyer ma candidature</button><button type="button" class="back-button" id="returnToJob">← Retour à l’offre</button></div>
+          <div class="application-profile-status" data-i18n="application_profile">${esc(dict.application_profile)}</div>
+          <label><span data-i18n="application_phone">${esc(dict.application_phone)}</span><input id="applicationPhone" type="tel" maxlength="30" placeholder="+213 ..." autocomplete="tel"></label>
+          <label><span data-i18n="application_availability">${esc(dict.application_availability)}</span>
+            <select id="applicationAvailability" required>
+              <option value="" data-i18n="application_choose">${esc(dict.application_choose)}</option>
+              <option value="immediate" data-i18n="application_now">${esc(dict.application_now)}</option>
+              <option value="two_weeks" data-i18n="application_two_weeks">${esc(dict.application_two_weeks)}</option>
+              <option value="one_month" data-i18n="application_one_month">${esc(dict.application_one_month)}</option>
+              <option value="to_define" data-i18n="application_to_define">${esc(dict.application_to_define)}</option>
+            </select>
+          </label>
+          <label><span data-i18n="application_letter">${esc(dict.application_letter)}</span>
+            <textarea id="coverLetter" rows="7" maxlength="2000" required data-i18n-placeholder="application_letter_hint" placeholder="${esc(dict.application_letter_hint)}"></textarea>
+          </label>
+          <div class="application-actions">
+            <button type="submit" data-i18n="application_send">${esc(dict.application_send)}</button>
+            <button type="button" class="back-button" id="returnToJob" data-i18n="application_back">${esc(dict.application_back)}</button>
+          </div>
         </form>
       </article>`;
     const form = $("jobApplicationForm");
     if (!form) throw new Error("Le formulaire de candidature n’a pas pu être affiché.");
+    if (typeof applyLanguage === "function") applyLanguage(lang);
     $("returnToJob")?.addEventListener("click", () => showJob(normalizedId));
     form.addEventListener("submit", async e => {
       e.preventDefault();
       if (form.dataset.submitting === "true") return;
       form.dataset.submitting = "true";
       const submitButton = form.querySelector('button[type="submit"]');
-      if (submitButton) { submitButton.disabled = true; submitButton.textContent = "Envoi en cours…"; }
+      if (submitButton) { submitButton.disabled = true; submitButton.textContent = dict.application_sending; }
       try {
         await applyJob(e, normalizedId);
       } catch (error) {
@@ -540,7 +593,7 @@ async function openApplicationForm(id) {
         alert("تعذر إكمال التقديم. تحقق من الاتصال ثم أعد المحاولة. " + (error?.message || ""));
       } finally {
         form.dataset.submitting = "false";
-        if (submitButton?.isConnected) { submitButton.disabled = false; submitButton.textContent = "🚀 Envoyer ma candidature"; }
+        if (submitButton?.isConnected) { submitButton.disabled = false; submitButton.textContent = dict.application_send; }
       }
     });
     target.scrollIntoView({ behavior: "smooth", block: "start" });
