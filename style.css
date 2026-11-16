@@ -634,3 +634,63 @@ html[lang="fr"] .application-card,html[lang="fr"] .application-form,html[lang="e
 .candidate-profile-preview .panel-heading{gap:14px;flex-wrap:wrap;align-items:center}
 .candidate-profile-preview .panel-heading>button{flex-shrink:0}
 @media(max-width:600px){.candidate-profile-preview .panel-heading{align-items:stretch}.candidate-profile-preview .panel-heading>button{width:100%}}
+
+
+/* Arabic application form: enforce a stable RTL layout on mobile browsers */
+.application-card[dir="rtl"],
+.application-card[dir="rtl"] h2,
+.application-card[dir="rtl"]>p,
+.application-card[dir="rtl"] .application-profile-status,
+.application-card[dir="rtl"] .application-form,
+.application-card[dir="rtl"] .application-form label,
+.application-card[dir="rtl"] .application-form label>span {
+  direction: rtl !important;
+  text-align: right !important;
+}
+.application-card[dir="rtl"] .application-form {
+  display: grid !important;
+  grid-template-columns: minmax(0,1fr) !important;
+  width: 100% !important;
+  gap: 15px !important;
+}
+.application-card[dir="rtl"] .application-form label {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+.application-card[dir="rtl"] .application-form input,
+.application-card[dir="rtl"] .application-form select,
+.application-card[dir="rtl"] .application-form textarea {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  direction: rtl !important;
+  text-align: right !important;
+  font: inherit !important;
+}
+.application-card[dir="rtl"] #applicationPhone {
+  direction: ltr !important;
+  text-align: left !important;
+}
+.application-card[dir="rtl"] .application-form select {
+  min-height: 54px !important;
+  padding: 12px 14px !important;
+  appearance: auto !important;
+}
+.application-card[dir="rtl"] .application-actions {
+  display: grid !important;
+  grid-template-columns: minmax(0,1fr) !important;
+  gap: 10px !important;
+  width: 100% !important;
+}
+.application-card[dir="rtl"] .application-actions button {
+  display: block !important;
+  width: 100% !important;
+  min-height: 54px !important;
+  margin: 0 !important;
+  white-space: normal !important;
+}
