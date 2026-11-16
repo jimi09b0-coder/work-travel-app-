@@ -1418,6 +1418,30 @@ fr:{statsApplications:"Candidatures",statsPending:"En cours",statsAccepted:"Acce
 en:{statsApplications:"Applications",statsPending:"In progress",statsAccepted:"Accepted",profileSection:"My profile",profileHelp:"Complete your profile to present your application more effectively.",fullName:"Full name",phone:"Phone",headline:"Professional title",skills:"Skills",languages:"Languages",experience:"Experience",education:"Education",bio:"About me",preview:"PREVIEW",previewTitle:"👁️ Professional profile",previewHelp:"See how your profile may appear to a recruiter.",cvSection:"My CV",cvProfessional:"Professional CV",activity:"ACTIVITY",summary:"📈 Summary",activityPending:"application(s) in progress",activityAccepted:"application(s) accepted",activityRefused:"application(s) declined",sentOn:"📅 Submitted",availability:"🕐 Availability",phoneLabel:"📱 Phone",cvLabel:"📄 CV",profileSent:"👤 Submitted profile",coverLetter:"✍️ Cover letter"},
 ar:{statsApplications:"طلبات التوظيف",statsPending:"قيد المعالجة",statsAccepted:"مقبولة",profileSection:"ملفي الشخصي",profileHelp:"أكمل ملفك لتقديم طلبك بصورة أفضل.",fullName:"الاسم الكامل",phone:"الهاتف",headline:"المسمى المهني",skills:"المهارات",languages:"اللغات",experience:"الخبرة",education:"التكوين",bio:"نبذة شخصية",preview:"معاينة",previewTitle:"👁️ الملف المهني",previewHelp:"هكذا يمكن أن يظهر ملفك لمسؤول التوظيف.",cvSection:"سيرتي الذاتية",cvProfessional:"السيرة الذاتية المهنية",activity:"النشاط",summary:"📈 الملخص",activityPending:"طلبات قيد المعالجة",activityAccepted:"طلبات مقبولة",activityRefused:"طلبات مرفوضة",sentOn:"📅 تاريخ الإرسال",availability:"🕐 التوفر",phoneLabel:"📱 الهاتف",cvLabel:"📄 السيرة الذاتية",profileSent:"👤 الملف المرسل",coverLetter:"✍️ رسالة التحفيز"}
 };
+function exportCandidateCV() {
+  const lang = getLanguage();
+  const labels = {
+    fr: {title:"Curriculum Vitae",about:"Présentation",skills:"Compétences",languages:"Langues",experience:"Expérience professionnelle",education:"Formation",contact:"Contact",print:"Imprimer / Enregistrer en PDF",hint:"Dans la fenêtre d’impression, choisissez « Enregistrer au format PDF »."},
+    en: {title:"Curriculum Vitae",about:"Profile",skills:"Skills",languages:"Languages",experience:"Work experience",education:"Education",contact:"Contact",print:"Print / Save as PDF",hint:"In the print dialog, choose “Save as PDF”."},
+    ar: {title:"السيرة الذاتية",about:"نبذة شخصية",skills:"المهارات",languages:"اللغات",experience:"الخبرة المهنية",education:"التكوين",contact:"معلومات الاتصال",print:"طباعة / حفظ بصيغة PDF",hint:"في نافذة الطباعة اختر «حفظ بصيغة PDF»."}
+  };
+  const t = labels[lang] || labels.fr;
+  const value = id => document.getElementById(id)?.value?.trim() || "";
+  const name = value("profileName");
+  if (!name) return alert(lang === "ar" ? "أدخل اسمك الكامل أولاً." : lang === "en" ? "Enter your full name first." : "Saisissez d’abord votre nom complet.");
+  const blocks = [
+    ["about", value("profileBio")],
+    ["skills", value("profileSkills")],
+    ["languages", value("profileLanguages")],
+    ["experience", value("profileExperience")],
+    ["education", value("profileEducation")]
+  ].filter(([,v]) => v);
+  const w = window.open("", "_blank");
+  if (!w) return alert(lang === "ar" ? "اسمح بالنوافذ المنبثقة لهذا الموقع ثم أعد المحاولة." : "Autorisez les fenêtres pop-up puis réessayez.");
+  const section = (key, val) => "<section><h2>" + t[key] + "</h2><p>" + esc(val).replace(/\n/g,"<br>") + "</p></section>";
+  w.document.write("<!doctype html><html lang=\"" + (lang === "ar" ? "ar" : lang) + "\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>" + t.title + " - " + esc(name) + "</title><style>*{box-sizing:border-box}body{font:15px/1.65 Arial,sans-serif;color:#172033;max-width:800px;margin:40px auto;padding:0 28px;direction:" + (lang === "ar" ? "rtl" : "ltr") + "}header{border-bottom:3px solid #2563eb;padding-bottom:18px;margin-bottom:24px}h1{font-size:30px;margin:0 0 6px}h2{font-size:17px;color:#1d4ed8;border-bottom:1px solid #dbe3ef;padding-bottom:5px}p{white-space:normal;margin:8px 0 20px}.contact{color:#475569}@media print{body{margin:0 auto;padding:0 10mm}.no-print{display:none}}</style></head><body><header><h1>" + esc(name) + "</h1><div>" + esc(value("profileHeadline")) + "</div><p class=\"contact\">" + esc(value("profilePhone")) + "</p></header>" + blocks.map(([k,v]) => section(k,v)).join("") + "<p class=\"no-print\">" + t.hint + "</p><button class=\"no-print\" onclick=\"window.print()\">" + t.print + "</button></body></html>");
+  w.document.close();
+}
 async function renderDashboard() {
   const user = await currentUser();
   if (!user) return renderAuth("login");
@@ -1520,7 +1544,7 @@ async function renderDashboard() {
         </form>
       </section>
       <section class="candidate-profile-preview">
-        <div class="panel-heading"><div><span class="eyebrow">${dd.preview}</span><h3>${dd.previewTitle}</h3><p class="small-note">${dd.previewHelp}</p></div></div>
+        <div class="panel-heading"><div><span class="eyebrow">${dd.preview}</span><h3>${dd.previewTitle}</h3><p class="small-note">${dd.previewHelp}</p></div><button type="button" class="secondary-button" onclick="exportCandidateCV()">${dashboardLang === "ar" ? "📄 إنشاء CV PDF" : dashboardLang === "en" ? "📄 Create CV PDF" : "📄 Créer mon CV PDF"}</button></div>
         <div class="profile-preview-card">
           <div class="profile-preview-head"><div class="profile-avatar">${esc((name || "C").charAt(0).toUpperCase())}</div><div><h3>${esc(profile?.headline || name)}</h3><p>${esc(profile?.headline ? name : "Candidat Work Travel")}</p></div></div>
           ${profile?.bio ? `<div class="preview-section"><strong>📝 Présentation</strong><p>${esc(profile.bio)}</p></div>` : ""}
