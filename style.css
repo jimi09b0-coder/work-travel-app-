@@ -629,3 +629,8 @@ html[lang="fr"] .application-card,html[lang="fr"] .application-form,html[lang="e
 .rtl-language .dashboard-header,.rtl-language .dashboard-welcome,.rtl-language .dashboard-stats,.rtl-language .candidate-profile-form,.rtl-language .candidate-profile-preview,.rtl-language .dashboard-grid,.rtl-language .dashboard-history{direction:rtl;text-align:right}
 .rtl-language .dashboard-quick-card{direction:rtl;align-items:flex-start;text-align:right}
 .rtl-language .application-history-status,.rtl-language .application-history-grid,.rtl-language .activity-list{direction:rtl;text-align:right}
+
+/* Candidate CV export action */
+.candidate-profile-preview .panel-heading{gap:14px;flex-wrap:wrap;align-items:center}
+.candidate-profile-preview .panel-heading>button{flex-shrink:0}
+@media(max-width:600px){.candidate-profile-preview .panel-heading{align-items:stretch}.candidate-profile-preview .panel-heading>button{width:100%}}
