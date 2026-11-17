@@ -694,3 +694,62 @@ html[lang="fr"] .application-card,html[lang="fr"] .application-form,html[lang="e
   margin: 0 !important;
   white-space: normal !important;
 }
+
+
+/* WorkWay Smart — refined premium visual system */
+:root{
+ --ww-ink:#102544;--ww-muted:#64748b;--ww-line:#e2eaf4;
+ --ww-blue:#1769e0;--ww-cyan:#17a6d5;--ww-glass:rgba(255,255,255,.88);
+}
+body{color:var(--ww-ink);-webkit-font-smoothing:antialiased}
+.hero{background:
+ radial-gradient(ellipse at 78% 18%,rgba(80,190,255,.32),transparent 28%),
+ radial-gradient(ellipse at 12% 85%,rgba(76,128,255,.25),transparent 30%),
+ linear-gradient(128deg,#061a3b 0%,#0a397b 48%,#0879bd 100%)}
+.hero:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.15;background-image:radial-gradient(rgba(255,255,255,.8) .7px,transparent .7px);background-size:23px 23px;mask-image:linear-gradient(110deg,black,transparent 80%)}
+.logo{letter-spacing:-.5px}
+.brand-ai{box-shadow:0 4px 14px rgba(139,227,255,.2)}
+.nav-links>a{font-weight:750;transition:background .2s,transform .2s}
+.nav-links>a:hover{transform:translateY(-1px)}
+.hero-button{border:1px solid rgba(255,255,255,.65)}
+.feature-tile{border-color:#e5edf7;box-shadow:0 12px 32px rgba(10,42,86,.085)}
+.worldwide-strip{border:1px solid #dce9f8;border-radius:22px;background:linear-gradient(120deg,#f4f9ff,#fff);padding:24px;margin:24px auto;max-width:1132px}
+.world-regions{display:flex;flex-wrap:wrap;gap:9px}
+.world-regions span{padding:8px 12px;border:1px solid #e2ebf7;border-radius:999px;background:#fff;color:#23466f;font-weight:750;font-size:.86rem}
+.smart-assistant{border:1px solid #dce9f8;border-radius:24px;background:linear-gradient(130deg,#f0f7ff,#fff 65%);box-shadow:0 14px 38px rgba(20,55,100,.07)}
+.smart-search-control{border:1px solid #dbe7f5;border-radius:16px;background:#fff;padding:6px;box-shadow:0 8px 24px rgba(20,55,100,.06)}
+.smart-search-control input{border:0!important;box-shadow:none!important;min-height:46px;padding:10px 13px}
+.smart-search-control button{border-radius:12px}
+.smart-suggestions button{border:1px solid #dce8f7;background:#f6faff;color:#24517f;box-shadow:none;font-weight:750}
+.smart-suggestions button:hover{background:#eaf3ff;border-color:#b8d1f4}
+.section-heading{max-width:760px}
+.eyebrow{letter-spacing:1.25px}
+.search-section,.account-card{border-color:#e3ebf5;box-shadow:0 16px 42px rgba(16,43,79,.075)}
+.job-card{border-color:#e3eaf3;box-shadow:0 9px 25px rgba(16,43,79,.055)}
+.job-card h3{color:#102e54}
+.job-card .job-meta span{border:1px solid #e0ebfa}
+.job-card button,.application-actions button{min-height:44px}
+.useful-site-card{border-color:#e2eaf4;background:linear-gradient(145deg,#fff,#f9fbff)}
+.account-card,.travel-tool,.travel-guide,.preferences-box{border-color:#e2eaf4}
+.status-badge{letter-spacing:.1px}
+input,select,textarea{accent-color:var(--ww-blue)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(54,133,244,.55);outline-offset:3px}
+@media(min-width:761px){
+ .hero{min-height:555px}
+ .hero-content{padding-top:12px}
+ .feature-ribbon{margin-bottom:42px}
+ .search-section{padding:34px}
+ .job-card{padding:24px}
+}
+@media(max-width:760px){
+ .worldwide-strip{display:none}
+ .hero{background:linear-gradient(150deg,#061d45,#0753a0 65%,#0785c9)!important}
+ .feature-tile{box-shadow:0 9px 24px rgba(11,45,88,.075)!important}
+ .smart-assistant-copy p,.section-heading p{line-height:1.7}
+ .job-card{border-radius:17px!important}
+ .job-card:active{transform:scale(.995)}
+ .mobile-app-nav{border-top:1px solid #dce6f2!important}
+}
+@media(prefers-reduced-motion:no-preference){
+ .job-card,.useful-site-card,.dashboard-quick-card{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+}
