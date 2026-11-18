@@ -753,3 +753,43 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(prefers-reduced-motion:no-preference){
  .job-card,.useful-site-card,.dashboard-quick-card{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
 }
+
+
+/* WorkWay Smart — accessible multilingual support assistant */
+.ww-help-root{position:fixed;z-index:2147482000;right:20px;bottom:22px;font-family:inherit;direction:inherit}
+html[dir="rtl"] .ww-help-root{right:auto;left:20px}
+.ww-help-launch{display:flex;align-items:center;gap:9px;min-height:54px;padding:0 19px;border:1px solid rgba(255,255,255,.35);border-radius:999px;background:linear-gradient(135deg,#0752ad,#0787c8);color:#fff;font-weight:850;box-shadow:0 12px 32px rgba(7,65,135,.3)}
+.ww-help-launch span:first-child{display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:rgba(255,255,255,.18);font-size:18px}
+.ww-help-panel{position:absolute;right:0;bottom:68px;display:flex;flex-direction:column;width:min(390px,calc(100vw - 28px));height:min(570px,calc(100dvh - 115px));min-height:390px;overflow:hidden;border:1px solid #dce7f4;border-radius:23px;background:#fff;box-shadow:0 24px 75px rgba(8,35,75,.24);text-align:start}
+html[dir="rtl"] .ww-help-panel{right:auto;left:0}
+.ww-help-panel[hidden]{display:none}
+.ww-help-head{display:flex;align-items:center;gap:11px;padding:15px 16px;background:linear-gradient(120deg,#082b61,#087dc1);color:#fff}
+.ww-help-head>div:nth-child(2){display:flex;flex:1;flex-direction:column;gap:2px}
+.ww-help-head strong{font-size:1rem}
+.ww-help-head small{color:rgba(255,255,255,.78);font-size:.77rem}
+.ww-help-avatar{display:grid;place-items:center;width:40px;height:40px;border-radius:14px;background:rgba(255,255,255,.16);font-size:22px}
+.ww-help-close{width:34px;height:34px;padding:0;border-radius:10px;background:rgba(255,255,255,.15);box-shadow:none;font-size:23px;line-height:1;color:#fff}
+.ww-help-messages{display:flex;flex:1;flex-direction:column;gap:10px;overflow-y:auto;padding:16px;background:linear-gradient(180deg,#f7faff,#fff)}
+.ww-help-message{max-width:91%;padding:11px 13px;border-radius:15px;font-size:.9rem;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
+.ww-help-message.bot{align-self:flex-start;border:1px solid #e3ebf5;border-bottom-left-radius:5px;background:#fff;color:#263b58}
+.ww-help-message.user{align-self:flex-end;border-bottom-right-radius:5px;background:#eaf3ff;color:#10427d}
+.ww-help-quick{display:flex;flex-wrap:wrap;gap:7px;padding:0 13px 12px;background:#fff}
+.ww-help-quick button{min-height:34px;padding:6px 10px;border:1px solid #dce8f7;border-radius:999px;background:#f4f8ff;color:#174c88;box-shadow:none;font-size:.77rem;font-weight:800}
+.ww-help-quick button:hover{background:#e8f2ff;transform:none}
+.ww-help-form{display:flex;gap:8px;padding:12px;border-top:1px solid #e8eef6;background:#fff}
+.ww-help-form input{min-width:0;flex:1;padding:11px 13px;border:1px solid #dce5f0;border-radius:12px;outline:0;background:#fbfdff;color:#14213d}
+.ww-help-form input:focus{border-color:#5d9aeb;box-shadow:0 0 0 3px rgba(23,105,224,.1)}
+.ww-help-form button{min-width:70px;padding:10px 13px;border-radius:12px}
+.ww-help-disclaimer{margin:0;padding:0 13px 11px;background:#fff;color:#77849a;font-size:.69rem;line-height:1.5}
+.ww-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:600px){
+ .ww-help-root{right:12px;bottom:82px}
+ html[dir="rtl"] .ww-help-root{right:auto;left:12px}
+ .ww-help-panel{right:-2px;bottom:65px;width:min(390px,calc(100vw - 24px));height:min(68dvh,570px);min-height:360px}
+ html[dir="rtl"] .ww-help-panel{right:auto;left:-2px}
+ .ww-help-launch{min-height:50px;padding:0 16px}
+}
+@media(prefers-reduced-motion:no-preference){
+ .ww-help-panel{animation:wwHelpIn .18s ease-out}
+ @keyframes wwHelpIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+}
