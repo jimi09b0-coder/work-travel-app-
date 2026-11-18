@@ -553,4 +553,128 @@ document.addEventListener("click", function(event) {
   <a href="#offres" onclick="toggleFavoritesOnly();return true;"><span aria-hidden="true">☆</span><small data-i18n="mobile_favorites">المفضلة</small></a>
   <a href="#compte" onclick="if(window.openAccount){openAccount();}return true;"><span aria-hidden="true">♙</span><small data-i18n="nav_account">حسابي</small></a>
 </nav>
+
+<!-- WorkWay Smart guided help assistant -->
+<div class="ww-help-root" id="wwHelpRoot">
+  <section class="ww-help-panel" id="wwHelpPanel" role="dialog" aria-modal="false" aria-labelledby="wwHelpTitle" hidden>
+    <header class="ww-help-head">
+      <div class="ww-help-avatar" aria-hidden="true">✦</div>
+      <div><strong id="wwHelpTitle">WorkWay Assistant</strong><small id="wwHelpStatus">مساعد الإرشاد متاح الآن</small></div>
+      <button type="button" class="ww-help-close" id="wwHelpClose" aria-label="إغلاق المساعد">×</button>
+    </header>
+    <div class="ww-help-messages" id="wwHelpMessages" aria-live="polite" aria-relevant="additions">
+      <div class="ww-help-message bot" id="wwHelpWelcome">مرحباً! أنا مساعد WorkWay. أستطيع إرشادك للبحث عن وظيفة، إعداد ملفك، متابعة طلباتك والاستعداد للسفر.</div>
+    </div>
+    <div class="ww-help-quick" id="wwHelpQuick">
+      <button type="button" data-help-topic="jobs">البحث عن عمل</button>
+      <button type="button" data-help-topic="cv">السيرة الذاتية</button>
+      <button type="button" data-help-topic="apply">التقديم</button>
+      <button type="button" data-help-topic="travel">السفر والتأشيرة</button>
+    </div>
+    <form class="ww-help-form" id="wwHelpForm">
+      <label class="ww-sr-only" for="wwHelpInput">اكتب سؤالك</label>
+      <input id="wwHelpInput" type="text" maxlength="500" autocomplete="off" placeholder="اكتب سؤالك هنا…" required>
+      <button type="submit" aria-label="إرسال السؤال">إرسال</button>
+    </form>
+    <p class="ww-help-disclaimer" id="wwHelpDisclaimer">مساعد إرشادي فوري. معلومات التأشيرة النهائية تؤخذ من الجهات الحكومية الرسمية.</p>
+  </section>
+  <button type="button" class="ww-help-launch" id="wwHelpLaunch" aria-expanded="false" aria-controls="wwHelpPanel">
+    <span aria-hidden="true">✦</span><span id="wwHelpLaunchText">مساعدة</span>
+  </button>
+</div>
+<script>
+(function(){
+  const root=document.getElementById("wwHelpRoot");
+  if(!root || root.dataset.ready==="1") return;
+  root.dataset.ready="1";
+  const panel=document.getElementById("wwHelpPanel");
+  const launch=document.getElementById("wwHelpLaunch");
+  const close=document.getElementById("wwHelpClose");
+  const form=document.getElementById("wwHelpForm");
+  const input=document.getElementById("wwHelpInput");
+  const messages=document.getElementById("wwHelpMessages");
+  const lang=()=>((document.getElementById("languageSelect")?.value || document.documentElement.lang || "fr").slice(0,2));
+  const copy={
+    ar:{
+      title:"مساعد WorkWay",status:"مساعد الإرشاد متاح الآن",launch:"مساعدة",welcome:"مرحباً! أنا مساعد WorkWay. أستطيع إرشادك للبحث عن وظيفة، إعداد ملفك، متابعة طلباتك والاستعداد للسفر.",
+      placeholder:"اكتب سؤالك هنا…",send:"إرسال",disclaimer:"مساعد إرشادي فوري. معلومات التأشيرة النهائية تؤخذ من الجهات الحكومية الرسمية.",
+      topics:["البحث عن عمل","السيرة الذاتية","التقديم","السفر والتأشيرة"],
+      jobs:"للبحث عن عمل: افتح قسم «الوظائف»، اكتب المهنة أو المدينة، ثم اختر الدولة والقطاع ونمط العمل. افتح تفاصيل الإعلان واقرأ شروطه قبل التقديم.",
+      cv:"لإعداد ملفك: افتح «حسابي»، أكمل الاسم والمهنة والخبرة والمهارات واللغات، ثم أضف سيرتك الذاتية واحفظ التغييرات. اجعل معلوماتك دقيقة ومحدثة.",
+      apply:"للتقديم: افتح إعلان الوظيفة، اختر «التقديم»، راجع بياناتك والسيرة الذاتية ورسالة التحفيز، ثم أرسل الطلب. تابع حالته من لوحة حسابك.",
+      travel:"للسفر والتأشيرة: اختر بلد الوجهة وراجع شروط العمل والإقامة والتأشيرة لدى السفارة أو الموقع الحكومي الرسمي لذلك البلد. لا تدفع لوسيط قبل التحقق من الترخيص والعقد.",
+      account:"للدخول إلى حسابك، اختر «حسابي» من القائمة. إذا تعذر الدخول، تحقق من البريد وكلمة المرور واتصال الإنترنت، ولا تشارك كلمة المرور مع أي شخص.",
+      favorites:"لحفظ وظيفة، اضغط رمز النجمة في بطاقة الإعلان. يمكنك العودة إليها من قسم المفضلة.",
+      fallback:"أستطيع مساعدتك في البحث عن عمل، السيرة الذاتية، التقديم، الحساب، المفضلة أو السفر والتأشيرة. اكتب موضوع سؤالك بكلمات بسيطة.",
+      error:"حدث خطأ. حاول مرة أخرى."
+    },
+    fr:{
+      title:"Assistant WorkWay",status:"Guide disponible",launch:"Aide",welcome:"Bonjour ! Je suis l’assistant WorkWay. Je peux vous guider pour rechercher un emploi, préparer votre profil, suivre vos candidatures et organiser votre départ.",
+      placeholder:"Écrivez votre question…",send:"Envoyer",disclaimer:"Assistant d’orientation. Vérifiez toujours les règles de visa auprès des autorités officielles.",
+      topics:["Trouver un emploi","CV et profil","Candidature","Voyage et visa"],
+      jobs:"Pour chercher un emploi : ouvrez « Offres », saisissez un métier ou une ville, puis filtrez par pays, secteur et mode de travail. Consultez les détails et les conditions avant de postuler.",
+      cv:"Pour préparer votre profil : ouvrez « Mon compte », complétez votre métier, expérience, compétences et langues, ajoutez votre CV puis enregistrez les changements.",
+      apply:"Pour postuler : ouvrez une annonce, choisissez « Postuler », vérifiez votre profil, votre CV et votre lettre de motivation, puis envoyez. Suivez le statut depuis votre compte.",
+      travel:"Pour le voyage et le visa : choisissez votre destination et vérifiez les conditions de travail, de séjour et de visa auprès de l’ambassade ou du site gouvernemental officiel. Vérifiez tout intermédiaire avant paiement.",
+      account:"Ouvrez « Mon compte » pour vous connecter. En cas de problème, vérifiez votre adresse e-mail, votre mot de passe et votre connexion. Ne partagez jamais votre mot de passe.",
+      favorites:"Appuyez sur l’étoile d’une offre pour l’enregistrer. Retrouvez-la ensuite dans vos favoris.",
+      fallback:"Je peux vous aider pour l’emploi, le CV, les candidatures, le compte, les favoris ou le voyage et le visa. Précisez simplement votre sujet.",
+      error:"Une erreur est survenue. Réessayez."
+    },
+    en:{
+      title:"WorkWay Assistant",status:"Help guide available",launch:"Help",welcome:"Hello! I’m the WorkWay assistant. I can guide you through job search, profile setup, applications and travel preparation.",
+      placeholder:"Type your question…",send:"Send",disclaimer:"Guidance assistant. Always confirm visa rules with official authorities.",
+      topics:["Find a job","CV and profile","Applications","Travel and visa"],
+      jobs:"To find a job: open Jobs, enter a role or city, then filter by country, sector and work mode. Read each listing and its requirements before applying.",
+      cv:"To prepare your profile: open My account, complete your role, experience, skills and languages, upload your CV and save your changes.",
+      apply:"To apply: open a job listing, choose Apply, review your profile, CV and cover letter, then submit. Track the status from your account.",
+      travel:"For travel and visas: choose your destination and confirm work, residence and visa requirements with that country’s embassy or official government website. Verify any intermediary before paying.",
+      account:"Open My account to sign in. If you have trouble, check your email, password and internet connection. Never share your password.",
+      favorites:"Tap the star on a job card to save it. You can find it later in Favorites.",
+      fallback:"I can help with job search, CVs, applications, accounts, favorites, travel or visas. Please describe your topic.",
+      error:"Something went wrong. Please try again."
+    }
+  };
+  const t=()=>copy[lang()]||copy.fr;
+  function addMessage(text,kind){
+    const node=document.createElement("div");
+    node.className="ww-help-message "+kind;
+    node.textContent=text;
+    messages.appendChild(node);
+    messages.scrollTop=messages.scrollHeight;
+  }
+  function refreshLanguage(){
+    const x=t();
+    document.getElementById("wwHelpTitle").textContent=x.title;
+    document.getElementById("wwHelpStatus").textContent=x.status;
+    document.getElementById("wwHelpLaunchText").textContent=x.launch;
+    document.getElementById("wwHelpWelcome").textContent=x.welcome;
+    input.placeholder=x.placeholder;
+    form.querySelector("button[type=submit]").textContent=x.send;
+    document.getElementById("wwHelpDisclaimer").textContent=x.disclaimer;
+    const buttons=[...document.querySelectorAll("[data-help-topic]")];
+    buttons.forEach((b,i)=>b.textContent=x.topics[i]);
+  }
+  function answer(question){
+    const q=question.toLocaleLowerCase();
+    const has=(words)=>words.some(w=>q.includes(w));
+    if(has(["visa","تأشيرة","فيزا","visas","visa","voyage","سفر","travel","voyager","سفر"])) return t().travel;
+    if(has(["cv","سيرة","السيرة","resume","résumé","profil","ملف","خبرة","compétence"])) return t().cv;
+    if(has(["apply","application","candidature","تقديم","التقديم","طلب","postuler"])) return t().apply;
+    if(has(["favorite","favori","مفضلة","المفضلة","نجمة","saved"])) return t().favorites;
+    if(has(["account","compte","حساب","login","connexion","دخول","تسجيل"])) return t().account;
+    if(has(["job","emploi","travail","وظيفة","عمل","وظائف","بحث","recherche","jobs"])) return t().jobs;
+    return t().fallback;
+  }
+  function open(){panel.hidden=false;launch.setAttribute("aria-expanded","true");input.focus();}
+  function shut(){panel.hidden=true;launch.setAttribute("aria-expanded","false");launch.focus();}
+  launch.addEventListener("click",()=>panel.hidden?open():shut());
+  close.addEventListener("click",shut);
+  form.addEventListener("submit",e=>{e.preventDefault();const q=input.value.trim();if(!q)return;addMessage(q,"user");addMessage(answer(q),"bot");input.value="";});
+  document.querySelectorAll("[data-help-topic]").forEach(b=>b.addEventListener("click",()=>{const topic=b.dataset.helpTopic;const replies={jobs:"jobs",cv:"cv",apply:"apply",travel:"travel"};addMessage(b.textContent,"user");addMessage(t()[replies[topic]],"bot");}));
+  document.getElementById("languageSelect")?.addEventListener("change",refreshLanguage);
+  refreshLanguage();
+})();
+</script>
+
 </body></html>
