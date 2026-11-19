@@ -5,7 +5,7 @@ on:
   push:
     paths:
       - 'package.json'
-      - 'capacitor.config.ts'
+      - 'capacitor.config.json'
       - '.github/workflows/build-android-apk.yml'
 
 permissions:
@@ -28,8 +28,6 @@ jobs:
           java-version: '21'
       - name: Install dependencies
         run: npm install
-      - name: Install TypeScript for Capacitor config
-        run: npm install --save-dev typescript
       - name: Prepare web assets
         run: mkdir -p www && cp index.html www/index.html
       - name: Add Android platform
