@@ -5,7 +5,12 @@
 <meta name="description" content="WorkWay Smart — trouvez des opportunités d’emploi à l’international, organisez vos candidatures et préparez votre mobilité depuis une seule plateforme.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="canonical" href="https://workway-smart.vercel.app/">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">\n<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="WorkWay Smart">
+<link rel="apple-touch-icon" href="/icons/icon-192.svg">
+
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="WorkWay Smart">
 <meta property="og:title" content="WorkWay Smart — Emploi international & mobilité">
@@ -700,4 +705,11 @@ document.addEventListener("click", function(event) {
 })();
 </script>
 
-</body></html>
+<script>
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(err => console.warn("WorkWay offline mode unavailable:", err));
+  });
+}
+</script>
+\n</body></html>
