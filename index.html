@@ -670,8 +670,31 @@ document.addEventListener("click", function(event) {
   function shut(){panel.hidden=true;launch.setAttribute("aria-expanded","false");launch.focus();}
   launch.addEventListener("click",()=>panel.hidden?open():shut());
   close.addEventListener("click",shut);
-  form.addEventListener("submit",e=>{e.preventDefault();const q=input.value.trim();if(!q)return;addMessage(q,"user");addMessage(answer(q),"bot");input.value="";});
-  document.querySelectorAll("[data-help-topic]").forEach(b=>b.addEventListener("click",()=>{const topic=b.dataset.helpTopic;const replies={jobs:"jobs",cv:"cv",apply:"apply",travel:"travel"};addMessage(b.textContent,"user");addMessage(t()[replies[topic]],"bot");}));
+  async function askAssistant(question){
+    const q=String(question||"").trim();
+    if(!q) return;
+    addMessage(q,"user");
+    input.value="";
+    const pending=document.createElement("div");
+    pending.className="ww-help-message bot";
+    pending.textContent=lang()==="ar"?"جارٍ إعداد الإجابة…":lang()==="en"?"Thinking…":"Préparation de la réponse…";
+    messages.appendChild(pending);
+    messages.scrollTop=messages.scrollHeight;
+    try {
+      if(typeof window.workwayAskAssistant!=="function") throw new Error(t().error);
+      const reply=await window.workwayAskAssistant(q,lang());
+      pending.textContent=reply;
+    } catch(error) {
+      pending.textContent=error?.message||t().error;
+    }
+    messages.scrollTop=messages.scrollHeight;
+  }
+  form.addEventListener("submit",e=>{e.preventDefault();askAssistant(input.value);});
+  document.querySelectorAll("[data-help-topic]").forEach(b=>b.addEventListener("click",()=>{
+    const topic=b.dataset.helpTopic;
+    const prompts={jobs:"ساعدني في العثور على وظائف مناسبة لمهنتي وخبرتي، واسألني عن المعلومات الناقصة.",cv:"ساعدني على تحسين سيرتي الذاتية وملفي المهني.",apply:"اشرح لي خطوات التقديم ومتابعة طلب التوظيف.",travel:"ساعدني في معرفة خطوات السفر والعمل والتأشيرة للبلد الذي أختاره."};
+    askAssistant(prompts[topic]||b.textContent);
+  }));
   document.getElementById("languageSelect")?.addEventListener("change",refreshLanguage);
   refreshLanguage();
 })();
