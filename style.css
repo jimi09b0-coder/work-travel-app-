@@ -782,9 +782,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .ww-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @media(max-width:600px){
  .ww-help-root{right:12px;bottom:82px}
- html[dir="rtl"] .ww-help-root{right:auto;left:12px}
+
  .ww-help-panel{right:-2px;bottom:65px;width:min(390px,calc(100vw - 24px));height:min(68dvh,570px);min-height:360px}
- html[dir="rtl"] .ww-help-panel{right:auto;left:-2px}
+
  .ww-help-launch{min-height:50px;padding:0 16px}
 }
 @media(prefers-reduced-motion:no-preference){
