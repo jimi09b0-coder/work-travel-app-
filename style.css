@@ -757,11 +757,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 
 /* WorkWay Smart — accessible multilingual support assistant */
 .ww-help-root{position:fixed;z-index:2147482000;right:20px;bottom:22px;font-family:inherit;direction:inherit}
-html[dir="rtl"] .ww-help-root{right:auto;left:20px}
 .ww-help-launch{display:flex;align-items:center;gap:9px;min-height:54px;padding:0 19px;border:1px solid rgba(255,255,255,.35);border-radius:999px;background:linear-gradient(135deg,#0752ad,#0787c8);color:#fff;font-weight:850;box-shadow:0 12px 32px rgba(7,65,135,.3)}
 .ww-help-launch span:first-child{display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:rgba(255,255,255,.18);font-size:18px}
 .ww-help-panel{position:absolute;right:0;bottom:68px;display:flex;flex-direction:column;width:min(390px,calc(100vw - 28px));height:min(570px,calc(100dvh - 115px));min-height:390px;overflow:hidden;border:1px solid #dce7f4;border-radius:23px;background:#fff;box-shadow:0 24px 75px rgba(8,35,75,.24);text-align:start}
-html[dir="rtl"] .ww-help-panel{right:auto;left:0}
 .ww-help-panel[hidden]{display:none}
 .ww-help-head{display:flex;align-items:center;gap:11px;padding:15px 16px;background:linear-gradient(120deg,#082b61,#087dc1);color:#fff}
 .ww-help-head>div:nth-child(2){display:flex;flex:1;flex-direction:column;gap:2px}
