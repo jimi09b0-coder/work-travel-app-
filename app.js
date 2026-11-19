@@ -220,6 +220,26 @@ async function currentUser() {
   }
 }
 
+// Secure AI assistant bridge: the OpenAI key remains on the Supabase server.
+window.workwayAskAssistant = async function(question, language) {
+  if (!supabase) await loadSupabaseClient();
+  if (!supabase) throw new Error("تعذر الاتصال بخدمة الحسابات. تحقق من الإنترنت ثم أعد المحاولة.");
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+  const session = sessionData?.session;
+  if (sessionError || !session) throw new Error(
+    language === "ar" ? "سجّل الدخول إلى حسابك أولاً لاستخدام المساعد الذكي." :
+    language === "en" ? "Please sign in to use the AI assistant." :
+    "Connectez-vous pour utiliser l’assistant intelligent."
+  );
+  const { data, error } = await supabase.functions.invoke("workway-assistant", {
+    body: { question: String(question || "").slice(0, 1200), language: ["ar","fr","en"].includes(language) ? language : "fr" }
+  });
+  if (error) throw new Error(error.message || "تعذر الاتصال بالمساعد.");
+  if (data?.error) throw new Error(data.error);
+  if (!data?.answer) throw new Error("لم تصل إجابة من المساعد. حاول مرة أخرى.");
+  return data.answer;
+};
+
 async function populateFilters() {
   const countries = [...new Set(jobs.map(j => j.country))].sort();
   const types = [...new Set(jobs.map(j => j.type).filter(Boolean))].sort();
