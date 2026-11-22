@@ -6,6 +6,13 @@ on:
     paths:
       - 'package.json'
       - 'capacitor.config.json'
+      - 'index.html'
+      - 'app.js'
+      - 'style.css'
+      - 'supabase-config.js'
+      - 'manifest.webmanifest'
+      - 'favicon.svg'
+      - 'icons/**'
       - '.github/workflows/build-android-apk.yml'
 
 permissions:
@@ -28,8 +35,16 @@ jobs:
           java-version: '21'
       - name: Install dependencies
         run: npm install
-      - name: Prepare web assets
-        run: mkdir -p www && cp index.html www/index.html
+      - name: Prepare complete web assets
+        run: |
+          mkdir -p www/icons
+          cp index.html app.js style.css supabase-config.js favicon.svg manifest.webmanifest www/
+          cp -R icons/. www/icons/
+          test -s www/index.html
+          test -s www/app.js
+          test -s www/style.css
+          test -s www/supabase-config.js
+          test -s www/manifest.webmanifest
       - name: Verify Capacitor config
         run: test -f capacitor.config.json && test ! -f capacitor.config.ts
       - name: Add Android platform
