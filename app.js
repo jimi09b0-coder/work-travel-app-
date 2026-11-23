@@ -242,7 +242,7 @@ window.workwayAskAssistant = async function(question, language) {
 
 async function populateFilters() {
   const countries = [...new Set(jobs.map(j => j.country))].sort();
-  const types = [...new Set(jobs.map(j => j.type).filter(Boolean))].sort();
+  const types = [...new Set([...jobs.map(j => j.type).filter(Boolean), "Agriculture"])].sort();
   const currencies = [...new Set(jobs.map(j => j.salary_currency).filter(Boolean))].sort();
   $("countryFilter").innerHTML = '<option value="">Tous les pays</option>' + countries.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
   $("typeFilter").innerHTML = '<option value="">Tous les secteurs</option>' + types.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join("");
