@@ -2213,6 +2213,24 @@ function openExternalJobSearch(country) {
     window.location.href = url;
   }
 }
+function setWorldCountryForSearch(country) {
+  const locationInput = document.getElementById("externalSearchLocation");
+  if (locationInput) locationInput.value = country || "";
+}
+function searchSelectedWorldCountry() {
+  const country = document.getElementById("worldCountrySelect")?.value || "";
+  const queryInput = document.getElementById("externalSearchQuery");
+  if (!country) {
+    alert("اختر الدولة أولاً.");
+    return;
+  }
+  setWorldCountryForSearch(country);
+  // Search a broad job portal using the selected country as the location filter.
+  openExternalJobSearch("IndeedPays");
+}
+window.setWorldCountryForSearch = setWorldCountryForSearch;
+window.searchSelectedWorldCountry = searchSelectedWorldCountry;
+
 window.openExternalJobSearch = openExternalJobSearch;
 
 // Publish the module-ready signal only after the complete module has evaluated.
