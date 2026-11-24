@@ -149,6 +149,13 @@ main,section,footer{color:#14213d}
         </optgroup>
       </select>
       <button type="button" onclick="searchSelectedWorldCountry()">🔎 البحث في الدولة المحددة</button>
+      <div class="world-search-sources" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+        <button type="button" class="secondary" onclick="openWorldJobSource('Google')">🌐 Google Jobs / Web</button>
+        <button type="button" class="secondary" onclick="openWorldJobSource('Jooble')">💼 Jooble</button>
+        <button type="button" class="secondary" onclick="openWorldJobSource('LinkedIn')">🔗 LinkedIn</button>
+        <button type="button" class="secondary" onclick="openWorldJobSource('Glassdoor')">⭐ Glassdoor</button>
+        <button type="button" class="secondary" onclick="openWorldJobSource('Visa')">🛂 وظائف + تأشيرة</button>
+      </div>
     </details>
     <details class="arab-country-search">
       <summary>🌙 بحث الوظائف في جميع الدول العربية (22 دولة)</summary>
