@@ -2228,6 +2228,25 @@ function searchSelectedWorldCountry() {
   // Search a broad job portal using the selected country as the location filter.
   openExternalJobSearch("IndeedPays");
 }
+function openWorldJobSource(source) {
+  const role = (document.getElementById("externalSearchQuery")?.value || document.getElementById("search")?.value || "").trim();
+  const city = (document.getElementById("externalSearchLocation")?.value || "").trim();
+  const country = (document.getElementById("worldCountrySelect")?.value || document.getElementById("countryFilter")?.value || "").trim();
+  const terms = [role, city, country].filter(Boolean).join(" ");
+  if (!country && !city) {
+    alert("اختر دولة أو أدخل مدينة/منطقة أولاً.");
+    return;
+  }
+  let url = "";
+  if (source === "Google") url = "https://www.google.com/search?q=" + encodeURIComponent("jobs " + terms);
+  else if (source === "Jooble") url = "https://jooble.org/SearchResult?" + new URLSearchParams({keywords:role || "jobs",location:city || country}).toString();
+  else if (source === "LinkedIn") url = "https://www.linkedin.com/jobs/search/?" + new URLSearchParams({keywords:role || "jobs",location:city || country}).toString();
+  else if (source === "Glassdoor") url = "https://www.glassdoor.com/Job/jobs.htm?" + new URLSearchParams({"sc.keyword":role || "jobs",locT:"C",locId:"",locName:city || country}).toString();
+  else if (source === "Visa") url = "https://www.google.com/search?q=" + encodeURIComponent("jobs " + (role || "") + " in " + (city || country) + " work visa sponsorship official");
+  if (url) window.location.assign(url);
+}
+window.openWorldJobSource = openWorldJobSource;
+
 window.setWorldCountryForSearch = setWorldCountryForSearch;
 window.searchSelectedWorldCountry = searchSelectedWorldCountry;
 
