@@ -2232,9 +2232,10 @@ function openWorldJobSource(source) {
   const role = (document.getElementById("externalSearchQuery")?.value || document.getElementById("search")?.value || "").trim();
   const city = (document.getElementById("externalSearchLocation")?.value || "").trim();
   const country = (document.getElementById("worldCountrySelect")?.value || document.getElementById("countryFilter")?.value || "").trim();
-  const terms = [role, city, country].filter(Boolean).join(" ");
-  if (!country && !city) {
-    alert("اختر دولة أو أدخل مدينة/منطقة أولاً.");
+  const preference = (document.getElementById("jobSearchPreference")?.value || "").trim();
+  const terms = [role, preference, city, country].filter(Boolean).join(" ");
+  if (!role && !country && !city) {
+    alert("اكتب مهنة أو اختر دولة أو أدخل مدينة/منطقة أولاً.");
     return;
   }
   let url = "";
