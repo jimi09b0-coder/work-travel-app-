@@ -1896,7 +1896,8 @@ function runSmartSearch(input) {
     [/مبرمج(?:ة|ين)?/g, "informatique"],
     [/محاسب(?:ة|ين)?/g, "comptable"],
     [/تنظيف|نظافة/g, "nettoyage"],
-    [/زراعة|فلاحة/g, "agriculture"],
+    [/زراعة|فلاحة|مزارع(?:ة|ون|ين)?|عامل(?:ة|ون|ين)?\s+(?:زراع(?:ي|ة)|فلاح(?:ي|ة))/g, "agriculture"],
+    [/حصاد|حصاد(?:ة|ون|ين)|قطاف|جني\s+(?:المحاصيل|الثمار)|محاصيل|مواشي|أبقار|غنم|دواجن|بيوت\s+محمي(?:ة|ات)|زراعة\s+عضوي(?:ة|ة)|بستان|بساتين/g, "agriculture"],
     [/عن بُعد|عن بعد/g, "a distance"]
   ];
   for (const [pattern, replacement] of ArabicJobAliases) cleaned = cleaned.replace(pattern, replacement);
