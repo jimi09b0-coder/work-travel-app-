@@ -1,4 +1,4 @@
-const CACHE_NAME = "workway-smart-v1";
+const CACHE_NAME = "workway-smart-v2";
 const CORE = ["/", "/index.html", "/style.css", "/app.js", "/manifest.webmanifest", "/favicon.svg"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
