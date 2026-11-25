@@ -2278,7 +2278,8 @@ window.optimizeCandidateProfile = optimizeCandidateProfile;
 
 // Let the HTML startup watchdog know that this ES module parsed successfully.
 window.__WORKWAY_MODULE_LOADED__ = true;
-\n/* WorkWay specialty-focused sector cards */
+
+/* WorkWay specialty-focused sector cards */
 (function(){const sectors={
  agriculture:{label:"🌾 الفلاحة والزراعة",terms:["عامل زراعي","حصاد","قطف الفواكه","مزارع","تربية المواشي","دواجن","سائق جرار","بيوت محمية","الري والسقي","فرز وتعبئة","بستان","مساعد زراعي"]},
  hotel:{label:"🏨 الفنادق والضيافة",terms:["استقبال فندق","Housekeeping","عامل غرف","مدير فندق","حارس فندق","Concierge","صيانة فندق"]},
