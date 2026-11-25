@@ -41,9 +41,14 @@ body>header.hero{display:block!important;position:relative!important;visibility:
 main,section,footer{color:#14213d}
 .hero .hero-button{color:#0b3f91!important;background:#fff!important;opacity:1!important}
 </style>
-<link rel="stylesheet" href="style.css?v=20261119-assistant1">
+<link rel="stylesheet" href="style.css?v=20261125-ui-fix1">
 </head>
-<body><aside id="workway-startup-status" dir="rtl" style="display:block!important;position:fixed!important;top:0;left:0;right:0;z-index:2147483000;padding:12px 16px;box-shadow:0 3px 18px rgba(0,0,0,.12);background:#fff4d6;color:#493600;font: bold 15px/1.6 Arial,sans-serif;text-align:center">يتم تحميل WorkWay Smart… إذا بقيت هذه الرسالة، فملف التطبيق لم يبدأ.</aside><a class="skip-link" href="#offres">Aller directement aux offres</a>
+<body><aside id="workway-startup-status" dir="rtl" style="display:block!important;position:fixed!important;top:0;left:0;right:0;z-index:2147483000;padding:12px 16px;box-shadow:0 3px 18px rgba(0,0,0,.12);background:#fff4d6;color:#493600;font: bold 15px/1.6 Arial,sans-serif;text-align:center">يتم تحميل WorkWay Smart… إذا بقيت هذه الرسالة، فملف التطبيق لم يبدأ.</aside>
+<script>
+/* Hide the static startup notice once the page has rendered; it is informational, not an error overlay. */
+(function(){var n=document.getElementById("workway-startup-status");if(!n)return;function dismiss(){if(n&&document.querySelector(".hero h1")){n.style.transition="opacity .25s";n.style.opacity="0";setTimeout(function(){if(n&&n.parentNode)n.remove();},300);}}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",dismiss,{once:true});else dismiss();setTimeout(dismiss,1500);
+})();
+</script><a class="skip-link" href="#offres">Aller directement aux offres</a>
 <header class="hero" id="home">
 <nav class="navbar"><a class="logo" href="#" onclick="resetView();return false;">🌍 WorkWay <span class="brand-ai">SMART</span></a>
 <div class="nav-links"><a href="#offres" data-i18n="nav_jobs">Offres</a><a href="#voyage" data-i18n="nav_travel">Voyage</a><a href="#compte" onclick="if(window.openAccount){openAccount();return false;}" data-i18n="nav_account">Mon compte</a>
@@ -600,7 +605,7 @@ document.addEventListener("click", function(event) {
   },20000);
 })();
 </script>
-<script type="module" src="app.js?v=20261125-01"></script>
+<script type="module" src="app.js?v=20261125-ui-fix1"></script>
 <nav class="mobile-app-nav" aria-label="التنقل الرئيسي">
   <a href="#home"><span aria-hidden="true">⌂</span><small data-i18n="mobile_home">الرئيسية</small></a>
   <a href="#offres"><span aria-hidden="true">⌕</span><small data-i18n="mobile_search">البحث</small></a>
