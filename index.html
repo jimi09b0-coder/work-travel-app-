@@ -596,11 +596,11 @@ document.addEventListener("click", function(event) {
   var module=document.querySelector('script[type="module"][src*="app.js"]');
   if(module) module.addEventListener("error",function(){showFailure("فشل تحميل app.js أو إحدى المكتبات المطلوبة. تحقق من اتصال الإنترنت ثم أعد التحميل.");});
   window.setTimeout(function(){
-    if(!window.__WORKWAY_MODULE_LOADED__) showFailure("لم يبدأ ملف التطبيق خلال 7 ثوانٍ. قد يكون رابط النشر أو تحميل المكتبة الخارجية متعطلاً.");
-  },7000);
+    if(!window.__WORKWAY_MODULE_LOADED__) showFailure("تأخر تحميل التطبيق أو مكتبة الاتصال. انتظر قليلًا، ثم أعد المحاولة إذا استمر الخطأ.");
+  },20000);
 })();
 </script>
-<script type="module" src="app.js?v=20261116-12"></script>
+<script type="module" src="app.js?v=20261125-01"></script>
 <nav class="mobile-app-nav" aria-label="التنقل الرئيسي">
   <a href="#home"><span aria-hidden="true">⌂</span><small data-i18n="mobile_home">الرئيسية</small></a>
   <a href="#offres"><span aria-hidden="true">⌕</span><small data-i18n="mobile_search">البحث</small></a>
