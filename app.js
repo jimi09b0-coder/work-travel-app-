@@ -1734,7 +1734,7 @@ async function searchJobicyJobs(query) {
   if (feedback) feedback.textContent = "Recherche des offres à distance publiées récemment…";
   try {
     // Current public Jobicy Jobs API; keyword filters accept 3–50 characters.
-    const params = new URLSearchParams({count:"30"});
+    const params = new URLSearchParams({count:"100"});
     if (keyword.length >= 3) params.set("tag", keyword.slice(0,50));
     const response = await fetch("https://jobicy.com/api/jobs?" + params.toString(), {
       method:"GET", headers:{Accept:"application/json"}, credentials:"omit", referrerPolicy:"no-referrer"
@@ -1742,12 +1742,29 @@ async function searchJobicyJobs(query) {
     if (!response.ok) throw new Error("HTTP " + response.status);
     const data = await response.json();
     if (data?.success === false) throw new Error(data.error || "Source indisponible");
-    const items = Array.isArray(data.jobs) ? data.jobs : [];
+    let items = Array.isArray(data.jobs) ? data.jobs : [];
     const normalizedQuery = normalizeSmartText(keyword);
-    const filtered = items.filter(job => {
+    const matchesKeyword = job => {
       const hay = normalizeSmartText([job.jobTitle,job.companyName,job.jobIndustry,job.jobType,job.jobGeo,job.jobExcerpt].flat().join(" "));
       return !normalizedQuery || normalizedQuery.split(/\s+/).filter(Boolean).some(term => hay.includes(term));
-    });
+    };
+    let filtered = items.filter(matchesKeyword);
+    // If the first 100 recent listings have no matches, try one cursor page only.
+    // This keeps searches responsive and avoids unbounded requests to the public feed.
+    if (!filtered.length && data.nextCursor) {
+      const nextParams = new URLSearchParams(params);
+      nextParams.set("cursor", data.nextCursor);
+      const nextResponse = await fetch("https://jobicy.com/api/jobs?" + nextParams.toString(), {
+        method:"GET", headers:{Accept:"application/json"}, credentials:"omit", referrerPolicy:"no-referrer"
+      });
+      if (nextResponse.ok) {
+        const nextData = await nextResponse.json();
+        if (nextData?.success !== false && Array.isArray(nextData.jobs)) {
+          items = nextData.jobs;
+          filtered = items.filter(matchesKeyword);
+        }
+      }
+    }
     if (!filtered.length) {
       jobsBox.innerHTML = '<div class="empty-state"><h3>Aucune offre à distance trouvée</h3><p>Le flux Jobicy ne contient pas de résultat récent pour cette recherche. Essayez un autre mot-clé ou poursuivez sur Indeed ou LinkedIn.</p><div class="empty-search-actions"><button type="button" class="secondary" onclick="openExternalJobSearch(\'Indeed\')">🔎 Rechercher sur Indeed</button> <button type="button" class="secondary" onclick="openExternalJobSearch(\'LinkedIn\')">💼 Rechercher sur LinkedIn</button></div><p>Source : <a href="https://jobicy.com/" target="_blank" rel="noopener noreferrer">Jobicy</a></p></div>';
       if (feedback) feedback.textContent = "Aucune offre correspondante dans le flux Jobicy. Essayez un mot-clé différent ou utilisez un site externe.";
