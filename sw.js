@@ -15,5 +15,5 @@ self.addEventListener("fetch", event => {
       caches.open(CACHE_NAME).then(cache => cache.put(req, copy));
     }
     return response;
-  }).catch(() => caches.match(req).then(cached => cached || (req.mode === "navigate" ? caches.match("/index.html") : Response.error()))));
+  }).catch(() => caches.match(req).then(cached => cached || (req.mode === "navigate" ? caches.match("./index.html") : Response.error()))));
 });
