@@ -763,7 +763,7 @@ document.addEventListener("click", function(event) {
 <script>
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(err => console.warn("WorkWay offline mode unavailable:", err));
+    navigator.serviceWorker.register("/sw.js?v=20261125-02").catch(err => console.warn("WorkWay offline mode unavailable:", err));
   });
 }
 </script>
