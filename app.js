@@ -1779,7 +1779,7 @@ async function searchJobicyJobs(query) {
     if (data?.success === false) throw new Error(data.error || "Source indisponible");
     let items = Array.isArray(data.jobs) ? data.jobs : [];
     const normalizedQuery = normalizeSmartText(keyword);
-    const queryTerms = [...new Set(normalizedQuery.split(/\\s+/).filter(Boolean))];
+    const queryTerms = [...new Set(normalizedQuery.split(/\s+/).filter(Boolean))];
     const haystackFor = job => normalizeSmartText([job.jobTitle,job.companyName,job.jobIndustry,job.jobType,job.jobGeo,job.jobExcerpt].flat().join(" "));
     const relevanceScore = job => {
       const hay = haystackFor(job);
