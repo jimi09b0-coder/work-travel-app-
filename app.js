@@ -354,11 +354,25 @@ function notificationMessage(app) {
 async function markAllNotificationsRead() {
   const user = await currentUser();
   if (!user) return renderAuth('login');
-  await supabase.from('notifications').update({is_read:true}).eq('user_id',user.id).eq('is_read',false);
-  const {data:apps} = await supabase.from('applications').select('id,status').eq('user_id',user.id);
+  const { error: notificationError } = await supabase.from('notifications').update({is_read:true}).eq('user_id',user.id).eq('is_read',false);
+  if (notificationError) {
+    console.warn("WorkWay: could not mark database notifications as read.", notificationError);
+    showNotification("Une partie des notifications n’a pas pu être marquée comme lue.", "error");
+  }
+  const {data:apps, error:applicationsError} = await supabase.from('applications').select('id,status').eq('user_id',user.id);
+  if (applicationsError) {
+    console.warn("WorkWay: could not load application statuses for notification cleanup.", applicationsError);
+    showNotification("Les notifications liées aux candidatures n’ont pas pu être actualisées.", "error");
+    return renderDashboard();
+  }
   const keys = (apps || []).filter(a => (a.status || 'En cours') !== 'En cours').map(notificationKey);
   const next = [...new Set([...getReadNotifications(), ...keys])];
-  localStorage.setItem('workTravelReadNotifications', JSON.stringify(next));
+  try {
+    localStorage.setItem('workTravelReadNotifications', JSON.stringify(next));
+  } catch (error) {
+    console.warn("WorkWay: bulk read state could not be saved.", error);
+    showNotification("Impossible de sauvegarder l’état des notifications sur cet appareil.", "error");
+  }
   await renderDashboard();
 }
 
