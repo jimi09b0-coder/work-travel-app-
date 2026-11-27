@@ -328,10 +328,18 @@ async function markNotificationRead(key) {
   if (!user) return renderAuth("login");
   if (String(key).startsWith("db:")) {
     const id = Number(String(key).slice(3));
-    if (Number.isFinite(id)) await supabase.from("notifications").update({is_read:true}).eq("id",id).eq("user_id",user.id);
+    if (Number.isFinite(id)) {
+      const { error } = await supabase.from("notifications").update({is_read:true}).eq("id",id).eq("user_id",user.id);
+      if (error) showNotification("Impossible de mettre à jour la notification. Réessayez.", "error");
+    }
   } else {
-    const next = [...new Set([...getReadNotifications(), key])];
-    localStorage.setItem("workTravelReadNotifications", JSON.stringify(next));
+    const next = [...new Set([...getReadNotifications(), String(key)])];
+    try {
+      localStorage.setItem("workTravelReadNotifications", JSON.stringify(next));
+    } catch (error) {
+      console.warn("WorkWay: notification state could not be saved.", error);
+      showNotification("Impossible d’enregistrer l’état de notification sur cet appareil.", "error");
+    }
   }
   await renderDashboard();
 }
@@ -428,7 +436,13 @@ function toggleFavorite(id) {
     return;
   }
   const next = favorites.includes(Number(id)) ? favorites.filter(x => x !== Number(id)) : [...favorites, Number(id)];
-  localStorage.setItem("workTravelFavorites", JSON.stringify(next));
+  try {
+    localStorage.setItem("workTravelFavorites", JSON.stringify(next));
+  } catch (error) {
+    console.warn("WorkWay: favorites could not be saved.", error);
+    showNotification("Impossible d’enregistrer les favoris sur cet appareil. Vérifiez l’espace de stockage.", "error");
+    return;
+  }
   searchJobs();
 }
 
@@ -439,7 +453,13 @@ function getPreferences() {
 function savePreferences() {
   const countries = [...document.querySelectorAll('.pref-country:checked')].map(x => x.value);
   const types = [...document.querySelectorAll('.pref-type:checked')].map(x => x.value);
-  localStorage.setItem('workTravelPreferences', JSON.stringify({countries, types}));
+  try {
+    localStorage.setItem('workTravelPreferences', JSON.stringify({countries, types}));
+  } catch (error) {
+    console.warn("WorkWay: preferences could not be saved.", error);
+    showNotification("Impossible d’enregistrer vos préférences sur cet appareil.", "error");
+    return;
+  }
   showNotification('Préférences enregistrées.', 'success');
   searchJobs();
 }
