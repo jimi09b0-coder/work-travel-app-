@@ -1742,6 +1742,22 @@ async function searchJobs(saveHistory = false) {
 }
 
 
+async function fetchJsonWithTimeout(url, options = {}, timeoutMs = 15000) {
+  const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+  let timer = null;
+  if (controller) timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { ...options, ...(controller ? { signal: controller.signal } : {}) });
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    return await response.json();
+  } catch (error) {
+    if (error?.name === "AbortError") throw new Error("انتهت مهلة البحث الخارجي. حاول مرة أخرى.");
+    throw error;
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
 function normalizeSmartText(value) {
   return String(value || "").toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\p{L}\p{N}\s-]/gu, " ").replace(/\s+/g, " ").trim();
 }
@@ -1757,11 +1773,9 @@ async function searchJobicyJobs(query) {
     // Current public Jobicy Jobs API; keyword filters accept 3–50 characters.
     const params = new URLSearchParams({count:"100"});
     if (keyword.length >= 3) params.set("tag", keyword.slice(0,50));
-    const response = await fetch("https://jobicy.com/api/jobs?" + params.toString(), {
+    const data = await fetchJsonWithTimeout("https://jobicy.com/api/jobs?" + params.toString(), {
       method:"GET", headers:{Accept:"application/json"}, credentials:"omit", referrerPolicy:"no-referrer"
-    });
-    if (!response.ok) throw new Error("HTTP " + response.status);
-    const data = await response.json();
+    }, 15000);
     if (data?.success === false) throw new Error(data.error || "Source indisponible");
     let items = Array.isArray(data.jobs) ? data.jobs : [];
     const normalizedQuery = normalizeSmartText(keyword);
@@ -1775,15 +1789,17 @@ async function searchJobicyJobs(query) {
     if (!filtered.length && data.nextCursor) {
       const nextParams = new URLSearchParams(params);
       nextParams.set("cursor", data.nextCursor);
-      const nextResponse = await fetch("https://jobicy.com/api/jobs?" + nextParams.toString(), {
-        method:"GET", headers:{Accept:"application/json"}, credentials:"omit", referrerPolicy:"no-referrer"
-      });
-      if (nextResponse.ok) {
-        const nextData = await nextResponse.json();
+      try {
+        const nextData = await fetchJsonWithTimeout("https://jobicy.com/api/jobs?" + nextParams.toString(), {
+          method:"GET", headers:{Accept:"application/json"}, credentials:"omit", referrerPolicy:"no-referrer"
+        }, 15000);
         if (nextData?.success !== false && Array.isArray(nextData.jobs)) {
           items = nextData.jobs;
           filtered = items.filter(matchesKeyword);
         }
+      } catch (pageError) {
+        // Keep the first page results if a cursor request fails or times out.
+        console.warn("WorkWay skipped a delayed Jobicy cursor page:", pageError);
       }
     }
     if (!filtered.length) {
