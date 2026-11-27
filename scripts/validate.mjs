@@ -59,7 +59,7 @@ if (!signupButton || /\bonclick=/i.test(signupButton)) throw new Error('Signup m
 if (!js.includes('async function directSignup()') || !js.includes('await directSignup();')) throw new Error('Signup handler is missing or not connected to the form.');
 if (!js.includes('showResendConfirmation(email)')) throw new Error('Signup confirmation resend action is missing.');
 if (!js.includes('function handleAuthRedirectError()') || !js.includes('new URLSearchParams(window.location.search)')) throw new Error('Supabase auth redirect errors must be handled in both query and fragment parameters.');
-if (/\\\\s/.test(js)) throw new Error('Email validation regexes must use the JavaScript whitespace escape \\s, not a literal backslash and s.');
+if (/\\\s/.test(js)) throw new Error('Email validation regexes must use the JavaScript whitespace escape \s, not a literal backslash and s.');
 if (js.includes(String.raw`\\.`)) throw new Error('Email validation regexes must escape a dot as \\. in JavaScript regex literals.');
 if (!js.includes('async function resendConfirmation(email)') || !js.includes('finally {') || !js.includes('supabase.auth.resetPasswordForEmail(email, {redirectTo})')) throw new Error('Auth resend/reset flows must handle pending states and errors.');
 if (/decodeURIComponent\(description/.test(js)) throw new Error('Auth redirect descriptions must not be decoded twice.');
@@ -89,17 +89,17 @@ if (!js.includes('Aucune offre à distance trouvée') || !js.includes('openExter
 
 
 const criticalBehaviors = [
-  ['Job search', /async function searchJobs\\s*\\(/],
-  ['Public job feed', /async function searchJobicyJobs\\s*\\(/],
-  ['Job rendering', /function displayJobs\\s*\\(/],
-  ['Job application', /async function applyJob\\s*\\(/],
-  ['Favorites toggle', /function toggleFavorite\\s*\\(/],
-  ['Language switch', /function setLanguage\\s*\\(/],
-  ['Smart search', /function runSmartSearch\\s*\\(/],
-  ['Smart search binding', /function bindSmartSearch\\s*\\(/],
-  ['Account registration', /async function directSignup\\s*\\(/],
-  ['Candidate profile save', /function saveCandidateProfile\\s*\\(/],
-  ['External search fallback', /function openExternalJobSearch\\s*\\(/],
+  ['Job search', /async function searchJobs\s*\(/],
+  ['Public job feed', /async function searchJobicyJobs\s*\(/],
+  ['Job rendering', /function displayJobs\s*\(/],
+  ['Job application', /async function applyJob\s*\(/],
+  ['Favorites toggle', /function toggleFavorite\s*\(/],
+  ['Language switch', /function setLanguage\s*\(/],
+  ['Smart search', /function runSmartSearch\s*\(/],
+  ['Smart search binding', /function bindSmartSearch\s*\(/],
+  ['Account registration', /async function directSignup\s*\(/],
+  ['Candidate profile save', /function saveCandidateProfile\s*\(/],
+  ['External search fallback', /function openExternalJobSearch\s*\(/],
 ];
 for (const [label, pattern] of criticalBehaviors) {
   if (!pattern.test(js)) throw new Error(`Critical behavior missing: ${label}`);
