@@ -1770,9 +1770,9 @@ async function searchJobicyJobs(query) {
   jobsBox.innerHTML = '<div class="empty-state"><h3>Recherche d’offres à distance…</h3><p>Connexion au flux public Jobicy.</p></div>';
   if (feedback) feedback.textContent = "Recherche des offres à distance publiées récemment…";
   try {
-    // Current public Jobicy Jobs API; keyword filters accept 3–50 characters.
+    // Fetch a broad recent feed and filter locally. Keyword/tag query parameters
+    // vary across providers and can return empty feeds for valid job searches.
     const params = new URLSearchParams({count:"100"});
-    if (keyword.length >= 3) params.set("tag", keyword.slice(0,50));
     const data = await fetchJsonWithTimeout("https://jobicy.com/api/jobs?" + params.toString(), {
       method:"GET", headers:{Accept:"application/json"}, credentials:"omit", referrerPolicy:"no-referrer"
     }, 15000);
@@ -1967,9 +1967,13 @@ function runSmartSearch(input) {
       (!remoteSelect?.value || job.remote_type === remoteSelect.value) &&
       (!favoritesOnly || isFavorite(job.id));
   }).length;
-  if (!count && jobs.length === 0) {
-    // When the database has no public offers (or is temporarily unavailable),
-    // automatically try the public remote-jobs feed instead of leaving Smart Search empty.
+  if (!count) {
+    // Always try the external feed when internal results are empty, even if
+    // internal listings exist for other keywords.
+    const queryField = $("externalSearchQuery");
+    if (queryField) queryField.value = cleaned || prompt;
+    const locationField = $("externalSearchLocation");
+    if (locationField && countryMatch && !locationField.value.trim()) locationField.value = countryMatch.value;
     searchJobicyJobs(cleaned || prompt);
     return;
   }
