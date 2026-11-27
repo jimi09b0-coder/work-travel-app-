@@ -87,4 +87,25 @@ for (const match of html.matchAll(/<a\b[^>]*target=["']_blank["'][^>]*>/gi)) {
 if (!js.includes("async function fetchJsonWithTimeout(") || !js.includes("15000") || !js.includes("controller.abort()")) throw new Error('External job search must use a bounded timeout and abort stalled requests.');
 if (!js.includes('Aucune offre à distance trouvée') || !js.includes('openExternalJobSearch(\'Indeed\')')) throw new Error('External search empty-state fallback is missing.');
 
+
+const criticalBehaviors = [
+  ['Job search', /async function searchJobs\\s*\\(/],
+  ['Public job feed', /async function searchJobicyJobs\\s*\\(/],
+  ['Job rendering', /function displayJobs\\s*\\(/],
+  ['Job application', /async function applyJob\\s*\\(/],
+  ['Favorites toggle', /function toggleFavorite\\s*\\(/],
+  ['Language switch', /function setLanguage\\s*\\(/],
+  ['Smart search', /function runSmartSearch\\s*\\(/],
+  ['Smart search binding', /function bindSmartSearch\\s*\\(/],
+  ['Account registration', /async function directSignup\\s*\\(/],
+  ['Candidate profile save', /function saveCandidateProfile\\s*\\(/],
+  ['External search fallback', /function openExternalJobSearch\\s*\\(/],
+];
+for (const [label, pattern] of criticalBehaviors) {
+  if (!pattern.test(js)) throw new Error(`Critical behavior missing: ${label}`);
+}
+for (const exposed of ['window.searchJobs=searchJobs','window.applyJob=applyJob','window.runSmartSearch=runSmartSearch','window.toggleFavorite=toggleFavorite','window.setLanguage = setLanguage','window.directSignup = directSignup']) {
+  if (!js.includes(exposed)) throw new Error(`Critical interaction is not exposed: ${exposed}`);
+}
+
 console.log(`Validation passed: ${required.length} required files, ${ids.length} unique HTML ids, ${inlineHandlers.length} inline handler references.`);
