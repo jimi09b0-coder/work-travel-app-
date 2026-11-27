@@ -1010,7 +1010,7 @@ function csvValues(value) {
   return value.split(",").map(x => x.trim()).filter(Boolean).slice(0, 12);
 }
 
-async function saveCandidateProfile(e) {
+async async function saveCandidateProfile(e) {
   e.preventDefault();
   const user = await currentUser();
   if (!user) return renderAuth("login");
