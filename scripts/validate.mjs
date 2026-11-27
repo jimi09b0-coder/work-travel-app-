@@ -89,20 +89,20 @@ if (!js.includes('Aucune offre à distance trouvée') || !js.includes('openExter
 
 
 const criticalBehaviors = [
-  ['Job search', /async function searchJobs\s*\(/],
-  ['Public job feed', /async function searchJobicyJobs\s*\(/],
-  ['Job rendering', /function displayJobs\s*\(/],
-  ['Job application', /async function applyJob\s*\(/],
-  ['Favorites toggle', /function toggleFavorite\s*\(/],
-  ['Language switch', /function setLanguage\s*\(/],
-  ['Smart search', /function runSmartSearch\s*\(/],
-  ['Smart search binding', /function bindSmartSearch\s*\(/],
-  ['Account registration', /async function directSignup\s*\(/],
-  ['Candidate profile save', /function saveCandidateProfile\s*\(/],
-  ['External search fallback', /function openExternalJobSearch\s*\(/],
+  'async function searchJobs(',
+  'async function searchJobicyJobs(',
+  'function displayJobs(',
+  'async function applyJob(',
+  'function toggleFavorite(',
+  'function setLanguage(',
+  'function runSmartSearch(',
+  'function bindSmartSearch(',
+  'async function directSignup(',
+  'function saveCandidateProfile(',
+  'function openExternalJobSearch(',
 ];
-for (const [label, pattern] of criticalBehaviors) {
-  if (!pattern.test(js)) throw new Error(`Critical behavior missing: ${label}`);
+for (const behavior of criticalBehaviors) {
+  if (!js.includes(behavior)) throw new Error(`Critical behavior missing: ${behavior}`);
 }
 for (const exposed of ['window.searchJobs=searchJobs','window.applyJob=applyJob','window.runSmartSearch=runSmartSearch','window.toggleFavorite=toggleFavorite','window.setLanguage = setLanguage','window.directSignup = directSignup']) {
   if (!js.includes(exposed)) throw new Error(`Critical interaction is not exposed: ${exposed}`);
