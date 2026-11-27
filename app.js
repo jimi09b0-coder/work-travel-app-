@@ -1802,7 +1802,7 @@ async function searchJobicyJobs(query) {
         }, 15000);
         if (nextData?.success !== false && Array.isArray(nextData.jobs)) {
           items = nextData.jobs;
-          filtered = items.filter(matchesKeyword);
+          filtered = items.filter(matchesKeyword).sort((a,b) => relevanceScore(b) - relevanceScore(a));
         }
       } catch (pageError) {
         // Keep the first page results if a cursor request fails or times out.
