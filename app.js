@@ -453,8 +453,7 @@ function renderPreferences() {
   box.innerHTML = `<div class="preferences-head"><div><span class="eyebrow">PERSONNALISATION</span><h3>🎯 Mes préférences</h3><p>Choisissez les destinations et secteurs qui vous intéressent.</p></div></div><div class="preference-groups"><div><strong>🌍 Pays</strong><div class="preference-options">${countries.map(x => `<label><input class="pref-country" type="checkbox" value="${esc(x)}" ${prefs.countries?.includes(x) ? 'checked' : ''}> ${esc(x)}</label>`).join('')}</div></div><div><strong>💼 Secteurs</strong><div class="preference-options">${types.map(x => `<label><input class="pref-type" type="checkbox" value="${esc(x)}" ${prefs.types?.includes(x) ? 'checked' : ''}> ${esc(x)}</label>`).join('')}</div></div></div><button type="button" onclick="savePreferences()">💾 Enregistrer mes préférences</button>`;
 }
 function jobMatchScore(job) {
-  // Transparent relevance estimate (not an employer decision): compare the candidate
-  // profile, entered search terms and saved preferences with the listing text.
+  // Transparent, bounded relevance estimate (not an employer decision).
   const q = normalizeSmartText($("search")?.value || "");
   const headline = normalizeSmartText($("profileHeadline")?.value || "");
   const skillList = csvValues($("profileSkills")?.value || "").map(normalizeSmartText).filter(Boolean);
@@ -465,38 +464,36 @@ function jobMatchScore(job) {
     job.description, job.requirements
   ].join(" "));
   const titleHay = normalizeSmartText([job.title, job.type].join(" "));
-  const tokenize = value => normalizeSmartText(value).split(/\s+/).filter(w => w.length >= 3 && !["the","and","with","for","from","dans","avec","pour","les","des","une","un","aux","sur","and","job","work"].includes(w));
+  const tokenize = value => normalizeSmartText(value).split(/\\s+/).filter(w => w.length >= 3 && !["the","and","with","for","from","dans","avec","pour","les","des","une","un","aux","sur","job","work"].includes(w));
   const unique = words => [...new Set(words)];
   const skillWords = unique(skillList.flatMap(tokenize));
   const matchedSkills = skillWords.filter(word => hay.includes(word));
-  let score = 15;
-  // Skill evidence: up to 50 points, based only on words actually present in the profile.
-  score += Math.min(50, matchedSkills.length * 12.5);
-  // Professional headline/role relevance: up to 20 points.
+  // Weights add up to exactly 100: baseline 10, skills 35, role 20,
+  // query 20, preferences 10, explicitly mentioned languages 5.
+  let score = 10;
+  score += Math.min(35, matchedSkills.length * 7);
   const headlineWords = unique(tokenize(headline));
   if (headlineWords.length) {
     const hits = headlineWords.filter(word => titleHay.includes(word)).length;
     score += Math.round(20 * hits / headlineWords.length);
   }
-  // Search-query relevance: up to 15 points.
   const queryWords = unique(tokenize(q));
   if (queryWords.length) {
     const hits = queryWords.filter(word => hay.includes(word)).length;
-    score += Math.round(15 * hits / queryWords.length);
+    score += Math.round(20 * hits / queryWords.length);
   }
-  // Saved country/sector preferences: up to 10 points.
   if (Array.isArray(prefs.countries) && prefs.countries.includes(job.country)) score += 5;
   if (Array.isArray(prefs.types) && prefs.types.includes(job.type)) score += 5;
-  // Languages are considered only when the listing explicitly mentions them.
   const languageHits = unique(languageList).filter(language => hay.includes(language));
   if (languageHits.length) score += Math.min(5, languageHits.length * 2);
   return Math.max(0, Math.min(100, score));
 }
 function matchLabel(score) {
-  if (score >= 85) return "Excellent";
-  if (score >= 70) return "Très bon";
-  if (score >= 55) return "Bon";
-  return "À découvrir";
+  const lang = getLanguage();
+  if (score >= 85) return lang === "ar" ? "ممتاز" : lang === "en" ? "Excellent" : "Excellent";
+  if (score >= 70) return lang === "ar" ? "جيد جداً" : lang === "en" ? "Very good" : "Très bon";
+  if (score >= 55) return lang === "ar" ? "جيد" : lang === "en" ? "Good" : "Bon";
+  return lang === "ar" ? "للاكتشاف" : lang === "en" ? "Explore" : "À découvrir";
 }
 function displayJobs(list = jobs) {
   const favoritesCount = getFavorites().length;
