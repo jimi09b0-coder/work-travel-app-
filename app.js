@@ -251,8 +251,16 @@ async function populateFilters() {
 }
 
 function getSearchHistory() {
-  try { return JSON.parse(localStorage.getItem("workTravelSearchHistory") || "[]"); }
-  catch { return []; }
+  try {
+    const parsed = JSON.parse(localStorage.getItem("workTravelSearchHistory") || "[]");
+    if (!Array.isArray(parsed)) return [];
+    const seen = new Set();
+    return parsed
+      .filter(item => typeof item === "string")
+      .map(item => item.trim())
+      .filter(item => item && !seen.has(item.toLocaleLowerCase()) && seen.add(item.toLocaleLowerCase()))
+      .slice(0, 5);
+  } catch { return []; }
 }
 
 function saveSearchHistory(term) {
