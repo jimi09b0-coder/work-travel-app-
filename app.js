@@ -271,7 +271,7 @@ function renderSearchHistory() {
   const box = $("searchHistory");
   if (!box) return;
   const history = getSearchHistory();
-  box.innerHTML = history.length ? `<span>🕘 Recherches récentes</span>${history.map(x => `<button type="button" onclick="useSearchHistory(${JSON.stringify(x).replace(/"/g,"&quot;")})">${esc(x)}</button>`).join("")}` : "";
+  box.innerHTML = history.length ? `<span>🕘 Recherches récentes</span>${history.map(x => `<button type="button" onclick="useSearchHistory(this.dataset.query)" data-query="${esc(x)}">${esc(x)}</button>`).join("")}` : "";
 }
 
 function useSearchHistory(value) {
