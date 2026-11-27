@@ -256,11 +256,15 @@ function getSearchHistory() {
 }
 
 function saveSearchHistory(term) {
-  const value = term.trim();
+  const value = String(term || "").trim();
   if (!value) return;
-  const next = [value, ...getSearchHistory().filter(x => x.toLowerCase() !== value.toLowerCase())].slice(0,5);
-  localStorage.setItem("workTravelSearchHistory", JSON.stringify(next));
-  renderSearchHistory();
+  try {
+    const next = [value, ...getSearchHistory().filter(x => String(x).toLowerCase() !== value.toLowerCase())].slice(0,5);
+    localStorage.setItem("workTravelSearchHistory", JSON.stringify(next));
+    renderSearchHistory();
+  } catch (error) {
+    console.warn("WorkWay: search history could not be saved.", error);
+  }
 }
 
 function renderSearchHistory() {
@@ -277,7 +281,8 @@ function useSearchHistory(value) {
 }
 
 function clearSearchHistory() {
-  localStorage.removeItem("workTravelSearchHistory");
+  try { localStorage.removeItem("workTravelSearchHistory"); }
+  catch (error) { console.warn("WorkWay: search history could not be cleared.", error); }
   renderSearchHistory();
 }
 
