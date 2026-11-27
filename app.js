@@ -390,7 +390,7 @@ function clearFavorites() {
   localStorage.removeItem("workTravelFavorites");
   favoritesOnly = false;
   if ($("favoritesFilter")) $("favoritesFilter").classList.remove("active");
-  displayJobs(jobs);
+  searchJobs();
 }
 
 function toggleFavoritesOnly() {
