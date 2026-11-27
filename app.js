@@ -295,7 +295,11 @@ function clearSearchHistory() {
 }
 
 function getReadNotifications() {
-  try { return JSON.parse(localStorage.getItem("workTravelReadNotifications") || "[]"); } catch { return []; }
+  try {
+    const parsed = JSON.parse(localStorage.getItem("workTravelReadNotifications") || "[]");
+    if (!Array.isArray(parsed)) return [];
+    return [...new Set(parsed.filter(item => typeof item === "string" || typeof item === "number).map(String))];
+  } catch { return []; }
 }
 
 function applicationStatusLabel(status) {
@@ -388,8 +392,12 @@ function showNotification(message, type="info") {
 }
 
 function getFavorites() {
-  try { return JSON.parse(localStorage.getItem("workTravelFavorites") || "[]").map(Number); }
-  catch { return []; }
+  try {
+    const parsed = JSON.parse(localStorage.getItem("workTravelFavorites") || "[]");
+    if (!Array.isArray(parsed)) return [];
+    const ids = parsed.map(Number).filter(id => Number.isSafeInteger(id) && id > 0);
+    return [...new Set(ids)];
+  } catch { return []; }
 }
 
 function isFavorite(id) {
