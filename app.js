@@ -728,6 +728,12 @@ async function openApplicationForm(id) {
 
 async function applyJob(e, id) {
   e.preventDefault();
+  const normalizedJobId = Number(id);
+  if (!Number.isSafeInteger(normalizedJobId) || normalizedJobId <= 0) {
+    alert("Identifiant de l’offre invalide. Veuillez réessayer depuis la liste des offres.");
+    return;
+  }
+  id = normalizedJobId;
   const user = await currentUser();
   if (!user) { openAccount("login"); return; }
   const {data:job,error:jobError} = await supabase.from("jobs").select("id,title,is_active").eq("id",id).maybeSingle();
@@ -743,7 +749,16 @@ async function applyJob(e, id) {
   if (profileError) return alert("Impossible de charger votre profil : " + profileError.message);
   if (!profile?.cv_path) return alert("Ajoutez votre CV dans votre espace candidat avant d'envoyer une candidature.");
   const cvName = profile.cv_path.split("/").pop().replace(/^[0-9a-f-]+-/i, "") || "CV";
-  const applicationToken = crypto.randomUUID();
+  // Use a cryptographically secure token; do not create a predictable CV copy name.
+  let applicationToken;
+  try {
+    if (typeof crypto === "undefined" || typeof crypto.randomUUID !== "function") throw new Error("Secure random UUID unavailable");
+    applicationToken = crypto.randomUUID();
+  } catch (tokenError) {
+    console.warn("WorkWay: secure application token generation failed.", tokenError);
+    alert("Votre navigateur ne permet pas de sécuriser cette candidature. Essayez avec un navigateur récent.");
+    return;
+  }
   const applicationCvPath = "applications/" + user.id + "/" + applicationToken + "-" + cvName;
   const { error: copyError } = await supabase.storage.from("cvs").copy(profile.cv_path, applicationCvPath);
   if (copyError) return alert("Impossible de préparer la copie du CV pour cette candidature : " + copyError.message);
@@ -755,7 +770,8 @@ async function applyJob(e, id) {
   };
   const { error } = await supabase.from("applications").insert({user_id:user.id,job_id:id,cover_letter,availability,phone:phone || profile.phone || "",profile_snapshot,cv_path:applicationCvPath,cv_name:cvName});
   if (error) {
-    await supabase.storage.from("cvs").remove([applicationCvPath]);
+    const { error: cleanupError } = await supabase.storage.from("cvs").remove([applicationCvPath]);
+    if (cleanupError) console.warn("WorkWay: orphan CV copy cleanup failed.", cleanupError);
     if (error.code === "23505") alert("Vous avez déjà postulé à cette offre."); else alert("Impossible d’enregistrer la candidature : " + error.message);
     return;
   }
