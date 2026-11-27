@@ -298,7 +298,7 @@ function getReadNotifications() {
   try {
     const parsed = JSON.parse(localStorage.getItem("workTravelReadNotifications") || "[]");
     if (!Array.isArray(parsed)) return [];
-    return [...new Set(parsed.filter(item => typeof item === "string" || typeof item === "number).map(String))];
+    return [...new Set(parsed.filter(item => typeof item === "string" || typeof item === "number").map(String))];
   } catch { return []; }
 }
 
