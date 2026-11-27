@@ -1992,24 +1992,37 @@ function bindSmartSearch() {
   });
 }
 
-const travelItems = ["Passeport / pièce d'identité","Contrat ou promesse d'embauche","Justificatifs de logement","Assurance voyage / santé","Moyens de paiement","Adresse et trajet vers le logement","Copies numériques des documents","Numéros d'urgence et contacts utiles"];
+const travelItems = {
+  fr:["Passeport / pièce d'identité","Contrat ou promesse d'embauche","Justificatifs de logement","Assurance voyage / santé","Moyens de paiement","Adresse et trajet vers le logement","Copies numériques des documents","Numéros d'urgence et contacts utiles"],
+  en:["Passport / identity document","Employment contract or job offer","Proof of accommodation","Travel / health insurance","Payment methods","Address and route to accommodation","Digital copies of documents","Emergency numbers and useful contacts"],
+  ar:["جواز السفر أو بطاقة الهوية","عقد العمل أو عرض التوظيف","إثبات السكن","تأمين السفر أو الصحة","وسائل الدفع","عنوان السكن وطريق الوصول","نسخ رقمية من الوثائق","أرقام الطوارئ وجهات الاتصال المهمة"]
+};
 
 function updateTravelGuide() {
   const country = $("travelCountry")?.value;
   const box = $("travelGuide");
   if (!box) return;
+  const lang = getLanguage();
+  const labels = {
+    fr:{emptyTitle:"Choisissez votre destination",emptyText:"Vous obtiendrez une checklist adaptée à votre départ.",heading:"Checklist avant le départ",reset:"Réinitialiser",tipTitle:"Conseil",tip:"Conservez une copie numérique de vos documents importants dans un espace sécurisé avant votre départ."},
+    en:{emptyTitle:"Choose your destination",emptyText:"You'll get a checklist tailored to your trip.",heading:"Pre-departure checklist",reset:"Reset checklist",tipTitle:"Tip",tip:"Keep secure digital copies of your important documents before you travel."},
+    ar:{emptyTitle:"اختر وجهتك",emptyText:"ستحصل على قائمة تجهيز مناسبة لرحلتك.",heading:"قائمة التجهيز قبل السفر",reset:"إعادة ضبط القائمة",tipTitle:"نصيحة",tip:"احتفظ بنسخ رقمية آمنة من وثائقك المهمة قبل السفر."}
+  }[lang] || {
+    emptyTitle:"Choisissez votre destination",emptyText:"Vous obtiendrez une checklist adaptée à votre départ.",heading:"Checklist avant le départ",reset:"Réinitialiser",tipTitle:"Conseil",tip:"Conservez une copie numérique de vos documents importants dans un espace sécurisé avant votre départ."
+  };
   if (!country) {
-    box.innerHTML = '<div class="travel-empty"><span>🗺️</span><h3>Choisissez votre destination</h3><p>Vous obtiendrez une checklist adaptée à votre départ.</p></div>';
+    box.innerHTML = '<div class="travel-empty"><span>🗺️</span><h3>'+labels.emptyTitle+'</h3><p>'+labels.emptyText+'</p></div>';
     updateTravelProgress();
     return;
   }
   const key = "workTravelChecklist_" + country;
   let checked = [];
   try { checked = JSON.parse(localStorage.getItem(key) || "[]"); } catch {}
+  const items = travelItems[lang] || travelItems.fr;
   box.innerHTML = `
-    <div class="travel-guide-head"><div><span class="eyebrow">GUIDE ${esc(country).toUpperCase()}</span><h3>📋 Checklist avant le départ</h3></div><button class="clear-checklist" onclick="clearTravelChecklist()">Réinitialiser</button></div>
-    <div class="travel-checklist">${travelItems.map((item,i) => `<label class="check-item"><input type="checkbox" ${checked.includes(i) ? "checked" : ""} onchange="toggleTravelItem(${i})"><span>${esc(item)}</span></label>`).join("")}</div>
-    <div class="travel-tips"><strong>💡 Conseil</strong><p>Conservez une copie numérique de vos documents importants dans un espace sécurisé avant votre départ.</p></div>`;
+    <div class="travel-guide-head"><div><span class="eyebrow">GUIDE ${esc(country).toUpperCase()}</span><h3>📋 ${labels.heading}</h3></div><button class="clear-checklist" onclick="clearTravelChecklist()">${labels.reset}</button></div>
+    <div class="travel-checklist">${items.map((item,i) => `<label class="check-item"><input type="checkbox" ${checked.includes(i) ? "checked" : ""} onchange="toggleTravelItem(${i})"><span>${esc(item)}</span></label>`).join("")}</div>
+    <div class="travel-tips"><strong>💡 ${labels.tipTitle}</strong><p>${labels.tip}</p></div>`;
   updateTravelProgress();
 }
 
