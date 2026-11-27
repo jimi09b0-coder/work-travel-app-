@@ -444,7 +444,7 @@ function jobMatchScore(job) {
     job.description, job.requirements
   ].join(" "));
   const titleHay = normalizeSmartText([job.title, job.type].join(" "));
-  const tokenize = value => normalizeSmartText(value).split(/\\s+/).filter(w => w.length >= 3 && !["the","and","with","for","from","dans","avec","pour","les","des","une","un","aux","sur","and","job","work"].includes(w));
+  const tokenize = value => normalizeSmartText(value).split(/\s+/).filter(w => w.length >= 3 && !["the","and","with","for","from","dans","avec","pour","les","des","une","un","aux","sur","and","job","work"].includes(w));
   const unique = words => [...new Set(words)];
   const skillWords = unique(skillList.flatMap(tokenize));
   const matchedSkills = skillWords.filter(word => hay.includes(word));
