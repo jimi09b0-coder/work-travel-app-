@@ -432,25 +432,45 @@ function renderPreferences() {
   box.innerHTML = `<div class="preferences-head"><div><span class="eyebrow">PERSONNALISATION</span><h3>🎯 Mes préférences</h3><p>Choisissez les destinations et secteurs qui vous intéressent.</p></div></div><div class="preference-groups"><div><strong>🌍 Pays</strong><div class="preference-options">${countries.map(x => `<label><input class="pref-country" type="checkbox" value="${esc(x)}" ${prefs.countries?.includes(x) ? 'checked' : ''}> ${esc(x)}</label>`).join('')}</div></div><div><strong>💼 Secteurs</strong><div class="preference-options">${types.map(x => `<label><input class="pref-type" type="checkbox" value="${esc(x)}" ${prefs.types?.includes(x) ? 'checked' : ''}> ${esc(x)}</label>`).join('')}</div></div></div><button type="button" onclick="savePreferences()">💾 Enregistrer mes préférences</button>`;
 }
 function jobMatchScore(job) {
-  const q = $('search')?.value.trim().toLowerCase() || '';
-  const country = $('countryFilter')?.value || '';
-  const type = $('typeFilter')?.value || '';
-  const remote = $('remoteFilter')?.value || '';
+  // Transparent relevance estimate (not an employer decision): compare the candidate
+  // profile, entered search terms and saved preferences with the listing text.
+  const q = normalizeSmartText($("search")?.value || "");
+  const headline = normalizeSmartText($("profileHeadline")?.value || "");
+  const skillList = csvValues($("profileSkills")?.value || "").map(normalizeSmartText).filter(Boolean);
+  const languageList = csvValues($("profileLanguages")?.value || "").map(normalizeSmartText).filter(Boolean);
   const prefs = getPreferences();
-  let score = 40;
-  if (country && job.country === country) score += 20;
-  if (type && job.type === type) score += 15;
-  if (remote && job.remote_type === remote) score += 10;
-  if (prefs.countries?.includes(job.country)) score += 15;
-  if (prefs.types?.includes(job.type)) score += 10;
-  if (q) {
-    const hay = [job.title,job.country,job.city,job.type,job.contract,job.description,job.requirements].join(' ').toLowerCase();
-    const words = q.split(/\s+/).filter(Boolean);
-    score += Math.min(10, words.filter(w => hay.includes(w)).length * 5);
+  const hay = normalizeSmartText([
+    job.title, job.country, job.city, job.type, job.contract,
+    job.description, job.requirements
+  ].join(" "));
+  const titleHay = normalizeSmartText([job.title, job.type].join(" "));
+  const tokenize = value => normalizeSmartText(value).split(/\\s+/).filter(w => w.length >= 3 && !["the","and","with","for","from","dans","avec","pour","les","des","une","un","aux","sur","and","job","work"].includes(w));
+  const unique = words => [...new Set(words)];
+  const skillWords = unique(skillList.flatMap(tokenize));
+  const matchedSkills = skillWords.filter(word => hay.includes(word));
+  let score = 15;
+  // Skill evidence: up to 50 points, based only on words actually present in the profile.
+  score += Math.min(50, matchedSkills.length * 12.5);
+  // Professional headline/role relevance: up to 20 points.
+  const headlineWords = unique(tokenize(headline));
+  if (headlineWords.length) {
+    const hits = headlineWords.filter(word => titleHay.includes(word)).length;
+    score += Math.round(20 * hits / headlineWords.length);
   }
-  return Math.min(100, score);
+  // Search-query relevance: up to 15 points.
+  const queryWords = unique(tokenize(q));
+  if (queryWords.length) {
+    const hits = queryWords.filter(word => hay.includes(word)).length;
+    score += Math.round(15 * hits / queryWords.length);
+  }
+  // Saved country/sector preferences: up to 10 points.
+  if (Array.isArray(prefs.countries) && prefs.countries.includes(job.country)) score += 5;
+  if (Array.isArray(prefs.types) && prefs.types.includes(job.type)) score += 5;
+  // Languages are considered only when the listing explicitly mentions them.
+  const languageHits = unique(languageList).filter(language => hay.includes(language));
+  if (languageHits.length) score += Math.min(5, languageHits.length * 2);
+  return Math.max(0, Math.min(100, score));
 }
-
 function matchLabel(score) {
   if (score >= 85) return "Excellent";
   if (score >= 70) return "Très bon";
