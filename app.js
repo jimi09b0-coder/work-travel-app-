@@ -2292,6 +2292,8 @@ function openWorldJobSource(source) {
   else if (source === "LinkedIn") url = "https://www.linkedin.com/jobs/search/?" + new URLSearchParams({keywords:role || "jobs",location:city || country}).toString();
   else if (source === "Glassdoor") url = "https://www.glassdoor.com/Job/jobs.htm?" + new URLSearchParams({"sc.keyword":role || "jobs",locT:"C",locId:"",locName:city || country}).toString();
   else if (source === "Visa") url = "https://www.google.com/search?q=" + encodeURIComponent("jobs " + (role || "") + " in " + (city || country) + " work visa sponsorship official");
+  else if (source === "Indeed") url = "https://www.indeed.com/jobs?" + new URLSearchParams({q:role || "jobs",l:city || country}).toString();
+  else if (source === "EURES") url = "https://eures.europa.eu/search-for-jobs_en?" + new URLSearchParams({keywords:role || "jobs",location:city || country}).toString();
   if (url) window.location.assign(url);
 }
 window.openWorldJobSource = openWorldJobSource;
