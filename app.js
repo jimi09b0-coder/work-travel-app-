@@ -430,7 +430,13 @@ function clearFavorites() {
   const count = getFavorites().length;
   if (!count) return;
   if (!confirm("Supprimer toutes les offres favorites ?")) return;
-  localStorage.removeItem("workTravelFavorites");
+  try {
+    localStorage.removeItem("workTravelFavorites");
+  } catch (error) {
+    console.warn("WorkWay: favorites could not be cleared.", error);
+    showNotification("Impossible de supprimer les favoris sur cet appareil.", "error");
+    return;
+  }
   favoritesOnly = false;
   if ($("favoritesFilter")) $("favoritesFilter").classList.remove("active");
   searchJobs();
