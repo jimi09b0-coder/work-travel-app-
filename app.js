@@ -1993,9 +1993,9 @@ function bindSmartSearch() {
 }
 
 const travelItems = {
-  fr:["Passeport / pièce d'identité","Contrat ou promesse d'embauche","Justificatifs de logement","Assurance voyage / santé","Moyens de paiement","Adresse et trajet vers le logement","Copies numériques des documents","Numéros d'urgence et contacts utiles"],
-  en:["Passport / identity document","Employment contract or job offer","Proof of accommodation","Travel / health insurance","Payment methods","Address and route to accommodation","Digital copies of documents","Emergency numbers and useful contacts"],
-  ar:["جواز السفر أو بطاقة الهوية","عقد العمل أو عرض التوظيف","إثبات السكن","تأمين السفر أو الصحة","وسائل الدفع","عنوان السكن وطريق الوصول","نسخ رقمية من الوثائق","أرقام الطوارئ وجهات الاتصال المهمة"]
+  fr:["Passeport valide","Visa et autorisation de travail selon les règles officielles","Contrat ou promesse d'embauche","Documents exigés à l'entrée et au travail","Justificatifs de logement","Assurance voyage / santé","Billets et transport vers la destination","Moyens de paiement et budget de départ","Copies numériques et papier des documents","Adresse du logement et itinéraire d'arrivée","Numéros d'urgence et contacts utiles","Vérifier les règles auprès du consulat ou de l'immigration"],
+  en:["Valid passport","Visa and work authorization, as required by official rules","Employment contract or job offer","Required entry and work documents","Proof of accommodation","Travel / health insurance","Tickets and onward transport","Payment methods and arrival budget","Digital and paper copies of documents","Accommodation address and arrival route","Emergency numbers and useful contacts","Check requirements with the consulate or immigration authority"],
+  ar:["جواز سفر ساري المفعول","التأشيرة وتصريح العمل حسب القوانين الرسمية","عقد العمل أو عرض التوظيف","وثائق الدخول والعمل المطلوبة","إثبات السكن","تأمين السفر أو الصحة","تذاكر السفر ووسائل النقل","وسائل الدفع وميزانية الوصول","نسخ ورقية ورقمية من الوثائق","عنوان السكن وخطة الوصول","أرقام الطوارئ وجهات الاتصال المهمة","تحقق من الشروط لدى القنصلية أو مصلحة الهجرة"]
 };
 
 function updateTravelGuide() {
