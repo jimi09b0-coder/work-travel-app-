@@ -1779,11 +1779,18 @@ async function searchJobicyJobs(query) {
     if (data?.success === false) throw new Error(data.error || "Source indisponible");
     let items = Array.isArray(data.jobs) ? data.jobs : [];
     const normalizedQuery = normalizeSmartText(keyword);
-    const matchesKeyword = job => {
-      const hay = normalizeSmartText([job.jobTitle,job.companyName,job.jobIndustry,job.jobType,job.jobGeo,job.jobExcerpt].flat().join(" "));
-      return !normalizedQuery || normalizedQuery.split(/\s+/).filter(Boolean).some(term => hay.includes(term));
+    const queryTerms = [...new Set(normalizedQuery.split(/\\s+/).filter(Boolean))];
+    const haystackFor = job => normalizeSmartText([job.jobTitle,job.companyName,job.jobIndustry,job.jobType,job.jobGeo,job.jobExcerpt].flat().join(" "));
+    const relevanceScore = job => {
+      const hay = haystackFor(job);
+      const title = normalizeSmartText(job.jobTitle || "");
+      const phraseScore = normalizedQuery && hay.includes(normalizedQuery) ? 30 : 0;
+      const titleScore = normalizedQuery && title.includes(normalizedQuery) ? 50 : 0;
+      const termHits = queryTerms.filter(term => hay.includes(term)).length;
+      return phraseScore + titleScore + (queryTerms.length ? termHits / queryTerms.length * 20 : 0);
     };
-    let filtered = items.filter(matchesKeyword);
+    const matchesKeyword = job => !queryTerms.length || queryTerms.every(term => haystackFor(job).includes(term));
+    let filtered = items.filter(matchesKeyword).sort((a,b) => relevanceScore(b) - relevanceScore(a));
     // If the first 100 recent listings have no matches, try one cursor page only.
     // This keeps searches responsive and avoids unbounded requests to the public feed.
     if (!filtered.length && data.nextCursor) {
