@@ -2046,12 +2046,17 @@ function clearTravelChecklist() {
 
 function updateTravelProgress() {
   const country = $("travelCountry")?.value;
-  const total = travelItems.length;
+  const lang = getLanguage();
+  const items = travelItems[lang] || travelItems.fr;
+  const total = items.length;
   let count = 0;
   if (country) {
-    try { count = JSON.parse(localStorage.getItem("workTravelChecklist_" + country) || "[]").length; } catch {}
+    try {
+      const checked = JSON.parse(localStorage.getItem("workTravelChecklist_" + country) || "[]");
+      count = Array.isArray(checked) ? new Set(checked.filter(i => Number.isInteger(i) && i >= 0 && i < total)).size : 0;
+    } catch {}
   }
-  const percent = Math.round((count / total) * 100);
+  const percent = total ? Math.max(0, Math.min(100, Math.round((count / total) * 100))) : 0;
   if ($("travelProgress")) $("travelProgress").textContent = percent + "%";
   if ($("travelProgressBar")) $("travelProgressBar").style.width = percent + "%";
 }
