@@ -2070,7 +2070,10 @@ function resetView() {
 async function loadJobs() {
   const {data,error} = await supabase.from("jobs").select("*").order("id");
   if (error) {
-    $("jobs").innerHTML = '<div class="empty-state"><h3>Impossible de charger les offres</h3><p>Vérifiez la connexion à la base de données.</p></div>';
+    console.warn("WorkWay: internal job database unavailable; trying public jobs feed.", error);
+    jobs = [];
+    displayJobs([]);
+    await searchJobicyJobs("");
     return;
   }
   const rawJobs = (data || []).filter(job => job.is_active !== false);
@@ -2086,7 +2089,12 @@ async function loadJobs() {
   jobs = rawJobs.map(job => ({...job, profiles: companyMap.get(job.employer_id) || null}));
   await populateFilters();
   renderPreferences();
-  displayJobs();
+  if (!jobs.length) {
+    displayJobs([]);
+    await searchJobicyJobs("");
+  } else {
+    displayJobs();
+  }
   await renderEmployerRequestPanel();
   renderSearchHistory();
 }
@@ -2182,9 +2190,12 @@ async function initializeApp() {
     if (!supabase) {
       const message = $("staticAuthMessage");
       if (message) {
-        message.textContent = "واجهة WorkWay تعمل، لكن تعذر الاتصال بخدمة الحسابات مؤقتًا. تحقق من الإنترنت ثم أعد المحاولة. البحث والصفحة الرئيسية يبقيان ظاهرين.";
+        message.textContent = "تعذر الاتصال بخدمة الحسابات. سيتم محاولة عرض الوظائف العامة من مصدر خارجي.";
         message.hidden = false;
       }
+      jobs = [];
+      displayJobs([]);
+      await searchJobicyJobs("");
       return;
     }
     supabase.auth.onAuthStateChange(async (event, session) => {
