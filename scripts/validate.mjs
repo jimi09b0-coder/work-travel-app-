@@ -84,4 +84,7 @@ for (const match of html.matchAll(/<a\b[^>]*target=["']_blank["'][^>]*>/gi)) {
   }
 }
 
+if (!js.includes("async function fetchJsonWithTimeout(") || !js.includes("15000") || !js.includes("controller.abort()")) throw new Error('External job search must use a bounded timeout and abort stalled requests.');
+if (!js.includes('Aucune offre à distance trouvée') || !js.includes('openExternalJobSearch(\'Indeed\')')) throw new Error('External search empty-state fallback is missing.');
+
 console.log(`Validation passed: ${required.length} required files, ${ids.length} unique HTML ids, ${inlineHandlers.length} inline handler references.`);
